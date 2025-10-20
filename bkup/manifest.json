@@ -1,0 +1,11 @@
+{
+  "name": "prompd-base",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "@prompd.io/refactoring": "latest",
+    "@prompd.io/api-toolkit": "latest",
+    "@prompd.io/testing": "1.0.1"
+  },
+  "devDependencies": {}
+}

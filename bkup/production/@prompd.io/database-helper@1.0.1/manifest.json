@@ -1,0 +1,10 @@
+{
+  "name": "@prompd.io/database-helper",
+  "version": "1.0.1",
+  "description": "Generate and optimize SQL queries with best practices",
+  "license": "MIT",
+  "tags": ["database", "sql", "query", "optimization"],
+  "dependencies": {},
+  "keywords": ["database", "sql", "query", "optimization", "postgresql", "mysql", "sqlite"],
+  "main": "prompts/generate-query.prmd"
+}

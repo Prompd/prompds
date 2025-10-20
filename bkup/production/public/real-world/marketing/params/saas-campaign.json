@@ -1,0 +1,9 @@
+{
+  "campaign_type": "digital-ads",
+  "business_model": "b2b-saas",
+  "attribution_model": "multi-touch",
+  "time_period": "monthly",
+  "budget_range": "medium",
+  "includes_cohort_analysis": true,
+  "competitive_analysis": false
+}

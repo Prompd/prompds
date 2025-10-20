@@ -1,0 +1,754 @@
+---
+id: financial-model-builder
+name: Financial Model & Forecasting Builder
+version: 1.0.0
+description: Build comprehensive financial models with forecasting, scenario analysis, and valuation
+tags: [finance, modeling, forecasting, valuation]
+parameters:
+  - name: model_type
+    type: string
+    enum: [dcf, lbo, merger, budget, forecast, startup-valuation, real-estate]
+    required: true
+    description: Type of financial model to build
+  - name: company_stage
+    type: string
+    enum: [startup, growth, mature, distressed]
+    required: true
+    description: Company maturity stage
+  - name: industry
+    type: string
+    required: false
+    description: Industry sector (e.g., SaaS, Manufacturing, Retail)
+  - name: time_horizon
+    type: string
+    enum: [1-year, 3-year, 5-year, 10-year]
+    default: 5-year
+    description: Forecasting time horizon
+  - name: currency
+    type: string
+    default: USD
+    description: Primary currency for the model
+  - name: includes_sensitivity_analysis
+    type: boolean
+    default: true
+    description: Include sensitivity and scenario analysis
+  - name: automation_level
+    type: string
+    enum: [basic, intermediate, advanced]
+    default: intermediate
+    description: Level of automation and sophistication
+---
+
+# Financial Model Builder: {{model_type}} for {{company_stage}} Company
+
+## Model Overview
+
+**Model Type:** {{model_type}}  
+**Company Stage:** {{company_stage}}  
+{{#if industry}}**Industry:** {{industry}}{{/if}}  
+**Time Horizon:** {{time_horizon}}  
+**Currency:** {{currency}}  
+**Includes Sensitivity Analysis:** {{#if includes_sensitivity_analysis}}Yes{{else}}No{{/if}}
+
+---
+
+## Excel/Google Sheets Model Structure
+
+### 1. Executive Summary Dashboard
+```excel
+=== EXECUTIVE DASHBOARD ===
+
+Key Metrics Summary:
+Revenue ({{time_horizon}}):     =Financials!B15        
+EBITDA Margin:                  =Financials!B25/Financials!B15
+Free Cash Flow:                 =Financials!B35
+Enterprise Value:               =Valuation!B10
+Equity Value:                   =Valuation!B15
+
+{{#if (eq model_type "dcf")}}
+DCF Valuation Summary:
+Terminal Value:                 =DCF!B50
+NPV of Cash Flows:             =DCF!B55
+Implied Share Price:           =DCF!B60
+{{/if}}
+
+Scenario Analysis:
+Base Case IRR:                 =Scenarios!B10
+Upside Case IRR:               =Scenarios!C10  
+Downside Case IRR:             =Scenarios!D10
+```
+
+### 2. Assumptions & Inputs
+```excel
+=== ASSUMPTIONS SHEET ===
+
+Revenue Drivers:
+{{#if (eq model_type "startup-valuation")}}
+ARR Growth Rate Y1:            25%         // Annual Recurring Revenue
+Customer Acquisition Cost:     $150
+Lifetime Value:                $2,400
+Churn Rate (Monthly):          2%
+Average Revenue Per User:      $50
+{{else if (eq industry "Manufacturing")}}
+Unit Sales Growth:             8%
+Average Selling Price:         $125
+Price Inflation:               2%
+Capacity Utilization:          85%
+{{else}}
+Revenue Growth Rate:           12%
+Market Size (TAM):             $10B
+Market Share:                  0.5%
+{{/if}}
+
+Cost Structure:
+COGS as % of Revenue:          {{#if (eq model_type "startup-valuation")}}25%{{else}}45%{{/if}}
+SG&A as % of Revenue:          {{#if (eq model_type "startup-valuation")}}65%{{else}}25%{{/if}}
+R&D as % of Revenue:           {{#if (eq model_type "startup-valuation")}}15%{{else}}5%{{/if}}
+
+Working Capital:
+Days Sales Outstanding:        30
+Days Inventory Outstanding:    45
+Days Payable Outstanding:      30
+
+Capital Expenditure:
+Capex as % of Revenue:         3%
+Depreciation (Years):          7
+
+Financial Assumptions:
+Tax Rate:                      25%
+WACC (Discount Rate):          {{#if (eq company_stage "startup")}}15%{{else if (eq company_stage "growth")}}12%{{else}}10%{{/if}}
+Terminal Growth Rate:          2.5%
+```
+
+### 3. Financial Statements Model
+
+#### Income Statement
+```excel
+=== INCOME STATEMENT ===
+
+                        Year 0    Year 1    Year 2    Year 3    Year 4    Year 5
+Revenue                 =B10      =C10*1.12 =D10*1.12 =E10*1.12 =F10*1.12 =G10*1.12
+
+{{#if (eq model_type "startup-valuation")}}
+Subscription Revenue    =B5*0.8   =C5*0.85  =D5*0.9   =E5*0.92  =F5*0.94  =G5*0.95
+Professional Services  =B5*0.2   =C5*0.15  =D5*0.1   =E5*0.08  =F5*0.06  =G5*0.05
+{{/if}}
+
+Cost of Goods Sold     =B10*-0.45 =C10*Assumptions!$B$15
+Gross Profit            =B10+B11   =C10+C11
+Gross Margin %          =B12/B10   =C12/C10
+
+Operating Expenses:
+Sales & Marketing       =B10*-0.15 =C10*Assumptions!$B$16
+General & Administrative =B10*-0.10 =C10*Assumptions!$B$17
+Research & Development  =B10*-0.05 =C10*Assumptions!$B$18
+Total OpEx              =SUM(B15:B17) =SUM(C15:C17)
+
+EBITDA                  =B12+B18   =C12+C18
+EBITDA Margin %         =B19/B10   =C19/C10
+
+Depreciation            =B25*-1    =C25*-1
+EBIT                    =B19+B21   =C19+C21
+
+Interest Expense        =Debt!B10*-0.05 =Debt!C10*-0.05
+EBT                     =B22+B23   =C22+C23
+
+Income Tax              =MAX(B24*-0.25,0) =MAX(C24*-0.25,0)
+Net Income              =B24+B25   =C24+C25
+
+Shares Outstanding      =10M       =10M
+EPS                     =B26/B27   =C26/C27
+```
+
+#### Balance Sheet
+```excel
+=== BALANCE SHEET ===
+
+ASSETS                  Year 0    Year 1    Year 2    Year 3    Year 4    Year 5
+
+Current Assets:
+Cash                    =CF!B35    =CF!C35
+Accounts Receivable     =IS!C10*30/365 =IS!D10*30/365
+Inventory              =IS!C11*45/365 =IS!D11*45/365
+Total Current Assets    =SUM(B5:B7) =SUM(C5:C7)
+
+Fixed Assets:
+PP&E (Gross)           =B12+CF!C30 =C12+CF!D30
+Less: Depreciation     =B13+IS!C21 =C13+IS!D21
+PP&E (Net)             =B12+B13    =C12+C13
+
+Total Assets           =B8+B14     =C8+C14
+
+LIABILITIES & EQUITY
+
+Current Liabilities:
+Accounts Payable       =IS!C11*-30/365 =IS!D11*-30/365
+Accrued Expenses       =IS!C10*-0.05   =IS!D10*-0.05
+Total Current Liab.    =B19+B20        =C19+C20
+
+Long-term Debt         =Debt!B10       =Debt!C10
+
+Total Liabilities      =B21+B23        =C21+C23
+
+Shareholders' Equity:
+Retained Earnings      =B26+IS!C26     =C26+IS!D26
+Total Equity           =B26            =C26
+
+Total Liab. & Equity   =B24+B27        =C24+C27
+
+// Balance Check
+Balance Check          =B15-B28        =C15-C28  // Should be 0
+```
+
+#### Cash Flow Statement
+```excel
+=== CASH FLOW STATEMENT ===
+
+                        Year 0    Year 1    Year 2    Year 3    Year 4    Year 5
+
+Operating Activities:
+Net Income             =IS!B26    =IS!C26
+Add: Depreciation      =IS!B21*-1 =IS!C21*-1
+
+Working Capital Changes:
+Δ Accounts Receivable  =BS!B6-BS!C6     =BS!C6-BS!D6
+Δ Inventory           =BS!B7-BS!C7      =BS!C7-BS!D7
+Δ Accounts Payable    =BS!C19-BS!B19    =BS!D19-BS!C19
+Net Working Capital   =B7+B8+B9         =C7+C8+C9
+
+Cash from Operations  =B4+B5+B10        =C4+C5+C10
+
+Investing Activities:
+Capital Expenditure   =IS!B10*-0.03     =IS!C10*-0.03
+Cash from Investing   =B13               =C13
+
+Financing Activities:
+Debt Issuance        =Debt!C10-Debt!B10 =Debt!D10-Debt!C10
+Interest Paid        =IS!B23            =IS!C23
+{{#if (eq model_type "lbo")}}
+Debt Repayment       =MAX(-B14-B13,0)*-1 =MAX(-C14-C13,0)*-1
+{{/if}}
+Cash from Financing  =B16+B17{{#if (eq model_type "lbo")}}+B18{{/if}} =C16+C17{{#if (eq model_type "lbo")}}+C18{{/if}}
+
+Net Change in Cash   =B11+B14+B{{#if (eq model_type "lbo")}}19{{else}}18{{/if}} =C11+C14+C{{#if (eq model_type "lbo")}}19{{else}}18{{/if}}
+Beginning Cash       =0                =BS!B5
+Ending Cash         =B{{#if (eq model_type "lbo")}}21{{else}}20{{/if}}+B{{#if (eq model_type "lbo")}}22{{else}}21{{/if}} =C{{#if (eq model_type "lbo")}}21{{else}}20{{/if}}+C{{#if (eq model_type "lbo")}}22{{else}}21{{/if}}
+```
+
+{{#if (eq model_type "dcf")}}
+### 4. DCF Valuation Model
+```excel
+=== DCF VALUATION ===
+
+                        Year 1    Year 2    Year 3    Year 4    Year 5    Terminal
+
+Free Cash Flow:
+EBIT                   =IS!C22    =IS!D22
+Tax on EBIT           =C4*-0.25   =D4*-0.25
+NOPAT                 =C4+C5      =D4+D5
+
+Add: Depreciation     =IS!C21*-1  =IS!D21*-1
+Less: Capex           =CF!C13     =CF!D13
+Less: Δ NWC           =CF!C10*-1  =CF!D10*-1
+
+Free Cash Flow        =C7+C8+C9+C10 =D7+D8+D9+D10
+
+Terminal Value        =                    =G11*(1+2.5%)/(10%-2.5%)
+
+PV Factor             =1/1.10^1   =1/1.10^2 =1/1.10^3 =1/1.10^4 =1/1.10^5 =G13
+Present Value         =C11*C13    =D11*D13  =E11*E13  =F11*F13  =G11*G13  =G12*G13
+
+Enterprise Value      =SUM(C14:H14)
+Less: Net Debt        =Debt!C10-BS!C5
+Equity Value          =B16+B17
+Shares Outstanding    =IS!C27
+Value per Share       =B18/B19
+```
+{{/if}}
+
+{{#if (eq model_type "lbo")}}
+### 4. LBO Returns Analysis
+```excel
+=== LBO ANALYSIS ===
+
+Entry Multiple        =8.5x        // EV/EBITDA
+Exit Multiple         =7.5x        // Conservative exit
+Entry EBITDA          =IS!B19      
+Entry Enterprise Value =B4*B5      
+Less: Cash            =BS!B5       
+Entry Equity Value    =B6+B7       
+
+Financing Structure:
+Total Debt           =B8*0.65      // 65% debt financing
+Sponsor Equity       =B8*0.35      // 35% equity
+Management Equity    =B10*0.05     // 5% mgmt participation
+
+Exit Analysis:
+Exit EBITDA          =IS!G19       
+Exit Enterprise Value =B13*Assumptions!$B$8
+Less: Remaining Debt  =BS!G23      
+Exit Equity Value     =B14+B15     
+
+Returns to Sponsor:
+Initial Investment    =B10          
+Exit Proceeds        =B16*0.95     // Net of mgmt participation
+Total Return         =B18/B17      
+IRR                  =RATE(5,0,-B17,B18) // 5-year hold
+
+Sensitivity Matrix:
+                Exit Multiple
+Entry EBITDA    6.5x   7.0x   7.5x   8.0x   8.5x
+Year 5 EBITDA:
+High Case      [IRR %] [IRR %] [IRR %] [IRR %] [IRR %]
+Base Case      [IRR %] [IRR %] [IRR %] [IRR %] [IRR %]
+Low Case       [IRR %] [IRR %] [IRR %] [IRR %] [IRR %]
+```
+{{/if}}
+
+{{#if includes_sensitivity_analysis}}
+### 5. Sensitivity & Scenario Analysis
+```excel
+=== SENSITIVITY ANALYSIS ===
+
+// Data Table for Revenue Growth vs EBITDA Margin
+                EBITDA Margin
+Revenue Growth   15%    20%    25%    30%    35%
+     8%         [NPV]  [NPV]  [NPV]  [NPV]  [NPV]
+    10%         [NPV]  [NPV]  [NPV]  [NPV]  [NPV]  
+    12%         [NPV]  [NPV]  [NPV]  [NPV]  [NPV]
+    15%         [NPV]  [NPV]  [NPV]  [NPV]  [NPV]
+    18%         [NPV]  [NPV]  [NPV]  [NPV]  [NPV]
+
+Base Case Formula: =Valuation!B18
+
+// Monte Carlo Simulation Setup
+Random Variables:
+Revenue Growth    =NORM.INV(RAND(),12%,3%)
+EBITDA Margin     =NORM.INV(RAND(),25%,5%)
+Terminal Multiple =NORM.INV(RAND(),8.0,1.0)
+Discount Rate     =NORM.INV(RAND(),10%,2%)
+
+Scenario Comparison:
+                Bear Case  Base Case  Bull Case
+Revenue CAGR        5%       12%        20%
+EBITDA Margin      15%       25%        35%
+Terminal Multiple   6.0x      8.0x      10.0x
+{{#if (eq model_type "dcf")}}
+NPV               [Value]   [Value]    [Value]
+IRR               [IRR]     [IRR]      [IRR]
+{{/if}}
+```
+{{/if}}
+
+---
+
+## Python Implementation (Advanced Automation)
+
+{{#if (eq automation_level "advanced")}}
+```python
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.optimize import minimize_scalar
+import warnings
+warnings.filterwarnings('ignore')
+
+class FinancialModel:
+    def __init__(self, model_type: str, company_stage: str, time_horizon: int = 5):
+        self.model_type = model_type
+        self.company_stage = company_stage
+        self.time_horizon = time_horizon
+        self.assumptions = {}
+        self.financials = pd.DataFrame()
+        
+    def set_assumptions(self, **kwargs):
+        """Set model assumptions"""
+        defaults = {
+            'revenue_growth': 0.12 if self.company_stage != 'startup' else 0.25,
+            'cogs_pct': 0.25 if self.model_type == 'startup-valuation' else 0.45,
+            'sga_pct': 0.65 if self.model_type == 'startup-valuation' else 0.25,
+            'rd_pct': 0.15 if self.model_type == 'startup-valuation' else 0.05,
+            'tax_rate': 0.25,
+            'capex_pct': 0.03,
+            'wacc': 0.15 if self.company_stage == 'startup' else 0.12 if self.company_stage == 'growth' else 0.10,
+            'terminal_growth': 0.025,
+            'initial_revenue': 1000000,  # $1M base
+        }
+        
+        self.assumptions.update(defaults)
+        self.assumptions.update(kwargs)
+        
+    def build_income_statement(self):
+        """Build projected income statement"""
+        years = range(self.time_horizon + 1)
+        
+        # Revenue projection
+        revenue = [self.assumptions['initial_revenue']]
+        for year in range(1, self.time_horizon + 1):
+            if self.model_type == 'startup-valuation' and year > 3:
+                # Startup growth typically moderates after year 3
+                growth_rate = max(self.assumptions['revenue_growth'] * (0.8 ** (year-3)), 0.15)
+            else:
+                growth_rate = self.assumptions['revenue_growth']
+            revenue.append(revenue[-1] * (1 + growth_rate))
+        
+        # Build income statement
+        data = {}
+        data['Revenue'] = revenue
+        data['COGS'] = [-r * self.assumptions['cogs_pct'] for r in revenue]
+        data['Gross_Profit'] = [r + c for r, c in zip(revenue, data['COGS'])]
+        data['SGA'] = [-r * self.assumptions['sga_pct'] for r in revenue]
+        data['RD'] = [-r * self.assumptions['rd_pct'] for r in revenue]
+        data['EBITDA'] = [gp + sga + rd for gp, sga, rd in zip(data['Gross_Profit'], data['SGA'], data['RD'])]
+        
+        # Depreciation (simplified)
+        capex_annual = [r * self.assumptions['capex_pct'] for r in revenue]
+        data['Depreciation'] = [-sum(capex_annual[:i+1]) * 0.143 for i in range(len(years))]  # 7-year life
+        
+        data['EBIT'] = [ebitda + dep for ebitda, dep in zip(data['EBITDA'], data['Depreciation'])]
+        data['Tax'] = [-max(ebit * self.assumptions['tax_rate'], 0) for ebit in data['EBIT']]
+        data['Net_Income'] = [ebit + tax for ebit, tax in zip(data['EBIT'], data['Tax'])]
+        
+        self.financials = pd.DataFrame(data, index=[f'Year_{i}' for i in years])
+        return self.financials
+        
+    def calculate_free_cash_flow(self):
+        """Calculate free cash flow"""
+        if self.financials.empty:
+            self.build_income_statement()
+            
+        fcf_data = {}
+        fcf_data['EBIT'] = self.financials['EBIT'].values
+        fcf_data['Tax_on_EBIT'] = [-ebit * self.assumptions['tax_rate'] if ebit > 0 else 0 
+                                  for ebit in fcf_data['EBIT']]
+        fcf_data['NOPAT'] = [ebit + tax for ebit, tax in zip(fcf_data['EBIT'], fcf_data['Tax_on_EBIT'])]
+        
+        # Add back depreciation
+        fcf_data['Add_Depreciation'] = [-d for d in self.financials['Depreciation'].values]
+        
+        # Capital expenditure
+        revenue = self.financials['Revenue'].values
+        fcf_data['Capex'] = [-r * self.assumptions['capex_pct'] for r in revenue]
+        
+        # Change in NWC (simplified)
+        revenue_growth = [0] + [(revenue[i] - revenue[i-1]) for i in range(1, len(revenue))]
+        fcf_data['Delta_NWC'] = [-rg * 0.05 for rg in revenue_growth]  # 5% of revenue growth
+        
+        fcf_data['Free_Cash_Flow'] = [
+            nopat + dep + capex + nwc 
+            for nopat, dep, capex, nwc in zip(
+                fcf_data['NOPAT'], fcf_data['Add_Depreciation'], 
+                fcf_data['Capex'], fcf_data['Delta_NWC']
+            )
+        ]
+        
+        fcf_df = pd.DataFrame(fcf_data, index=self.financials.index)
+        return fcf_df
+        
+    def dcf_valuation(self):
+        """Perform DCF valuation"""
+        if self.model_type != 'dcf':
+            print("DCF valuation only applicable for DCF models")
+            return None
+            
+        fcf_df = self.calculate_free_cash_flow()
+        
+        # Terminal value calculation
+        terminal_fcf = fcf_df['Free_Cash_Flow'].iloc[-1] * (1 + self.assumptions['terminal_growth'])
+        terminal_value = terminal_fcf / (self.assumptions['wacc'] - self.assumptions['terminal_growth'])
+        
+        # Discount cash flows
+        cash_flows = fcf_df['Free_Cash_Flow'].iloc[1:].tolist()  # Exclude year 0
+        cash_flows[-1] += terminal_value  # Add terminal value to final year
+        
+        # Present value calculation
+        discount_factors = [(1 + self.assumptions['wacc']) ** -i for i in range(1, len(cash_flows) + 1)]
+        present_values = [cf * df for cf, df in zip(cash_flows, discount_factors)]
+        
+        enterprise_value = sum(present_values)
+        
+        return {
+            'Enterprise_Value': enterprise_value,
+            'Terminal_Value': terminal_value,
+            'PV_of_Cash_Flows': sum(present_values[:-1]),
+            'PV_of_Terminal_Value': present_values[-1],
+            'Cash_Flows': cash_flows,
+            'Present_Values': present_values,
+            'WACC': self.assumptions['wacc']
+        }
+        
+    def sensitivity_analysis(self, base_var: str, test_var: str, base_range: list, test_range: list):
+        """Perform two-way sensitivity analysis"""
+        if self.model_type != 'dcf':
+            print("Sensitivity analysis implemented for DCF models")
+            return None
+            
+        results = np.zeros((len(base_range), len(test_range)))
+        original_assumptions = self.assumptions.copy()
+        
+        for i, base_val in enumerate(base_range):
+            for j, test_val in enumerate(test_range):
+                # Update assumptions
+                self.assumptions[base_var] = base_val
+                self.assumptions[test_var] = test_val
+                
+                # Recalculate model
+                self.build_income_statement()
+                valuation = self.dcf_valuation()
+                results[i, j] = valuation['Enterprise_Value']
+                
+        # Restore original assumptions
+        self.assumptions = original_assumptions
+        
+        # Create heatmap
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(results, 
+                   xticklabels=[f"{v:.1%}" if test_var.endswith('_pct') or 'growth' in test_var else f"{v:.1f}" for v in test_range],
+                   yticklabels=[f"{v:.1%}" if base_var.endswith('_pct') or 'growth' in base_var else f"{v:.1f}" for v in base_range],
+                   annot=True, fmt='.0f', cmap='RdYlGn')
+        plt.title(f'Sensitivity Analysis: {base_var.title()} vs {test_var.title()}')
+        plt.ylabel(base_var.replace('_', ' ').title())
+        plt.xlabel(test_var.replace('_', ' ').title())
+        plt.tight_layout()
+        plt.show()
+        
+        return results
+        
+    def scenario_analysis(self, scenarios: dict):
+        """Run scenario analysis"""
+        results = {}
+        original_assumptions = self.assumptions.copy()
+        
+        for scenario_name, scenario_assumptions in scenarios.items():
+            # Update assumptions for scenario
+            self.assumptions.update(scenario_assumptions)
+            
+            # Run model
+            self.build_income_statement()
+            
+            if self.model_type == 'dcf':
+                valuation = self.dcf_valuation()
+                results[scenario_name] = {
+                    'Enterprise_Value': valuation['Enterprise_Value'],
+                    'Revenue_Year_5': self.financials['Revenue'].iloc[-1],
+                    'EBITDA_Year_5': self.financials['EBITDA'].iloc[-1],
+                    'EBITDA_Margin': self.financials['EBITDA'].iloc[-1] / self.financials['Revenue'].iloc[-1]
+                }
+            else:
+                results[scenario_name] = {
+                    'Revenue_Year_5': self.financials['Revenue'].iloc[-1],
+                    'EBITDA_Year_5': self.financials['EBITDA'].iloc[-1],
+                    'EBITDA_Margin': self.financials['EBITDA'].iloc[-1] / self.financials['Revenue'].iloc[-1]
+                }
+        
+        # Restore original assumptions
+        self.assumptions = original_assumptions
+        
+        # Display results
+        results_df = pd.DataFrame(results).T
+        print("\nSCENARIO ANALYSIS RESULTS:")
+        print(results_df)
+        
+        return results_df
+        
+    def generate_reports(self):
+        """Generate comprehensive financial reports"""
+        if self.financials.empty:
+            self.build_income_statement()
+            
+        print(f"\n{'='*60}")
+        print(f"FINANCIAL MODEL REPORT: {self.model_type.upper()}")
+        print(f"Company Stage: {self.company_stage.title()}")
+        print(f"Time Horizon: {self.time_horizon} years")
+        print(f"{'='*60}")
+        
+        print("\nKEY ASSUMPTIONS:")
+        for key, value in self.assumptions.items():
+            if isinstance(value, float):
+                if 'pct' in key or 'growth' in key or 'rate' in key:
+                    print(f"  {key.replace('_', ' ').title()}: {value:.1%}")
+                else:
+                    print(f"  {key.replace('_', ' ').title()}: ${value:,.0f}")
+        
+        print(f"\nINCOME STATEMENT SUMMARY:")
+        print(self.financials[['Revenue', 'EBITDA', 'Net_Income']].round(0))
+        
+        print(f"\nKEY METRICS:")
+        final_year = self.financials.iloc[-1]
+        initial_revenue = self.financials['Revenue'].iloc[0]
+        final_revenue = final_year['Revenue']
+        
+        revenue_cagr = (final_revenue / initial_revenue) ** (1/self.time_horizon) - 1
+        ebitda_margin = final_year['EBITDA'] / final_year['Revenue']
+        
+        print(f"  Revenue CAGR: {revenue_cagr:.1%}")
+        print(f"  Final Year Revenue: ${final_revenue:,.0f}")
+        print(f"  Final Year EBITDA: ${final_year['EBITDA']:,.0f}")
+        print(f"  Final Year EBITDA Margin: {ebitda_margin:.1%}")
+        
+        if self.model_type == 'dcf':
+            valuation = self.dcf_valuation()
+            print(f"\nVALUATION SUMMARY:")
+            print(f"  Enterprise Value: ${valuation['Enterprise_Value']:,.0f}")
+            print(f"  Terminal Value: ${valuation['Terminal_Value']:,.0f}")
+            print(f"  WACC: {valuation['WACC']:.1%}")
+
+# Example Usage
+if __name__ == "__main__":
+    # Create model
+    model = FinancialModel('{{model_type}}', '{{company_stage}}', {{#if (eq time_horizon "1-year")}}1{{else if (eq time_horizon "3-year")}}3{{else if (eq time_horizon "10-year")}}10{{else}}5{{/if}})
+    
+    # Set assumptions
+    model.set_assumptions(
+        initial_revenue={{#if (eq company_stage "startup")}}500000{{else if (eq company_stage "growth")}}5000000{{else}}50000000{{/if}},
+        {{#if industry}}
+        {{#if (eq industry "SaaS")}}
+        revenue_growth=0.30,
+        cogs_pct=0.20,
+        sga_pct=0.50,
+        {{else if (eq industry "Manufacturing")}}
+        revenue_growth=0.08,
+        cogs_pct=0.60,
+        sga_pct=0.20,
+        {{/if}}
+        {{/if}}
+    )
+    
+    # Generate reports
+    model.generate_reports()
+    
+    {{#if (eq model_type "dcf")}}
+    # DCF Analysis
+    valuation = model.dcf_valuation()
+    print(f"DCF Valuation: ${valuation['Enterprise_Value']:,.0f}")
+    {{/if}}
+    
+    {{#if includes_sensitivity_analysis}}
+    # Sensitivity Analysis
+    model.sensitivity_analysis(
+        'revenue_growth', 'wacc', 
+        [0.05, 0.10, 0.15, 0.20, 0.25],
+        [0.08, 0.10, 0.12, 0.14, 0.16]
+    )
+    
+    # Scenario Analysis
+    scenarios = {
+        'Bear Case': {'revenue_growth': 0.05, 'ebitda_margin': 0.15},
+        'Base Case': {'revenue_growth': 0.12, 'ebitda_margin': 0.25}, 
+        'Bull Case': {'revenue_growth': 0.20, 'ebitda_margin': 0.35}
+    }
+    model.scenario_analysis(scenarios)
+    {{/if}}
+```
+{{/if}}
+
+---
+
+## Key Financial Ratios & Metrics
+
+### Profitability Ratios
+- **Gross Margin:** (Revenue - COGS) / Revenue
+- **EBITDA Margin:** EBITDA / Revenue  
+- **Net Margin:** Net Income / Revenue
+- **ROE:** Net Income / Shareholders' Equity
+- **ROIC:** NOPAT / Invested Capital
+
+### Efficiency Ratios  
+- **Asset Turnover:** Revenue / Total Assets
+- **Working Capital Days:** DSO + DIO - DPO
+- **Cash Conversion Cycle:** Days to convert investment to cash
+
+### Leverage Ratios
+- **Debt/EBITDA:** Total Debt / EBITDA
+- **Interest Coverage:** EBITDA / Interest Expense
+- **Debt/Equity:** Total Debt / Total Equity
+
+### Valuation Multiples
+{{#if (eq model_type "dcf")}}
+- **EV/Revenue:** Enterprise Value / Revenue
+- **EV/EBITDA:** Enterprise Value / EBITDA  
+- **P/E Ratio:** Price per Share / Earnings per Share
+{{/if}}
+
+---
+
+## Risk Factors & Considerations
+
+### Business Risks
+{{#if (eq company_stage "startup")}}
+- **Execution Risk:** Unproven business model
+- **Market Risk:** Product-market fit uncertainty  
+- **Funding Risk:** Dependency on external capital
+- **Competition Risk:** Large incumbents entering market
+{{else if (eq company_stage "growth")}}
+- **Scaling Risk:** Operational complexity increases
+- **Market Saturation:** Growth rate sustainability
+- **Competition Risk:** Market share protection
+- **Capital Risk:** Funding growth requirements
+{{else}}
+- **Market Risk:** Economic cyclicality impact
+- **Disruption Risk:** Technology/business model changes
+- **Regulatory Risk:** Industry regulation changes
+- **Operational Risk:** Legacy system limitations
+{{/if}}
+
+### Financial Model Risks
+- **Assumption Risk:** Key assumptions prove incorrect
+- **Timing Risk:** Cash flow timing variations
+- **Sensitivity Risk:** High sensitivity to key variables
+- **Terminal Value Risk:** Significant portion of value in terminal period
+
+### Industry-Specific Risks
+{{#if industry}}
+{{#if (eq industry "SaaS")}}
+- **Churn Risk:** Customer retention challenges
+- **Pricing Pressure:** Competitive pricing dynamics
+- **Technology Risk:** Platform obsolescence
+{{else if (eq industry "Manufacturing")}}
+- **Commodity Risk:** Raw material price volatility
+- **Capacity Risk:** Fixed cost leverage
+- **Supply Chain Risk:** Disruption impact
+{{else if (eq industry "Retail")}}
+- **Consumer Demand Risk:** Economic sensitivity
+- **Inventory Risk:** Product lifecycle management
+- **Channel Risk:** Distribution channel changes
+{{/if}}
+{{/if}}
+
+---
+
+## Implementation Checklist
+
+### Model Development
+- [ ] Gather historical financial data (3-5 years)
+- [ ] Research industry benchmarks and multiples
+- [ ] Interview management for key assumptions
+- [ ] Build and test model formulas
+- [ ] Validate model with sanity checks
+
+### Analysis & Validation
+{{#if includes_sensitivity_analysis}}
+- [ ] Perform sensitivity analysis on key variables
+- [ ] Run multiple scenario analyses
+- [ ] Test model break-points and stress cases
+{{/if}}
+- [ ] Compare results to industry benchmarks
+- [ ] Review assumptions with subject matter experts
+
+### Documentation & Presentation
+- [ ] Document all key assumptions and sources
+- [ ] Create executive summary dashboard
+- [ ] Prepare presentation materials
+- [ ] Include risk factors and limitations
+- [ ] Plan for model updates and maintenance
+
+### Quality Assurance
+- [ ] Check all formulas and links
+- [ ] Verify balance sheet balances
+- [ ] Test scenario switching functionality
+- [ ] Review formatting and presentation
+- [ ] Get independent model review
+
+Remember: This financial model is a tool for analysis and should be combined with qualitative factors and professional judgment. All assumptions should be regularly reviewed and updated based on actual performance and market conditions.

@@ -1,0 +1,23 @@
+---
+id: security-audit
+name: Comprehensive Security Audit
+version: 1.0.0
+description: Performs a comprehensive security audit using OWASP standards and penetration testing methodology
+system: "../systems/security-expert.md"
+parameters:
+  - name: application_name
+    type: string
+    required: true
+    description: Name of the application being audited
+tags:
+- "security"
+- "owasp"
+- "penetration testing"
+- "audit"
+- "security-audit"
+---
+
+# Security Audit for {{application_name}}
+
+## Application Profile
+This is only for testing inheritance

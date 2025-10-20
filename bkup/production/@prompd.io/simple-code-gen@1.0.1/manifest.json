@@ -1,0 +1,13 @@
+{
+  "name": "@prompd.io/simple-code-gen",
+  "version": "1.0.1",
+  "description": "Generate Python/JavaScript classes and functions",
+  "license": "MIT",
+  "tags": ["code-generation", "python", "javascript", "classes", "functions"],
+  "dependencies": {},
+  "keywords": ["code-generation", "python", "javascript", "typescript", "classes", "functions"],
+  "main": "prompts/generate-class.prmd",
+  "files": [
+    "prompts/generate-function.prmd"
+  ]
+}

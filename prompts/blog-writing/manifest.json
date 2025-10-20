@@ -1,0 +1,9 @@
+{
+  "name": "blog-writing",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "@prompd/public-examples": "latest"
+  },
+  "devDependencies": {}
+}

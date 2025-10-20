@@ -1,0 +1,11 @@
+{
+  "name": "prompts",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "@prompd.io/core-patterns": "latest"
+  },
+  "devDependencies": {
+    "@prompd.io/core-patterns": "latest"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@prompd.io/public-examples",
+  "version": "1.0.1",
+  "description": "Public example prompts demonstrating various features and patterns",
+  "license": "MIT",
+  "tags": ["examples", "patterns", "inheritance", "api"],
+  "dependencies": {},
+  "keywords": ["examples", "patterns", "inheritance", "api", "tutorial"],
+  "main": "api-development.prmd",
+  "files": [
+    "base-prompt.prmd",
+    "basic-inheritance.prmd",
+    "package-inheritance.prmd"
+  ]
+}

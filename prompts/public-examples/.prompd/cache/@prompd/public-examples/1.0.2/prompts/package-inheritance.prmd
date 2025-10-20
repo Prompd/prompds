@@ -1,0 +1,36 @@
+---
+id: package-inheritance-example
+name: "Package Inheritance Example"
+description: "Demonstrates package-based inheritance"
+version: 1.0.1
+inherits: "@prompd.io/core-patterns@2.0.0/templates/analysis-framework.prompd"
+parameters:
+  - name: domain
+    type: string
+    default: "technology"
+    description: "Domain to focus analysis on"
+  - name: stakeholders
+    type: array
+    items:
+      enum: [developers, users, executives, regulators]
+    default: ["developers", "users"]
+    description: "Key stakeholder groups"
+---
+
+## Specialized Analysis for {domain}
+
+### Stakeholder Perspectives
+{{#each stakeholders}}
+**{this} Viewpoint:**
+- Key concerns and priorities
+- Success criteria and metrics
+- Risk factors and mitigation strategies
+
+{{/each}}
+
+### Domain-Specific Considerations
+For {domain} analysis, evaluate:
+- Industry standards and best practices
+- Regulatory compliance requirements
+- Market dynamics and competitive landscape
+- Technical feasibility and constraints

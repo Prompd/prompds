@@ -1,0 +1,10 @@
+{
+  "name": "@prompd.io/api-development",
+  "version": "1.0.1",
+  "description": "Complete API development toolkit with endpoint generators, authentication, and testing utilities",
+  "license": "MIT",
+  "tags": [],
+  "dependencies": {},
+  "keywords": [],
+  "main": "prompts/rest-endpoint-generator.prmd"
+}

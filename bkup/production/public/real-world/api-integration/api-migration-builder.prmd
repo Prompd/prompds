@@ -1,0 +1,1288 @@
+---
+id: api-migration-builder
+name: API Migration & Legacy System Integration
+version: 1.0.0
+description: Migrate legacy APIs to modern architectures using existing documentation and schemas
+tags: [api, migration, legacy, integration, modernization]
+parameters:
+  - name: migration_type
+    type: string
+    enum: [rest-to-graphql, soap-to-rest, monolith-to-microservices, legacy-modernization]
+    required: true
+    description: Type of API migration to perform
+  - name: target_framework
+    type: string
+    enum: [express, fastify, spring-boot, flask, django, nestjs]
+    required: true
+    description: Target framework for the new API
+  - name: legacy_api_docs
+    type: string
+    required: false
+    description: Path to existing API documentation (OpenAPI, Swagger, WSDL, etc.)
+  - name: existing_schema
+    type: string
+    required: false
+    description: Path to existing database schema or data model files
+  - name: sample_requests
+    type: string
+    required: false
+    description: Path to sample request/response files or Postman collection
+  - name: business_logic_docs
+    type: string
+    required: false
+    description: Path to business logic documentation or requirements
+  - name: error_handling_guide
+    type: string
+    required: false
+    description: Path to existing error handling patterns or documentation
+  - name: authentication_config
+    type: string
+    required: false
+    description: Path to authentication configuration or security requirements
+  - name: performance_requirements
+    type: string
+    required: false
+    description: Path to performance requirements or SLA documentation
+---
+
+# API Migration: {{migration_type}} to {{target_framework}}
+
+## Migration Overview
+
+**Migration Type:** {{migration_type}}  
+**Target Framework:** {{target_framework}}  
+{{#if legacy_api_docs}}**Legacy API Documentation:** {{legacy_api_docs}}{{/if}}  
+{{#if existing_schema}}**Existing Schema:** {{existing_schema}}{{/if}}  
+{{#if sample_requests}}**Sample Data:** {{sample_requests}}{{/if}}
+
+---
+
+## Context Analysis
+
+{{#if legacy_api_docs}}
+### Legacy API Documentation Analysis
+
+Based on the provided API documentation ({{legacy_api_docs}}):
+
+**Step 1: Parse and Analyze Existing API Structure**
+```python
+# API Documentation Parser
+import json
+import yaml
+import requests
+from pathlib import Path
+
+class APIDocumentationAnalyzer:
+    def __init__(self, doc_path: str):
+        self.doc_path = doc_path
+        self.api_structure = {}
+        self.endpoints = []
+        self.models = {}
+        
+    def analyze_openapi_spec(self):
+        """Analyze OpenAPI/Swagger specification"""
+        try:
+            with open(self.doc_path, 'r') as f:
+                if self.doc_path.endswith('.json'):
+                    spec = json.load(f)
+                else:
+                    spec = yaml.safe_load(f)
+            
+            # Extract basic info
+            self.api_structure = {
+                'title': spec.get('info', {}).get('title', 'Unknown API'),
+                'version': spec.get('info', {}).get('version', '1.0.0'),
+                'base_url': spec.get('servers', [{}])[0].get('url', ''),
+                'description': spec.get('info', {}).get('description', '')
+            }
+            
+            # Extract endpoints
+            for path, methods in spec.get('paths', {}).items():
+                for method, details in methods.items():
+                    if method.upper() in ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']:
+                        endpoint = {
+                            'path': path,
+                            'method': method.upper(),
+                            'summary': details.get('summary', ''),
+                            'description': details.get('description', ''),
+                            'parameters': details.get('parameters', []),
+                            'request_body': details.get('requestBody', {}),
+                            'responses': details.get('responses', {}),
+                            'tags': details.get('tags', [])
+                        }
+                        self.endpoints.append(endpoint)
+            
+            # Extract models/schemas
+            components = spec.get('components', {})
+            self.models = components.get('schemas', {})
+            
+            return self.api_structure, self.endpoints, self.models
+            
+        except Exception as e:
+            print(f"Error analyzing API documentation: {e}")
+            return None, [], {}
+    
+    def generate_migration_plan(self):
+        """Generate migration plan based on analyzed structure"""
+        plan = {
+            'total_endpoints': len(self.endpoints),
+            'endpoint_categories': {},
+            'complexity_assessment': 'Medium',  # Default
+            'migration_phases': []
+        }
+        
+        # Categorize endpoints
+        for endpoint in self.endpoints:
+            for tag in endpoint.get('tags', ['uncategorized']):
+                if tag not in plan['endpoint_categories']:
+                    plan['endpoint_categories'][tag] = []
+                plan['endpoint_categories'][tag].append({
+                    'path': endpoint['path'],
+                    'method': endpoint['method']
+                })
+        
+        # Assess complexity
+        if len(self.endpoints) > 50:
+            plan['complexity_assessment'] = 'High'
+        elif len(self.endpoints) > 20:
+            plan['complexity_assessment'] = 'Medium'
+        else:
+            plan['complexity_assessment'] = 'Low'
+        
+        # Suggest migration phases
+        if plan['complexity_assessment'] == 'High':
+            plan['migration_phases'] = [
+                'Phase 1: Core CRUD endpoints',
+                'Phase 2: Business logic endpoints',
+                'Phase 3: Complex integrations',
+                'Phase 4: Authentication & authorization',
+                'Phase 5: Performance optimization'
+            ]
+        else:
+            plan['migration_phases'] = [
+                'Phase 1: All endpoints migration',
+                'Phase 2: Testing & optimization',
+                'Phase 3: Security implementation'
+            ]
+        
+        return plan
+
+# Usage with provided documentation
+analyzer = APIDocumentationAnalyzer('{{legacy_api_docs}}')
+api_structure, endpoints, models = analyzer.analyze_openapi_spec()
+migration_plan = analyzer.generate_migration_plan()
+
+print("=== LEGACY API ANALYSIS ===")
+print(f"API: {api_structure['title']} v{api_structure['version']}")
+print(f"Total Endpoints: {len(endpoints)}")
+print(f"Complexity: {migration_plan['complexity_assessment']}")
+print(f"Migration Phases: {len(migration_plan['migration_phases'])}")
+```
+
+**Identified Legacy Patterns to Modernize:**
+- Authentication mechanisms that need JWT upgrade
+- REST endpoints that could benefit from GraphQL
+- Synchronous operations that should be asynchronous
+- Missing error handling standardization
+- Lack of request/response validation
+{{/if}}
+
+{{#if existing_schema}}
+### Database Schema Analysis
+
+Based on the provided schema ({{existing_schema}}):
+
+**Step 2: Schema Modernization Strategy**
+```sql
+-- Analysis of existing schema structure
+-- (This would be based on the actual schema file provided)
+
+-- Common modernization patterns:
+-- 1. Add proper indexing
+-- 2. Implement soft deletes
+-- 3. Add audit fields (created_at, updated_at, created_by, updated_by)
+-- 4. Normalize data structures
+-- 5. Add constraints and foreign keys
+
+-- Example modernization for a typical legacy table:
+{{#if (eq migration_type "monolith-to-microservices")}}
+-- Microservices Schema Decomposition Strategy:
+
+-- Original monolithic table might need to be split:
+-- users table -> user_service.users + profile_service.user_profiles
+-- orders table -> order_service.orders + payment_service.transactions + inventory_service.stock_movements
+
+-- Example decomposition:
+CREATE SCHEMA user_service;
+CREATE SCHEMA order_service; 
+CREATE SCHEMA payment_service;
+
+-- User Service Tables
+CREATE TABLE user_service.users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    status VARCHAR(50) DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE user_service.user_profiles (
+    user_id UUID REFERENCES user_service.users(id),
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    phone VARCHAR(20),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+{{/if}}
+```
+
+**Schema Migration Considerations:**
+- Data consistency across service boundaries
+- Transaction management for distributed operations  
+- Event sourcing for data synchronization
+- Backup and rollback strategies
+{{/if}}
+
+{{#if sample_requests}}
+### Sample Request/Response Analysis
+
+Based on provided samples ({{sample_requests}}):
+
+**Step 3: Request/Response Pattern Analysis**
+```javascript
+// Request/Response Pattern Analyzer
+const fs = require('fs');
+
+class RequestAnalyzer {
+    constructor(samplesPath) {
+        this.samplesPath = samplesPath;
+        this.patterns = {
+            authentication: new Set(),
+            contentTypes: new Set(),
+            errorPatterns: new Set(),
+            responseStructures: new Set()
+        };
+    }
+    
+    analyzeSamples() {
+        // Parse Postman collection or JSON samples
+        const samples = JSON.parse(fs.readFileSync(this.samplesPath));
+        
+        // Extract patterns from samples
+        if (samples.collection) { // Postman format
+            this.analyzePostmanCollection(samples.collection);
+        } else if (Array.isArray(samples)) { // Generic sample array
+            this.analyzeGenericSamples(samples);
+        }
+        
+        return this.generateModernPatterns();
+    }
+    
+    generateModernPatterns() {
+        return {
+            // Modern authentication pattern
+            authentication: {
+                type: 'Bearer JWT',
+                header: 'Authorization: Bearer <token>',
+                example: 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+            },
+            
+            // Standardized error responses
+            errorResponse: {
+                structure: {
+                    error: {
+                        code: 'string',
+                        message: 'string',
+                        details: 'object',
+                        timestamp: 'ISO8601 string',
+                        traceId: 'string'
+                    }
+                },
+                example: {
+                    error: {
+                        code: 'VALIDATION_ERROR',
+                        message: 'Invalid input data',
+                        details: { field: 'email', issue: 'Invalid format' },
+                        timestamp: '2024-01-15T10:30:00Z',
+                        traceId: 'abc123-def456'
+                    }
+                }
+            },
+            
+            // Standardized success responses
+            successResponse: {
+                structure: {
+                    data: 'object|array',
+                    meta: {
+                        timestamp: 'ISO8601 string',
+                        version: 'string',
+                        pagination: 'object' // if applicable
+                    }
+                }
+            }
+        };
+    }
+}
+
+// Analyze provided samples
+const analyzer = new RequestAnalyzer('{{sample_requests}}');
+const modernPatterns = analyzer.analyzeSamples();
+```
+
+**Modernization Requirements Identified:**
+- Consistent JSON response structures
+- Proper HTTP status codes usage
+- Request/response validation schemas
+- Standardized error handling
+- Pagination patterns for list endpoints
+{{/if}}
+
+---
+
+## Migration Implementation
+
+{{#if (eq migration_type "rest-to-graphql")}}
+### REST to GraphQL Migration
+
+**Step 4: GraphQL Schema Generation**
+```graphql
+# Generated GraphQL schema based on REST endpoints analysis
+
+{{#if existing_schema}}
+# Types based on database schema
+type User {
+  id: ID!
+  email: String!
+  profile: UserProfile
+  orders: [Order!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type UserProfile {
+  firstName: String
+  lastName: String
+  phone: String
+  avatar: String
+}
+
+type Order {
+  id: ID!
+  userId: ID!
+  status: OrderStatus!
+  items: [OrderItem!]!
+  total: Float!
+  createdAt: DateTime!
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+{{/if}}
+
+# Queries (converted from GET endpoints)
+type Query {
+  # User queries
+  user(id: ID!): User
+  users(filter: UserFilter, pagination: Pagination): UserConnection!
+  
+  # Order queries  
+  order(id: ID!): Order
+  orders(userId: ID, filter: OrderFilter, pagination: Pagination): OrderConnection!
+}
+
+# Mutations (converted from POST/PUT/DELETE endpoints)
+type Mutation {
+  # User mutations
+  createUser(input: CreateUserInput!): CreateUserPayload!
+  updateUser(id: ID!, input: UpdateUserInput!): UpdateUserPayload!
+  deleteUser(id: ID!): DeleteUserPayload!
+  
+  # Order mutations
+  createOrder(input: CreateOrderInput!): CreateOrderPayload!
+  updateOrderStatus(id: ID!, status: OrderStatus!): UpdateOrderStatusPayload!
+}
+
+# Subscriptions (for real-time features)
+type Subscription {
+  orderStatusChanged(userId: ID!): Order!
+  userUpdated(id: ID!): User!
+}
+
+# Input types
+input CreateUserInput {
+  email: String!
+  password: String!
+  profile: UserProfileInput
+}
+
+input UserProfileInput {
+  firstName: String
+  lastName: String
+  phone: String
+}
+
+# Connection types for pagination
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type UserEdge {
+  node: User!
+  cursor: String!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+# Payload types for mutations
+type CreateUserPayload {
+  user: User
+  errors: [UserError!]!
+}
+
+type UserError {
+  field: String
+  message: String!
+  code: String!
+}
+```
+
+**GraphQL Resolver Implementation ({{target_framework}})**
+```javascript
+{{#if (eq target_framework "express")}}
+// GraphQL resolvers for Express + Apollo Server
+const { ApolloServer } = require('apollo-server-express');
+const { buildSchema } = require('graphql');
+
+const resolvers = {
+  Query: {
+    user: async (parent, { id }, context) => {
+      // Validate authentication
+      if (!context.user) {
+        throw new AuthenticationError('Authentication required');
+      }
+      
+      // Fetch from legacy data source with proper error handling
+      try {
+        const user = await context.dataSources.userAPI.getUserById(id);
+        return user;
+      } catch (error) {
+        throw new UserInputError(`User not found: ${id}`);
+      }
+    },
+    
+    users: async (parent, { filter, pagination }, context) => {
+      if (!context.user || !context.user.permissions.includes('READ_USERS')) {
+        throw new ForbiddenError('Insufficient permissions');
+      }
+      
+      return await context.dataSources.userAPI.getUsers(filter, pagination);
+    }
+  },
+  
+  Mutation: {
+    createUser: async (parent, { input }, context) => {
+      // Validate input using schema validation
+      const validationErrors = await validateCreateUserInput(input);
+      if (validationErrors.length > 0) {
+        return { user: null, errors: validationErrors };
+      }
+      
+      try {
+        const user = await context.dataSources.userAPI.createUser(input);
+        
+        // Publish subscription for real-time updates
+        context.pubsub.publish('USER_CREATED', { userCreated: user });
+        
+        return { user, errors: [] };
+      } catch (error) {
+        return { 
+          user: null, 
+          errors: [{ 
+            field: null, 
+            message: error.message, 
+            code: 'CREATION_FAILED' 
+          }] 
+        };
+      }
+    }
+  },
+  
+  Subscription: {
+    userUpdated: {
+      subscribe: (parent, args, context) => {
+        if (!context.user) {
+          throw new AuthenticationError('Authentication required for subscriptions');
+        }
+        
+        return context.pubsub.asyncIterator('USER_UPDATED');
+      }
+    }
+  },
+  
+  // Field resolvers for complex relationships
+  User: {
+    orders: async (user, args, context) => {
+      return await context.dataSources.orderAPI.getOrdersByUserId(user.id);
+    },
+    
+    profile: async (user, args, context) => {
+      return await context.dataSources.userAPI.getUserProfile(user.id);
+    }
+  }
+};
+
+// Data source integration with legacy systems
+class UserAPI extends RESTDataSource {
+  constructor() {
+    super();
+    this.baseURL = process.env.LEGACY_API_URL;
+  }
+  
+  willSendRequest(request) {
+    // Add authentication headers for legacy API
+    request.headers.set('Authorization', `Bearer ${this.context.legacyToken}`);
+  }
+  
+  async getUserById(id) {
+    const response = await this.get(`/api/users/${id}`);
+    return this.transformLegacyUser(response);
+  }
+  
+  transformLegacyUser(legacyUser) {
+    // Transform legacy data structure to GraphQL schema
+    return {
+      id: legacyUser.user_id,
+      email: legacyUser.email_address,
+      createdAt: new Date(legacyUser.created_date),
+      updatedAt: new Date(legacyUser.last_modified),
+      // Map other fields...
+    };
+  }
+}
+{{/if}}
+```
+
+{{else if (eq migration_type "monolith-to-microservices")}}
+### Monolith to Microservices Migration
+
+**Step 4: Service Decomposition Strategy**
+
+Based on the analyzed endpoints and business domains:
+
+```yaml
+# Service decomposition plan
+services:
+  user-service:
+    responsibilities:
+      - User authentication
+      - User profile management
+      - User preferences
+    endpoints:
+      - GET /users/{id}
+      - POST /users
+      - PUT /users/{id}
+      - DELETE /users/{id}
+    database: user_service_db
+    
+  order-service:  
+    responsibilities:
+      - Order management
+      - Order lifecycle
+      - Order history
+    endpoints:
+      - GET /orders/{id}
+      - POST /orders
+      - PUT /orders/{id}/status
+      - GET /orders/user/{userId}
+    database: order_service_db
+    dependencies:
+      - user-service (for user validation)
+      - payment-service (for payment processing)
+      - inventory-service (for stock validation)
+    
+  payment-service:
+    responsibilities:
+      - Payment processing
+      - Transaction management
+      - Refunds and chargebacks
+    endpoints:
+      - POST /payments
+      - GET /payments/{id}
+      - POST /payments/{id}/refund
+    database: payment_service_db
+    external_integrations:
+      - stripe
+      - paypal
+```
+
+**Service Implementation ({{target_framework}})**
+```javascript
+{{#if (eq target_framework "express")}}
+// User Service Implementation
+const express = require('express');
+const { Pool } = require('pg');
+const jwt = require('jsonwebtoken');
+
+class UserService {
+  constructor() {
+    this.app = express();
+    this.db = new Pool({
+      connectionString: process.env.USER_SERVICE_DB_URL
+    });
+    this.setupRoutes();
+    this.setupMiddleware();
+  }
+  
+  setupMiddleware() {
+    this.app.use(express.json());
+    this.app.use(this.authMiddleware);
+    this.app.use(this.loggingMiddleware);
+  }
+  
+  authMiddleware = (req, res, next) => {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    
+    if (!token) {
+      return res.status(401).json({
+        error: {
+          code: 'AUTHENTICATION_REQUIRED',
+          message: 'Authentication token required',
+          timestamp: new Date().toISOString()
+        }
+      });
+    }
+    
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = decoded;
+      next();
+    } catch (error) {
+      return res.status(401).json({
+        error: {
+          code: 'INVALID_TOKEN',
+          message: 'Invalid authentication token',
+          timestamp: new Date().toISOString()
+        }
+      });
+    }
+  };
+  
+  setupRoutes() {
+    // Get user by ID
+    this.app.get('/users/:id', async (req, res) => {
+      try {
+        const { id } = req.params;
+        
+        const result = await this.db.query(
+          'SELECT * FROM users WHERE id = $1 AND deleted_at IS NULL',
+          [id]
+        );
+        
+        if (result.rows.length === 0) {
+          return res.status(404).json({
+            error: {
+              code: 'USER_NOT_FOUND',
+              message: `User with id ${id} not found`,
+              timestamp: new Date().toISOString()
+            }
+          });
+        }
+        
+        const user = this.transformUser(result.rows[0]);
+        
+        res.json({
+          data: user,
+          meta: {
+            timestamp: new Date().toISOString(),
+            version: '1.0.0'
+          }
+        });
+        
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: 'Internal server error',
+            timestamp: new Date().toISOString()
+          }
+        });
+      }
+    });
+    
+    // Create user
+    this.app.post('/users', async (req, res) => {
+      try {
+        const userData = this.validateUserData(req.body);
+        
+        const result = await this.db.query(`
+          INSERT INTO users (email, password_hash, first_name, last_name, created_at, updated_at)
+          VALUES ($1, $2, $3, $4, NOW(), NOW())
+          RETURNING *
+        `, [
+          userData.email,
+          await this.hashPassword(userData.password),
+          userData.firstName,
+          userData.lastName
+        ]);
+        
+        const user = this.transformUser(result.rows[0]);
+        
+        // Publish user creation event for other services
+        await this.publishEvent('user.created', {
+          userId: user.id,
+          email: user.email,
+          timestamp: new Date().toISOString()
+        });
+        
+        res.status(201).json({
+          data: user,
+          meta: {
+            timestamp: new Date().toISOString(),
+            version: '1.0.0'
+          }
+        });
+        
+      } catch (error) {
+        if (error.code === 'VALIDATION_ERROR') {
+          return res.status(400).json({
+            error: {
+              code: error.code,
+              message: error.message,
+              details: error.details,
+              timestamp: new Date().toISOString()
+            }
+          });
+        }
+        
+        console.error('Error creating user:', error);
+        res.status(500).json({
+          error: {
+            code: 'INTERNAL_ERROR',
+            message: 'Internal server error',
+            timestamp: new Date().toISOString()
+          }
+        });
+      }
+    });
+  }
+  
+  transformUser(dbUser) {
+    // Transform database format to API format
+    return {
+      id: dbUser.id,
+      email: dbUser.email,
+      firstName: dbUser.first_name,
+      lastName: dbUser.last_name,
+      createdAt: dbUser.created_at,
+      updatedAt: dbUser.updated_at
+    };
+  }
+  
+  async publishEvent(eventType, payload) {
+    // Publish events to message queue for inter-service communication
+    const message = {
+      eventType,
+      payload,
+      timestamp: new Date().toISOString(),
+      service: 'user-service'
+    };
+    
+    // Using Redis/RabbitMQ/Kafka for event publishing
+    await this.messageQueue.publish(eventType, message);
+  }
+}
+
+// Start the service
+const userService = new UserService();
+userService.app.listen(process.env.PORT || 3001, () => {
+  console.log('User Service running on port', process.env.PORT || 3001);
+});
+{{/if}}
+```
+
+**Inter-Service Communication**
+```javascript
+// Event-driven communication between services
+const EventBus = require('./utils/event-bus');
+
+class OrderService {
+  constructor() {
+    this.eventBus = new EventBus();
+    this.setupEventListeners();
+  }
+  
+  setupEventListeners() {
+    // Listen for user events
+    this.eventBus.subscribe('user.created', this.handleUserCreated.bind(this));
+    this.eventBus.subscribe('user.deleted', this.handleUserDeleted.bind(this));
+    
+    // Listen for payment events
+    this.eventBus.subscribe('payment.completed', this.handlePaymentCompleted.bind(this));
+    this.eventBus.subscribe('payment.failed', this.handlePaymentFailed.bind(this));
+  }
+  
+  async handleUserCreated(event) {
+    // Initialize user-specific order data
+    console.log(`Setting up order context for user: ${event.payload.userId}`);
+  }
+  
+  async handlePaymentCompleted(event) {
+    // Update order status when payment completes
+    const { orderId } = event.payload;
+    
+    await this.db.query(
+      'UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2',
+      ['PAID', orderId]
+    );
+    
+    // Publish order status change event
+    await this.eventBus.publish('order.status_changed', {
+      orderId,
+      newStatus: 'PAID',
+      timestamp: new Date().toISOString()
+    });
+  }
+}
+```
+{{/if}}
+
+---
+
+{{#if business_logic_docs}}
+## Business Logic Migration
+
+Based on the business logic documentation ({{business_logic_docs}}):
+
+**Step 5: Business Rules Implementation**
+```javascript
+// Business Rules Engine based on documented requirements
+
+class BusinessRulesEngine {
+  constructor(rulesConfig) {
+    this.rules = new Map();
+    this.loadRules(rulesConfig);
+  }
+  
+  loadRules(config) {
+    // Load business rules from documentation
+    // Example rules that might be documented:
+    
+    this.rules.set('user_creation_validation', {
+      condition: (user) => {
+        return user.email && 
+               user.email.includes('@') && 
+               user.password && 
+               user.password.length >= 8;
+      },
+      errorMessage: 'User must have valid email and password (min 8 chars)'
+    });
+    
+    this.rules.set('order_value_discount', {
+      condition: (order) => order.totalValue > 100,
+      action: (order) => {
+        order.discount = order.totalValue * 0.1; // 10% discount
+        order.totalValue -= order.discount;
+        return order;
+      }
+    });
+    
+    this.rules.set('premium_user_benefits', {
+      condition: (user) => user.subscriptionType === 'premium',
+      action: (context) => {
+        context.features = [...context.features, 'advanced_analytics', 'priority_support'];
+        return context;
+      }
+    });
+  }
+  
+  validate(entity, ruleNames) {
+    const violations = [];
+    
+    for (const ruleName of ruleNames) {
+      const rule = this.rules.get(ruleName);
+      if (rule && rule.condition && !rule.condition(entity)) {
+        violations.push({
+          rule: ruleName,
+          message: rule.errorMessage || `Rule ${ruleName} violated`
+        });
+      }
+    }
+    
+    return violations;
+  }
+  
+  apply(entity, ruleNames) {
+    let processedEntity = { ...entity };
+    
+    for (const ruleName of ruleNames) {
+      const rule = this.rules.get(ruleName);
+      if (rule && rule.condition && rule.condition(processedEntity) && rule.action) {
+        processedEntity = rule.action(processedEntity);
+      }
+    }
+    
+    return processedEntity;
+  }
+}
+
+// Usage in API endpoints
+const businessRules = new BusinessRulesEngine(require('./business-rules-config.json'));
+
+app.post('/users', async (req, res) => {
+  // Validate business rules
+  const violations = businessRules.validate(req.body, ['user_creation_validation']);
+  
+  if (violations.length > 0) {
+    return res.status(400).json({
+      error: {
+        code: 'BUSINESS_RULE_VIOLATION',
+        message: 'Business rules validation failed',
+        details: violations
+      }
+    });
+  }
+  
+  // Create user...
+});
+```
+{{/if}}
+
+{{#if error_handling_guide}}
+## Error Handling Migration
+
+Based on error handling patterns ({{error_handling_guide}}):
+
+**Step 6: Standardized Error Handling**
+```javascript
+// Centralized error handling based on legacy patterns
+
+class APIError extends Error {
+  constructor(message, statusCode, errorCode, details = {}) {
+    super(message);
+    this.name = 'APIError';
+    this.statusCode = statusCode;
+    this.errorCode = errorCode;
+    this.details = details;
+    this.timestamp = new Date().toISOString();
+    this.traceId = generateTraceId();
+  }
+  
+  toJSON() {
+    return {
+      error: {
+        code: this.errorCode,
+        message: this.message,
+        details: this.details,
+        timestamp: this.timestamp,
+        traceId: this.traceId
+      }
+    };
+  }
+}
+
+// Legacy error mapping
+class ErrorMapper {
+  static mapLegacyError(legacyError) {
+    const errorMappings = {
+      'USER_NOT_FOUND': new APIError('User not found', 404, 'USER_NOT_FOUND'),
+      'INVALID_CREDENTIALS': new APIError('Invalid credentials', 401, 'AUTHENTICATION_FAILED'),
+      'DUPLICATE_EMAIL': new APIError('Email already exists', 409, 'DUPLICATE_RESOURCE'),
+      'VALIDATION_ERROR': new APIError('Validation failed', 400, 'VALIDATION_ERROR'),
+      'PERMISSION_DENIED': new APIError('Insufficient permissions', 403, 'AUTHORIZATION_FAILED'),
+      'RATE_LIMIT_EXCEEDED': new APIError('Rate limit exceeded', 429, 'RATE_LIMIT_EXCEEDED'),
+      'SERVICE_UNAVAILABLE': new APIError('Service temporarily unavailable', 503, 'SERVICE_UNAVAILABLE')
+    };
+    
+    return errorMappings[legacyError.type] || 
+           new APIError('Internal server error', 500, 'INTERNAL_ERROR');
+  }
+}
+
+// Global error handler middleware
+const errorHandler = (error, req, res, next) => {
+  let apiError;
+  
+  if (error instanceof APIError) {
+    apiError = error;
+  } else if (error.name === 'ValidationError') {
+    apiError = new APIError('Validation failed', 400, 'VALIDATION_ERROR', error.details);
+  } else if (error.code === '23505') { // PostgreSQL unique constraint
+    apiError = new APIError('Resource already exists', 409, 'DUPLICATE_RESOURCE');
+  } else {
+    // Log unexpected errors
+    console.error('Unexpected error:', error);
+    apiError = new APIError('Internal server error', 500, 'INTERNAL_ERROR');
+  }
+  
+  // Log error for monitoring
+  console.error(`API Error [${apiError.traceId}]:`, apiError);
+  
+  res.status(apiError.statusCode).json(apiError.toJSON());
+};
+
+// Usage
+app.use(errorHandler);
+```
+{{/if}}
+
+---
+
+## Testing Strategy
+
+{{#if sample_requests}}
+**Step 7: Test Case Generation from Legacy Samples**
+```javascript
+// Generate test cases based on legacy request/response samples
+
+const testCaseGenerator = {
+  generateFromSamples(samplesFile) {
+    const samples = JSON.parse(fs.readFileSync(samplesFile));
+    const testCases = [];
+    
+    for (const sample of samples) {
+      // Generate positive test case
+      testCases.push({
+        description: `should handle ${sample.method} ${sample.path} successfully`,
+        method: sample.method,
+        path: sample.path,
+        requestBody: sample.request,
+        expectedStatus: 200,
+        expectedResponse: this.modernizeResponse(sample.response)
+      });
+      
+      // Generate negative test cases
+      testCases.push({
+        description: `should return 400 for invalid ${sample.method} ${sample.path}`,
+        method: sample.method,
+        path: sample.path,
+        requestBody: this.generateInvalidRequest(sample.request),
+        expectedStatus: 400,
+        expectedResponse: {
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: expect.any(String)
+          }
+        }
+      });
+    }
+    
+    return testCases;
+  }
+};
+
+// Jest test suite generation
+describe('Migrated API Tests', () => {
+  const testCases = testCaseGenerator.generateFromSamples('{{sample_requests}}');
+  
+  testCases.forEach(testCase => {
+    test(testCase.description, async () => {
+      const response = await request(app)
+        [testCase.method.toLowerCase()](testCase.path)
+        .send(testCase.requestBody);
+        
+      expect(response.status).toBe(testCase.expectedStatus);
+      expect(response.body).toMatchObject(testCase.expectedResponse);
+    });
+  });
+});
+```
+{{/if}}
+
+---
+
+## Deployment & Migration Strategy
+
+**Step 8: Gradual Migration Plan**
+```yaml
+# Migration phases with rollback capability
+
+migration_phases:
+  phase_1_preparation:
+    duration: "2 weeks"
+    tasks:
+      - Setup new infrastructure
+      - Database migration scripts
+      - CI/CD pipeline setup
+      - Monitoring and logging setup
+    
+  phase_2_parallel_deployment:
+    duration: "3 weeks" 
+    tasks:
+      - Deploy new API alongside legacy
+      - Setup traffic routing (0% to new API)
+      - Comprehensive testing
+      - Performance benchmarking
+    
+  phase_3_gradual_cutover:
+    duration: "4 weeks"
+    tasks:
+      - Route 10% traffic to new API (Week 1)
+      - Route 25% traffic to new API (Week 2)
+      - Route 50% traffic to new API (Week 3)
+      - Route 100% traffic to new API (Week 4)
+    
+  phase_4_legacy_cleanup:
+    duration: "2 weeks"
+    tasks:
+      - Monitor new API stability
+      - Decommission legacy systems
+      - Update documentation
+      - Final performance optimization
+
+# Rollback triggers
+rollback_conditions:
+  - error_rate_threshold: "5%"
+  - response_time_p95_threshold: "2000ms" 
+  - availability_threshold: "99.5%"
+  - business_critical_failure: true
+
+# Traffic routing configuration
+traffic_routing:
+  strategy: "weighted_routing"
+  legacy_weight: 90
+  new_weight: 10
+  
+  # Feature flags for gradual rollout
+  feature_flags:
+    - name: "use_new_user_api"
+      enabled: false
+      rollout_percentage: 10
+    - name: "use_new_order_api"
+      enabled: false
+      rollout_percentage: 5
+```
+
+**API Gateway Configuration**
+```nginx
+# Nginx configuration for gradual migration
+upstream legacy_api {
+    server legacy-api.internal:8080;
+}
+
+upstream new_api {
+    server new-api.internal:8080;
+}
+
+# Weighted load balancing for gradual cutover
+upstream api_backend {
+    server legacy-api.internal:8080 weight=90;
+    server new-api.internal:8080 weight=10;
+}
+
+server {
+    listen 443 ssl;
+    server_name api.mycompany.com;
+    
+    location /api/ {
+        # Health check before routing
+        access_by_lua_block {
+            -- Check feature flags and user attributes
+            local feature_enabled = ngx.var.cookie_feature_new_api
+            if feature_enabled == "true" then
+                ngx.var.backend = "new_api"
+            else
+                ngx.var.backend = "api_backend"
+            end
+        }
+        
+        proxy_pass http://$backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        
+        # Add migration tracking headers
+        proxy_set_header X-Migration-Phase "gradual_cutover";
+        proxy_set_header X-Original-Request-Id $request_id;
+        
+        # Timeout and retry configuration
+        proxy_connect_timeout 5s;
+        proxy_send_timeout 10s;
+        proxy_read_timeout 30s;
+        
+        # Fallback to legacy on new API failure
+        proxy_next_upstream error timeout http_500 http_502 http_503;
+    }
+}
+```
+
+---
+
+## Success Metrics & Monitoring
+
+```javascript
+// Migration success metrics tracking
+
+const migrationMetrics = {
+  performance: {
+    response_time_p95: { target: '<500ms', current: '750ms' },
+    response_time_p99: { target: '<1000ms', current: '1200ms' },
+    throughput: { target: '>1000 rps', current: '850 rps' }
+  },
+  
+  reliability: {
+    availability: { target: '99.9%', current: '99.7%' },
+    error_rate: { target: '<0.1%', current: '0.15%' },
+    success_rate: { target: '>99.9%', current: '99.85%' }
+  },
+  
+  business: {
+    api_adoption: { target: '100%', current: '75%' },
+    customer_complaints: { target: '<5/day', current: '8/day' },
+    support_tickets: { target: '<10/day', current: '12/day' }
+  }
+};
+
+// Automated monitoring alerts
+const alertConfig = {
+  critical: {
+    conditions: [
+      'error_rate > 1%',
+      'availability < 99%',
+      'response_time_p95 > 2000ms'
+    ],
+    actions: ['immediate_rollback', 'page_oncall_engineer']
+  },
+  
+  warning: {
+    conditions: [
+      'error_rate > 0.5%',
+      'response_time_p95 > 1000ms',
+      'throughput < 500 rps'
+    ],
+    actions: ['slack_notification', 'create_incident']
+  }
+};
+```
+
+Remember: This migration approach prioritizes safety and gradual transition. Always maintain the ability to rollback to the legacy system until the new system proves stable in production with full traffic load.
+
+{{#if performance_requirements}}
+## Performance Optimization
+
+Based on performance requirements ({{performance_requirements}}):
+
+**Performance targets and optimization strategies:**
+- Response time improvements through caching and query optimization
+- Throughput scaling with load balancing and connection pooling  
+- Resource utilization optimization through monitoring and profiling
+- CDN integration for static content delivery
+- Database query optimization and indexing strategies
+{{/if}}
+
+<function_calls>
+<invoke name="TodoWrite">
+<parameter name="todos">[{"content": "Add context file examples to prompts", "status": "completed", "activeForm": "Adding context file examples to prompts"}]

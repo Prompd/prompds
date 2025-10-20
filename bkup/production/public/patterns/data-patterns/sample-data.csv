@@ -1,0 +1,11 @@
+product_id,product_name,category,price,units_sold,revenue,date_sold,region
+P001,Laptop Pro,Electronics,1299.99,45,58499.55,2024-01-15,North America
+P002,Wireless Mouse,Accessories,29.99,120,3598.80,2024-01-15,Europe
+P003,Monitor 27",Electronics,349.99,78,27299.22,2024-01-16,Asia
+P004,Keyboard Mechanical,Accessories,89.99,95,8549.05,2024-01-16,North America
+P005,Tablet Slim,Electronics,599.99,62,37199.38,2024-01-17,Europe
+P006,Phone Case,Accessories,19.99,200,3998.00,2024-01-17,Asia
+P007,Headphones Wireless,Electronics,199.99,88,17599.12,2024-01-18,North America
+P008,USB Cable,Accessories,12.99,150,1948.50,2024-01-18,Europe
+P009,Smart Watch,Electronics,299.99,70,20999.30,2024-01-19,Asia
+P010,Power Bank,Accessories,39.99,110,4398.90,2024-01-19,North America

@@ -1,0 +1,13 @@
+{
+  "lockfileVersion": 1,
+  "packages": {
+    "@prompd/public-examples@latest": {
+      "name": "public-examples",
+      "version": "latest",
+      "resolved_version": "1.1.0",
+      "integrity": "",
+      "dependencies": {},
+      "installed_at": "2025-10-17T20:29:18.759669"
+    }
+  }
+}

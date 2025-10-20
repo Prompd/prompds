@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(prompd validate:*)",
+      "WebSearch",
+      "Bash(prompd --help)",
+      "Bash(prompd compile --help)",
+      "Bash(prompd compile:*)",
+      "Bash(prompd package create:*)",
+      "Bash(prompd registry publish:*)",
+      "Bash(prompd registry login:*)",
+      "Bash(python:*)",
+      "Bash(prompd registry list)",
+      "Read(C:\\git\\github\\Logikbug\\prompd-cli\\cli\\python\\prompd/**)",
+      "Bash(prompd login:*)",
+      "Read(C:\\git\\github\\Logikbug/**)",
+      "Read(C:\\git\\github\\Logikbug\\registry.prompdhub.ai\\backend/**)",
+      "Read(C:\\git\\github\\Logikbug\\registry.prompdhub.ai\\backend\\src\\routes/**)",
+      "Read(C:\\git\\github\\Logikbug\\registry.prompdhub.ai\\backend\\src\\routes/**)",
+      "Read(C:\\git\\github\\Logikbug\\registry.prompdhub.ai\\backend/**)",
+      "Bash(npm run dev)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

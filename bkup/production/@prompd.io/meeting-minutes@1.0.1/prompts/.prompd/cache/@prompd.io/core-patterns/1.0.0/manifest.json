@@ -1,0 +1,10 @@
+{
+  "name": "@prompd.io/core-patterns",
+  "version": "1.0.0",
+  "description": "Base framework for structured analysis tasks",
+  "license": "MIT",
+  "tags": [],
+  "dependencies": {},
+  "keywords": [],
+  "main": "templates/analysis-framework.prmd"
+}

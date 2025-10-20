@@ -1,0 +1,68 @@
+---
+id: generate-query
+name: Generate SQL Query
+version: 1.0.0
+description: Generate optimized SQL queries with proper indexing and security
+parameters:
+  - name: query_type
+    type: string
+    required: true
+    description: Type of query (SELECT, INSERT, UPDATE, DELETE, JOIN)
+  - name: table_name
+    type: string
+    required: true
+    description: Primary table name
+  - name: columns
+    type: string
+    required: false
+    default: "*"
+    description: Columns to select or modify
+  - name: conditions
+    type: string
+    required: false
+    default: ""
+    description: WHERE clause conditions
+  - name: database_type
+    type: string
+    required: true
+    description: Database system (PostgreSQL, MySQL, SQLite, SQL Server)
+---
+
+# Generate {{database_type}} Query
+
+Create an optimized {{query_type}} query for the {{table_name}} table.
+
+## Query Requirements
+
+- **Type**: {{query_type}}
+- **Table**: {{table_name}}
+- **Columns**: {{columns}}
+- **Conditions**: {{conditions}}
+- **Database**: {{database_type}}
+
+## Best Practices to Follow
+
+1. **Security**: Use parameterized queries to prevent SQL injection
+2. **Performance**: Include appropriate indexing suggestions
+3. **Clarity**: Write readable, well-formatted SQL
+4. **Validation**: Include input validation recommendations
+5. **Error Handling**: Suggest proper error handling approaches
+
+## Generated Query
+
+```sql
+-- Optimized {{query_type}} query for {{table_name}}
+-- Database: {{database_type}}
+```
+
+## Performance Considerations
+
+- Index recommendations for optimal query performance
+- Explain plan analysis suggestions
+- Query optimization tips specific to {{database_type}}
+
+## Security Notes
+
+- Parameter binding examples
+- Input sanitization requirements
+- Access control recommendations

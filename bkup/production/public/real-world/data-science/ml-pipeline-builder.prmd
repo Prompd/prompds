@@ -1,0 +1,1019 @@
+---
+id: ml-pipeline-builder
+name: Machine Learning Pipeline Builder
+version: 1.0.0
+description: End-to-end ML pipeline with data preprocessing, training, validation, and deployment
+tags: [machine-learning, data-science, pipeline, mlops]
+parameters:
+  - name: problem_type
+    type: string
+    enum: [classification, regression, clustering, recommendation, time-series, nlp, computer-vision]
+    required: true
+    description: Type of ML problem to solve
+  - name: framework
+    type: string
+    enum: [scikit-learn, tensorflow, pytorch, xgboost, lightgbm, huggingface]
+    required: true
+    description: ML framework to use
+  - name: data_source
+    type: string
+    enum: [csv, database, api, streaming, images, text]
+    required: true
+    description: Primary data source type
+  - name: deployment_target
+    type: string
+    enum: [batch, real-time, edge, cloud, on-premise]
+    required: true
+    description: Deployment environment
+  - name: data_size
+    type: string
+    enum: [small, medium, large, big-data]
+    default: medium
+    description: Expected data volume
+  - name: requires_interpretability
+    type: boolean
+    default: false
+    description: Model interpretability required for business
+  - name: performance_metric
+    type: string
+    required: false
+    description: Primary evaluation metric (e.g., accuracy, F1, RMSE, AUC)
+---
+
+# ML Pipeline: {{problem_type}} with {{framework}}
+
+## Project Overview
+
+**Problem Type:** {{problem_type}}  
+**Framework:** {{framework}}  
+**Data Source:** {{data_source}}  
+**Deployment:** {{deployment_target}}  
+**Data Scale:** {{data_size}}  
+**Interpretability:** {{#if requires_interpretability}}Required{{else}}Not required{{/if}}  
+{{#if performance_metric}}**Primary Metric:** {{performance_metric}}{{/if}}
+
+---
+
+## Pipeline Architecture
+
+### 1. Data Ingestion Layer
+{{#if (eq data_source "csv")}}
+```python
+import pandas as pd
+import numpy as np
+from pathlib import Path
+
+class DataIngester:
+    def __init__(self, data_path: str):
+        self.data_path = Path(data_path)
+        
+    def load_data(self, file_pattern: str = "*.csv") -> pd.DataFrame:
+        """Load and combine CSV files"""
+        files = list(self.data_path.glob(file_pattern))
+        
+        if not files:
+            raise FileNotFoundError(f"No CSV files found in {self.data_path}")
+            
+        dfs = []
+        for file in files:
+            df = pd.read_csv(file)
+            df['source_file'] = file.name
+            dfs.append(df)
+            
+        combined_df = pd.concat(dfs, ignore_index=True)
+        
+        # Data quality checks
+        self._validate_data(combined_df)
+        return combined_df
+        
+    def _validate_data(self, df: pd.DataFrame):
+        """Basic data validation"""
+        assert not df.empty, "Dataset is empty"
+        assert df.shape[1] > 0, "No features found"
+        
+        # Check for completely missing columns
+        missing_cols = df.columns[df.isnull().all()].tolist()
+        if missing_cols:
+            print(f"Warning: Completely empty columns: {missing_cols}")
+```
+
+{{else if (eq data_source "database")}}
+```python
+import pandas as pd
+import sqlalchemy as sa
+from sqlalchemy.orm import sessionmaker
+
+class DatabaseIngester:
+    def __init__(self, connection_string: str):
+        self.engine = sa.create_engine(connection_string)
+        self.Session = sessionmaker(bind=self.engine)
+        
+    def load_data(self, query: str, chunksize: int = 10000) -> pd.DataFrame:
+        """Load data from database with chunking for large datasets"""
+        {{#if (eq data_size "big-data")}}
+        # Process in chunks for big data
+        chunks = []
+        for chunk in pd.read_sql(query, self.engine, chunksize=chunksize):
+            # Basic preprocessing per chunk
+            chunk = self._preprocess_chunk(chunk)
+            chunks.append(chunk)
+        
+        return pd.concat(chunks, ignore_index=True)
+        {{else}}
+        # Load all data at once for smaller datasets
+        return pd.read_sql(query, self.engine)
+        {{/if}}
+        
+    def _preprocess_chunk(self, chunk: pd.DataFrame) -> pd.DataFrame:
+        """Preprocessing for individual chunks"""
+        # Remove duplicates within chunk
+        chunk = chunk.drop_duplicates()
+        
+        # Handle obvious data quality issues
+        chunk = chunk.replace([np.inf, -np.inf], np.nan)
+        
+        return chunk
+```
+
+{{else if (eq data_source "streaming")}}
+```python
+from kafka import KafkaConsumer
+import json
+from typing import Iterator, Dict
+import pandas as pd
+
+class StreamingDataIngester:
+    def __init__(self, kafka_config: Dict):
+        self.consumer = KafkaConsumer(
+            bootstrap_servers=kafka_config['bootstrap_servers'],
+            value_deserializer=lambda m: json.loads(m.decode('utf-8'))
+        )
+        
+    def stream_data(self, topic: str, batch_size: int = 100) -> Iterator[pd.DataFrame]:
+        """Stream data in mini-batches"""
+        self.consumer.subscribe([topic])
+        
+        batch = []
+        for message in self.consumer:
+            batch.append(message.value)
+            
+            if len(batch) >= batch_size:
+                df = pd.DataFrame(batch)
+                yield self._preprocess_batch(df)
+                batch = []
+                
+    def _preprocess_batch(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Real-time preprocessing for streaming data"""
+        # Add timestamp
+        df['processed_at'] = pd.Timestamp.now()
+        
+        # Basic cleaning
+        df = df.dropna(subset=['required_field'])
+        
+        return df
+```
+{{/if}}
+
+### 2. Data Preprocessing Pipeline
+```python
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.compose import ColumnTransformer
+{{#if (eq problem_type "nlp")}}
+from sklearn.feature_extraction.text import TfidfVectorizer
+{{/if}}
+
+class DataPreprocessor:
+    def __init__(self):
+        self.preprocessor = None
+        self.target_encoder = None
+        
+    def create_preprocessor(self, df: pd.DataFrame, target_column: str):
+        """Create preprocessing pipeline based on data types"""
+        
+        # Identify column types
+        numeric_features = df.select_dtypes(include=[np.number]).columns.tolist()
+        categorical_features = df.select_dtypes(include=['object', 'category']).columns.tolist()
+        
+        # Remove target from features
+        if target_column in numeric_features:
+            numeric_features.remove(target_column)
+        if target_column in categorical_features:
+            categorical_features.remove(target_column)
+            
+        {{#if (eq problem_type "nlp")}}
+        # Text preprocessing for NLP
+        text_features = [col for col in categorical_features if 'text' in col.lower() or 'description' in col.lower()]
+        categorical_features = [col for col in categorical_features if col not in text_features]
+        
+        text_transformer = Pipeline(steps=[
+            ('tfidf', TfidfVectorizer(max_features=5000, stop_words='english'))
+        ])
+        {{/if}}
+        
+        # Numeric preprocessing
+        numeric_transformer = Pipeline(steps=[
+            ('imputer', SimpleImputer(strategy='median')),
+            ('scaler', StandardScaler())
+        ])
+        
+        # Categorical preprocessing
+        categorical_transformer = Pipeline(steps=[
+            ('imputer', SimpleImputer(strategy='constant', fill_value='missing')),
+            ('onehot', OneHotEncoder(handle_unknown='ignore', sparse=False))
+        ])
+        
+        # Combine preprocessors
+        transformers = [
+            ('num', numeric_transformer, numeric_features),
+            ('cat', categorical_transformer, categorical_features)
+        ]
+        
+        {{#if (eq problem_type "nlp")}}
+        if text_features:
+            transformers.append(('text', text_transformer, text_features[0]))  # Handle first text column
+        {{/if}}
+        
+        self.preprocessor = ColumnTransformer(transformers=transformers)
+        
+        # Target encoding for classification
+        {{#if (eq problem_type "classification")}}
+        if target_column in df.select_dtypes(include=['object']).columns:
+            self.target_encoder = LabelEncoder()
+        {{/if}}
+        
+    def fit_transform(self, df: pd.DataFrame, target_column: str):
+        """Fit and transform the data"""
+        X = df.drop(columns=[target_column])
+        y = df[target_column]
+        
+        # Transform features
+        X_transformed = self.preprocessor.fit_transform(X)
+        
+        # Transform target if needed
+        {{#if (eq problem_type "classification")}}
+        if self.target_encoder:
+            y_transformed = self.target_encoder.fit_transform(y)
+        else:
+            y_transformed = y.values
+        {{else}}
+        y_transformed = y.values
+        {{/if}}
+        
+        return X_transformed, y_transformed
+        
+    def transform(self, df: pd.DataFrame, target_column: str = None):
+        """Transform new data using fitted preprocessors"""
+        if target_column:
+            X = df.drop(columns=[target_column])
+            y = df[target_column]
+            
+            X_transformed = self.preprocessor.transform(X)
+            
+            {{#if (eq problem_type "classification")}}
+            if self.target_encoder:
+                y_transformed = self.target_encoder.transform(y)
+            else:
+                y_transformed = y.values
+            {{else}}
+            y_transformed = y.values
+            {{/if}}
+            
+            return X_transformed, y_transformed
+        else:
+            return self.preprocessor.transform(df)
+```
+
+### 3. Model Training Pipeline
+{{#if (eq framework "scikit-learn")}}
+```python
+from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
+{{#if (eq problem_type "classification")}}
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
+{{else if (eq problem_type "regression")}}
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+{{/if}}
+import joblib
+
+class MLModelTrainer:
+    def __init__(self):
+        self.models = {}
+        self.best_model = None
+        self.best_score = None
+        
+    def define_models(self):
+        """Define candidate models for comparison"""
+        {{#if (eq problem_type "classification")}}
+        self.models = {
+            'logistic_regression': LogisticRegression(random_state=42),
+            'random_forest': RandomForestClassifier(n_estimators=100, random_state=42),
+            {{#if requires_interpretability}}
+            'decision_tree': DecisionTreeClassifier(random_state=42, max_depth=10)
+            {{else}}
+            'xgboost': XGBClassifier(random_state=42)
+            {{/if}}
+        }
+        {{else if (eq problem_type "regression")}}
+        self.models = {
+            'linear_regression': LinearRegression(),
+            'random_forest': RandomForestRegressor(n_estimators=100, random_state=42),
+            {{#if requires_interpretability}}
+            'decision_tree': DecisionTreeRegressor(random_state=42, max_depth=10)
+            {{else}}
+            'xgboost': XGBRegressor(random_state=42)
+            {{/if}}
+        }
+        {{/if}}
+        
+    def train_and_evaluate(self, X_train, X_val, y_train, y_val):
+        """Train multiple models and select best performer"""
+        results = {}
+        
+        for name, model in self.models.items():
+            print(f"Training {name}...")
+            
+            # Train model
+            model.fit(X_train, y_train)
+            
+            # Make predictions
+            y_pred = model.predict(X_val)
+            
+            # Calculate metrics
+            {{#if (eq problem_type "classification")}}
+            score = roc_auc_score(y_val, model.predict_proba(X_val)[:, 1]) if hasattr(model, 'predict_proba') else accuracy_score(y_val, y_pred)
+            results[name] = {
+                'model': model,
+                'score': score,
+                'predictions': y_pred
+            }
+            
+            print(f"{name} AUC: {score:.4f}")
+            print(classification_report(y_val, y_pred))
+            {{else if (eq problem_type "regression")}}
+            mse = mean_squared_error(y_val, y_pred)
+            r2 = r2_score(y_val, y_pred)
+            mae = mean_absolute_error(y_val, y_pred)
+            
+            results[name] = {
+                'model': model,
+                'mse': mse,
+                'r2': r2,
+                'mae': mae,
+                'predictions': y_pred
+            }
+            
+            print(f"{name} - MSE: {mse:.4f}, R²: {r2:.4f}, MAE: {mae:.4f}")
+            {{/if}}
+        
+        # Select best model
+        {{#if (eq problem_type "classification")}}
+        best_name = max(results.keys(), key=lambda k: results[k]['score'])
+        self.best_model = results[best_name]['model']
+        self.best_score = results[best_name]['score']
+        {{else if (eq problem_type "regression")}}
+        best_name = min(results.keys(), key=lambda k: results[k]['mse'])
+        self.best_model = results[best_name]['model']
+        self.best_score = results[best_name]['r2']
+        {{/if}}
+        
+        print(f"\nBest model: {best_name}")
+        return results
+        
+    def hyperparameter_tuning(self, X_train, y_train, model_name: str):
+        """Perform hyperparameter tuning for the best model"""
+        if model_name == 'random_forest':
+            {{#if (eq problem_type "classification")}}
+            param_grid = {
+                'n_estimators': [100, 200, 300],
+                'max_depth': [10, 20, None],
+                'min_samples_split': [2, 5, 10],
+                'min_samples_leaf': [1, 2, 4]
+            }
+            model = RandomForestClassifier(random_state=42)
+            scoring = 'roc_auc'
+            {{else if (eq problem_type "regression")}}
+            param_grid = {
+                'n_estimators': [100, 200, 300],
+                'max_depth': [10, 20, None],
+                'min_samples_split': [2, 5, 10],
+                'min_samples_leaf': [1, 2, 4]
+            }
+            model = RandomForestRegressor(random_state=42)
+            scoring = 'r2'
+            {{/if}}
+            
+        grid_search = GridSearchCV(
+            model, param_grid, cv=5, scoring=scoring, n_jobs=-1
+        )
+        
+        grid_search.fit(X_train, y_train)
+        
+        self.best_model = grid_search.best_estimator_
+        print(f"Best parameters: {grid_search.best_params_}")
+        print(f"Best CV score: {grid_search.best_score_:.4f}")
+        
+        return grid_search.best_estimator_
+```
+
+{{else if (eq framework "tensorflow")}}
+```python
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+import numpy as np
+
+class DeepLearningTrainer:
+    def __init__(self, input_shape):
+        self.input_shape = input_shape
+        self.model = None
+        self.history = None
+        
+    def create_model(self):
+        """Create neural network architecture"""
+        {{#if (eq problem_type "classification")}}
+        model = keras.Sequential([
+            layers.Dense(128, activation='relu', input_shape=self.input_shape),
+            layers.Dropout(0.3),
+            layers.Dense(64, activation='relu'),
+            layers.Dropout(0.3),
+            layers.Dense(32, activation='relu'),
+            layers.Dense(1, activation='sigmoid')  # Binary classification
+        ])
+        
+        model.compile(
+            optimizer='adam',
+            loss='binary_crossentropy',
+            metrics=['accuracy', 'auc']
+        )
+        {{else if (eq problem_type "regression")}}
+        model = keras.Sequential([
+            layers.Dense(128, activation='relu', input_shape=self.input_shape),
+            layers.Dropout(0.3),
+            layers.Dense(64, activation='relu'),
+            layers.Dropout(0.3),
+            layers.Dense(32, activation='relu'),
+            layers.Dense(1)  # Regression output
+        ])
+        
+        model.compile(
+            optimizer='adam',
+            loss='mse',
+            metrics=['mae']
+        )
+        {{/if}}
+        
+        self.model = model
+        return model
+        
+    def train(self, X_train, y_train, X_val, y_val, epochs=100):
+        """Train the model with callbacks"""
+        callbacks = [
+            keras.callbacks.EarlyStopping(patience=10, restore_best_weights=True),
+            keras.callbacks.ReduceLROnPlateau(patience=5, factor=0.5),
+            keras.callbacks.ModelCheckpoint('best_model.h5', save_best_only=True)
+        ]
+        
+        self.history = self.model.fit(
+            X_train, y_train,
+            epochs=epochs,
+            batch_size=32,
+            validation_data=(X_val, y_val),
+            callbacks=callbacks,
+            verbose=1
+        )
+        
+        return self.history
+```
+{{/if}}
+
+### 4. Model Evaluation & Interpretability
+```python
+{{#if requires_interpretability}}
+import shap
+from sklearn.inspection import permutation_importance
+import matplotlib.pyplot as plt
+
+class ModelInterpreter:
+    def __init__(self, model, preprocessor):
+        self.model = model
+        self.preprocessor = preprocessor
+        
+    def feature_importance_analysis(self, X_test, y_test, feature_names):
+        """Analyze feature importance using multiple methods"""
+        
+        # 1. Built-in feature importance (for tree-based models)
+        if hasattr(self.model, 'feature_importances_'):
+            importance_df = pd.DataFrame({
+                'feature': feature_names,
+                'importance': self.model.feature_importances_
+            }).sort_values('importance', ascending=False)
+            
+            plt.figure(figsize=(10, 8))
+            plt.barh(importance_df['feature'].head(20), importance_df['importance'].head(20))
+            plt.title('Top 20 Feature Importances')
+            plt.xlabel('Importance')
+            plt.tight_layout()
+            plt.show()
+        
+        # 2. Permutation importance
+        perm_importance = permutation_importance(
+            self.model, X_test, y_test, n_repeats=10, random_state=42
+        )
+        
+        perm_df = pd.DataFrame({
+            'feature': feature_names,
+            'importance_mean': perm_importance.importances_mean,
+            'importance_std': perm_importance.importances_std
+        }).sort_values('importance_mean', ascending=False)
+        
+        # 3. SHAP analysis
+        explainer = shap.Explainer(self.model, X_test[:100])  # Sample for speed
+        shap_values = explainer(X_test[:100])
+        
+        # SHAP summary plot
+        shap.summary_plot(shap_values, X_test[:100], feature_names=feature_names)
+        
+        return importance_df, perm_df, shap_values
+        
+    def explain_prediction(self, single_instance, feature_names):
+        """Explain a single prediction"""
+        explainer = shap.Explainer(self.model)
+        shap_values = explainer(single_instance.reshape(1, -1))
+        
+        shap.waterfall_plot(shap_values[0])
+        
+        return shap_values
+{{/if}}
+
+class ModelEvaluator:
+    def __init__(self):
+        self.evaluation_results = {}
+        
+    def comprehensive_evaluation(self, model, X_test, y_test, problem_type):
+        """Comprehensive model evaluation"""
+        
+        predictions = model.predict(X_test)
+        
+        {{#if (eq problem_type "classification")}}
+        # Classification metrics
+        from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
+        
+        if hasattr(model, 'predict_proba'):
+            y_proba = model.predict_proba(X_test)[:, 1]
+            auc = roc_auc_score(y_test, y_proba)
+        else:
+            auc = None
+            
+        results = {
+            'accuracy': accuracy_score(y_test, predictions),
+            'precision': precision_score(y_test, predictions, average='weighted'),
+            'recall': recall_score(y_test, predictions, average='weighted'),
+            'f1': f1_score(y_test, predictions, average='weighted'),
+            'auc': auc
+        }
+        
+        # Confusion Matrix
+        cm = confusion_matrix(y_test, predictions)
+        plt.figure(figsize=(8, 6))
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+        plt.title('Confusion Matrix')
+        plt.ylabel('True Label')
+        plt.xlabel('Predicted Label')
+        plt.show()
+        
+        {{else if (eq problem_type "regression")}}
+        # Regression metrics
+        from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+        
+        results = {
+            'mse': mean_squared_error(y_test, predictions),
+            'rmse': np.sqrt(mean_squared_error(y_test, predictions)),
+            'mae': mean_absolute_error(y_test, predictions),
+            'r2': r2_score(y_test, predictions)
+        }
+        
+        # Residual plot
+        residuals = y_test - predictions
+        plt.figure(figsize=(12, 4))
+        
+        plt.subplot(1, 2, 1)
+        plt.scatter(predictions, residuals, alpha=0.6)
+        plt.axhline(y=0, color='r', linestyle='--')
+        plt.xlabel('Predicted Values')
+        plt.ylabel('Residuals')
+        plt.title('Residual Plot')
+        
+        plt.subplot(1, 2, 2)
+        plt.scatter(y_test, predictions, alpha=0.6)
+        plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--')
+        plt.xlabel('Actual Values')
+        plt.ylabel('Predicted Values')
+        plt.title('Actual vs Predicted')
+        
+        plt.tight_layout()
+        plt.show()
+        {{/if}}
+        
+        self.evaluation_results = results
+        return results
+        
+    def cross_validation_evaluation(self, model, X, y, cv=5):
+        """Cross-validation evaluation"""
+        {{#if (eq problem_type "classification")}}
+        cv_scores = cross_val_score(model, X, y, cv=cv, scoring='roc_auc')
+        {{else if (eq problem_type "regression")}}
+        cv_scores = cross_val_score(model, X, y, cv=cv, scoring='r2')
+        {{/if}}
+        
+        print(f"Cross-validation scores: {cv_scores}")
+        print(f"Mean CV score: {cv_scores.mean():.4f} (+/- {cv_scores.std() * 2:.4f})")
+        
+        return cv_scores
+```
+
+### 5. Model Deployment Pipeline
+{{#if (eq deployment_target "real-time")}}
+```python
+import pickle
+import joblib
+from flask import Flask, request, jsonify
+import pandas as pd
+
+class ModelAPI:
+    def __init__(self, model_path: str, preprocessor_path: str):
+        self.model = joblib.load(model_path)
+        self.preprocessor = joblib.load(preprocessor_path)
+        
+    def predict(self, input_data: dict):
+        """Make prediction on new data"""
+        try:
+            # Convert input to DataFrame
+            df = pd.DataFrame([input_data])
+            
+            # Preprocess
+            X_processed = self.preprocessor.transform(df)
+            
+            # Predict
+            prediction = self.model.predict(X_processed)[0]
+            
+            {{#if (eq problem_type "classification")}}
+            if hasattr(self.model, 'predict_proba'):
+                probability = self.model.predict_proba(X_processed)[0].max()
+            else:
+                probability = None
+                
+            return {
+                'prediction': int(prediction),
+                'probability': float(probability) if probability else None,
+                'status': 'success'
+            }
+            {{else}}
+            return {
+                'prediction': float(prediction),
+                'status': 'success'
+            }
+            {{/if}}
+            
+        except Exception as e:
+            return {
+                'error': str(e),
+                'status': 'error'
+            }
+
+# Flask API
+app = Flask(__name__)
+api = ModelAPI('model.joblib', 'preprocessor.joblib')
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    data = request.json
+    result = api.predict(data)
+    return jsonify(result)
+
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({'status': 'healthy'})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+```
+
+{{else if (eq deployment_target "batch")}}
+```python
+import argparse
+from pathlib import Path
+import pandas as pd
+import joblib
+from datetime import datetime
+
+class BatchPredictor:
+    def __init__(self, model_path: str, preprocessor_path: str):
+        self.model = joblib.load(model_path)
+        self.preprocessor = joblib.load(preprocessor_path)
+        
+    def predict_batch(self, input_path: str, output_path: str, batch_size: int = 10000):
+        """Process large datasets in batches"""
+        
+        # Read data in chunks
+        chunk_iter = pd.read_csv(input_path, chunksize=batch_size)
+        
+        results = []
+        for i, chunk in enumerate(chunk_iter):
+            print(f"Processing batch {i+1}...")
+            
+            # Preprocess chunk
+            X_processed = self.preprocessor.transform(chunk)
+            
+            # Predict
+            predictions = self.model.predict(X_processed)
+            
+            # Add predictions to chunk
+            chunk['prediction'] = predictions
+            chunk['prediction_timestamp'] = datetime.now()
+            
+            results.append(chunk)
+            
+        # Combine all results
+        final_results = pd.concat(results, ignore_index=True)
+        
+        # Save results
+        final_results.to_csv(output_path, index=False)
+        print(f"Predictions saved to {output_path}")
+        
+        return final_results
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input', required=True, help='Input CSV file')
+    parser.add_argument('--output', required=True, help='Output CSV file')
+    parser.add_argument('--model', required=True, help='Model file path')
+    parser.add_argument('--preprocessor', required=True, help='Preprocessor file path')
+    
+    args = parser.parse_args()
+    
+    predictor = BatchPredictor(args.model, args.preprocessor)
+    predictor.predict_batch(args.input, args.output)
+```
+{{/if}}
+
+### 6. MLOps & Monitoring
+```python
+import mlflow
+import mlflow.sklearn
+from datetime import datetime
+import json
+
+class MLFlowTracker:
+    def __init__(self, experiment_name: str):
+        mlflow.set_experiment(experiment_name)
+        
+    def log_training_run(self, model, preprocessor, train_metrics, val_metrics, hyperparams):
+        """Log training run to MLFlow"""
+        
+        with mlflow.start_run():
+            # Log hyperparameters
+            mlflow.log_params(hyperparams)
+            
+            # Log training metrics
+            for metric, value in train_metrics.items():
+                mlflow.log_metric(f"train_{metric}", value)
+                
+            # Log validation metrics
+            for metric, value in val_metrics.items():
+                mlflow.log_metric(f"val_{metric}", value)
+                
+            # Log model
+            mlflow.sklearn.log_model(model, "model")
+            mlflow.sklearn.log_model(preprocessor, "preprocessor")
+            
+            # Log additional info
+            mlflow.set_tag("model_type", "{{problem_type}}")
+            mlflow.set_tag("framework", "{{framework}}")
+            mlflow.set_tag("deployment_target", "{{deployment_target}}")
+            
+            return mlflow.active_run().info.run_id
+
+class ModelMonitor:
+    def __init__(self):
+        self.baseline_metrics = {}
+        
+    def calculate_data_drift(self, reference_data, current_data):
+        """Detect data drift using statistical tests"""
+        from scipy import stats
+        
+        drift_results = {}
+        
+        for column in reference_data.columns:
+            if reference_data[column].dtype in ['int64', 'float64']:
+                # Numerical columns - use KS test
+                statistic, p_value = stats.ks_2samp(
+                    reference_data[column].dropna(),
+                    current_data[column].dropna()
+                )
+                
+                drift_results[column] = {
+                    'test': 'ks_test',
+                    'statistic': statistic,
+                    'p_value': p_value,
+                    'drift_detected': p_value < 0.05
+                }
+            else:
+                # Categorical columns - use chi-square test
+                ref_counts = reference_data[column].value_counts()
+                curr_counts = current_data[column].value_counts()
+                
+                # Align categories
+                all_categories = set(ref_counts.index) | set(curr_counts.index)
+                ref_aligned = [ref_counts.get(cat, 0) for cat in all_categories]
+                curr_aligned = [curr_counts.get(cat, 0) for cat in all_categories]
+                
+                if sum(curr_aligned) > 0:  # Avoid division by zero
+                    statistic, p_value = stats.chisquare(curr_aligned, ref_aligned)
+                    
+                    drift_results[column] = {
+                        'test': 'chi_square',
+                        'statistic': statistic,
+                        'p_value': p_value,
+                        'drift_detected': p_value < 0.05
+                    }
+                    
+        return drift_results
+        
+    def monitor_model_performance(self, y_true, y_pred, timestamp):
+        """Monitor model performance over time"""
+        {{#if (eq problem_type "classification")}}
+        from sklearn.metrics import accuracy_score, f1_score
+        
+        current_metrics = {
+            'accuracy': accuracy_score(y_true, y_pred),
+            'f1_score': f1_score(y_true, y_pred, average='weighted'),
+            'timestamp': timestamp
+        }
+        {{else if (eq problem_type "regression")}}
+        from sklearn.metrics import mean_squared_error, r2_score
+        
+        current_metrics = {
+            'mse': mean_squared_error(y_true, y_pred),
+            'r2_score': r2_score(y_true, y_pred),
+            'timestamp': timestamp
+        }
+        {{/if}}
+        
+        # Check for performance degradation
+        if self.baseline_metrics:
+            {{#if (eq problem_type "classification")}}
+            accuracy_drop = self.baseline_metrics['accuracy'] - current_metrics['accuracy']
+            if accuracy_drop > 0.1:  # 10% drop threshold
+                print(f"ALERT: Model accuracy dropped by {accuracy_drop:.3f}")
+            {{else if (eq problem_type "regression")}}
+            r2_drop = self.baseline_metrics['r2_score'] - current_metrics['r2_score']
+            if r2_drop > 0.1:  # 10% drop threshold
+                print(f"ALERT: Model R² score dropped by {r2_drop:.3f}")
+            {{/if}}
+        else:
+            self.baseline_metrics = current_metrics
+            
+        return current_metrics
+```
+
+---
+
+## Complete Pipeline Orchestration
+
+```python
+class MLPipeline:
+    def __init__(self, config: dict):
+        self.config = config
+        self.ingester = None
+        self.preprocessor = DataPreprocessor()
+        self.trainer = MLModelTrainer()
+        self.evaluator = ModelEvaluator()
+        self.tracker = MLFlowTracker(config['experiment_name'])
+        
+    def run_full_pipeline(self):
+        """Execute complete ML pipeline"""
+        print("🚀 Starting ML Pipeline...")
+        
+        # 1. Data Ingestion
+        print("📊 Step 1: Data Ingestion")
+        {{#if (eq data_source "csv")}}
+        self.ingester = DataIngester(self.config['data_path'])
+        df = self.ingester.load_data()
+        {{else if (eq data_source "database")}}
+        self.ingester = DatabaseIngester(self.config['db_connection'])
+        df = self.ingester.load_data(self.config['query'])
+        {{/if}}
+        
+        print(f"Loaded {len(df)} samples with {df.shape[1]} features")
+        
+        # 2. Data Preprocessing
+        print("🔧 Step 2: Data Preprocessing")
+        self.preprocessor.create_preprocessor(df, self.config['target_column'])
+        X, y = self.preprocessor.fit_transform(df, self.config['target_column'])
+        
+        # 3. Train/Validation Split
+        X_train, X_val, y_train, y_val = train_test_split(
+            X, y, test_size=0.2, random_state=42, stratify=y if self.config['problem_type'] == 'classification' else None
+        )
+        
+        # 4. Model Training
+        print("🤖 Step 3: Model Training")
+        self.trainer.define_models()
+        results = self.trainer.train_and_evaluate(X_train, X_val, y_train, y_val)
+        
+        # 5. Hyperparameter Tuning
+        print("⚙️ Step 4: Hyperparameter Tuning")
+        best_model_name = max(results.keys(), key=lambda k: results[k]['score'])
+        final_model = self.trainer.hyperparameter_tuning(X_train, y_train, best_model_name)
+        
+        # 6. Final Evaluation
+        print("📈 Step 5: Model Evaluation")
+        evaluation_results = self.evaluator.comprehensive_evaluation(
+            final_model, X_val, y_val, self.config['problem_type']
+        )
+        
+        # 7. Model Saving
+        print("💾 Step 6: Model Saving")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        model_path = f"model_{timestamp}.joblib"
+        preprocessor_path = f"preprocessor_{timestamp}.joblib"
+        
+        joblib.dump(final_model, model_path)
+        joblib.dump(self.preprocessor, preprocessor_path)
+        
+        # 8. MLFlow Logging
+        print("📝 Step 7: Experiment Logging")
+        run_id = self.tracker.log_training_run(
+            final_model, self.preprocessor,
+            train_metrics={'loss': 0.0},  # Add actual training metrics
+            val_metrics=evaluation_results,
+            hyperparams=self.config
+        )
+        
+        print(f"✅ Pipeline completed! Run ID: {run_id}")
+        print(f"📁 Model saved to: {model_path}")
+        print(f"📁 Preprocessor saved to: {preprocessor_path}")
+        
+        return {
+            'model': final_model,
+            'preprocessor': self.preprocessor,
+            'evaluation': evaluation_results,
+            'model_path': model_path,
+            'preprocessor_path': preprocessor_path,
+            'run_id': run_id
+        }
+
+# Usage Example
+if __name__ == "__main__":
+    config = {
+        'experiment_name': '{{problem_type}}_experiment',
+        'data_path': './data/',
+        'target_column': 'target',
+        'problem_type': '{{problem_type}}',
+        'db_connection': 'postgresql://user:pass@localhost:5432/db'  # if using database
+    }
+    
+    pipeline = MLPipeline(config)
+    results = pipeline.run_full_pipeline()
+```
+
+---
+
+## Production Deployment Checklist
+
+### Model Validation:
+- [ ] Cross-validation performance meets requirements
+- [ ] Model performance validated on holdout test set
+- [ ] Edge cases and data quality issues handled
+- [ ] Model interpretability requirements satisfied
+- [ ] Bias and fairness evaluation completed
+
+### Infrastructure:
+- [ ] Deployment environment configured
+- [ ] Model versioning system implemented
+- [ ] A/B testing framework ready
+- [ ] Monitoring and alerting setup
+- [ ] Rollback procedures documented
+
+{{#if (eq deployment_target "real-time")}}
+### API Deployment:
+- [ ] Load testing completed
+- [ ] Error handling implemented
+- [ ] Input validation secured
+- [ ] Rate limiting configured
+- [ ] Health checks implemented
+{{/if}}
+
+### Monitoring:
+- [ ] Data drift detection enabled
+- [ ] Model performance monitoring active
+- [ ] Business metrics tracking setup
+- [ ] Alert thresholds configured
+- [ ] Dashboard for stakeholders created
+
+Remember: This is a production ML system. Always validate thoroughly, monitor continuously, and maintain the ability to rollback quickly.

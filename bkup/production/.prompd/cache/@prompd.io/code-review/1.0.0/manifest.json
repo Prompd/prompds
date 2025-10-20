@@ -1,0 +1,10 @@
+{
+  "name": "@prompd.io/code-review",
+  "version": "1.0.0",
+  "description": "Package code-review",
+  "license": "MIT",
+  "tags": [],
+  "dependencies": {},
+  "keywords": [],
+  "main": "prompts/comprehensive-review.prmd"
+}

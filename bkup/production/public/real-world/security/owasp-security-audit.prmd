@@ -1,0 +1,533 @@
+---
+id: owasp-security-audit
+name: OWASP Security Audit & Penetration Testing
+version: 1.0.0
+description: Comprehensive security audit following OWASP Top 10 and security best practices. Analyzes provided codebase and configuration files when available.
+tags: [security, audit, owasp, penetration-testing]
+parameters:
+  - name: application_type
+    type: string
+    enum: [web-app, api, mobile-app, desktop-app]
+    required: true
+    description: Type of application to audit
+  - name: technology_stack
+    type: string
+    required: true
+    description: Technology stack (e.g., "Node.js + Express + MongoDB")
+  - name: audit_scope
+    type: string
+    enum: [basic, comprehensive, compliance]
+    default: comprehensive
+    description: Scope of security audit
+  - name: compliance_requirements
+    type: array
+    required: false
+    description: Compliance standards to check (GDPR, SOC2, PCI-DSS, etc.)
+  - name: authentication_type
+    type: string
+    enum: [session, jwt, oauth, api-key, none]
+    required: true
+    description: Authentication mechanism used
+  - name: has_file_uploads
+    type: boolean
+    default: false
+    description: Application handles file uploads
+  - name: has_payment_processing
+    type: boolean
+    default: false
+    description: Application processes payments
+---
+
+# OWASP Security Audit: {{technology_stack}}
+
+> **Context Files Usage**: Run with `--meta:context` to include source code, config files, and documentation:
+> ```bash
+> prompd run owasp-security-audit.prompd \
+>   --meta:context ./src/auth.js \
+>   --meta:context ./config/database.yml \
+>   --meta:context ./package.json \
+>   --meta:context ./nginx.conf
+> ```
+
+## Security Assessment Scope
+
+**Context Analysis**: {{#if meta.context}}Analyzing provided files: {{#each meta.context}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}{{else}}Based on technology stack analysis{{/if}}
+
+**Application Type:** {{application_type}}  
+**Technology Stack:** {{technology_stack}}  
+**Audit Scope:** {{audit_scope}}  
+**Authentication:** {{authentication_type}}  
+{{#if compliance_requirements}}**Compliance:** {{#each compliance_requirements}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}{{/if}}
+
+{{#if meta.context}}
+## Codebase Analysis
+
+Based on the provided context files, I will analyze the following security aspects:
+
+### File Analysis Summary
+{{#each meta.context}}
+**{{this}}:**
+- File type and security relevance
+- Key security patterns identified
+- Potential vulnerabilities detected
+{{/each}}
+
+### Key Security Findings from Context
+1. **Authentication Implementation**: [Analysis of auth-related files]
+2. **Data Handling**: [Analysis of database and API files]  
+3. **Configuration Security**: [Analysis of config files]
+4. **Dependency Vulnerabilities**: [Analysis of package files]
+
+{{/if}}
+
+## Executive Summary Template
+
+### Risk Assessment Overview
+- **Critical Issues:** [Count] - Immediate attention required
+- **High Risk:** [Count] - Fix within 1 week  
+- **Medium Risk:** [Count] - Fix within 1 month
+- **Low Risk:** [Count] - Fix during next sprint
+- **Informational:** [Count] - Best practice recommendations
+
+### Overall Security Posture: [CRITICAL/HIGH/MEDIUM/LOW]
+
+---
+
+## OWASP Top 10 Security Checklist
+
+### A01:2021 – Broken Access Control
+**Risk Level: CRITICAL**
+
+#### Testing Checklist:
+- [ ] **Vertical Privilege Escalation**
+  - Test user role elevation attacks
+  - Verify admin functionality is properly protected
+  - Check for default credentials on admin accounts
+
+- [ ] **Horizontal Privilege Escalation**  
+  - Test accessing other users' data by changing IDs
+  - Verify user isolation in multi-tenant systems
+  - Test direct object references (IDOR)
+
+- [ ] **Business Logic Bypass**
+  - Test workflow step skipping
+  - Verify price/quantity manipulation protection
+  - Check for race conditions in critical operations
+
+#### Common Vulnerabilities to Check:
+```bash
+# Test Cases
+# 1. Change user ID in requests
+GET /api/users/123/profile  # Try with different user IDs
+
+# 2. Test admin endpoints without proper auth
+GET /api/admin/users
+
+# 3. Test parameter manipulation
+POST /api/transfer {"from":"123","to":"456","amount":1000,"from":"999"}
+```
+
+### A02:2021 – Cryptographic Failures
+**Risk Level: HIGH**
+
+#### Testing Checklist:
+- [ ] **Data in Transit**
+  - Verify HTTPS enforcement (no HTTP fallback)
+  - Check TLS version and cipher strength
+  - Test certificate validation
+  - Verify HSTS headers
+
+- [ ] **Data at Rest**
+  - Check database encryption
+  - Verify password hashing (bcrypt, Argon2)
+  - Test backup encryption
+  - Check log file encryption
+
+{{#if (eq authentication_type "jwt")}}
+- [ ] **JWT Security**
+  - Verify JWT secret strength
+  - Check for JWT algorithm confusion attacks
+  - Test token expiration handling
+  - Verify signature validation
+{{/if}}
+
+#### Encryption Standards Check:
+```bash
+# SSL/TLS Testing
+nmap --script ssl-enum-ciphers -p 443 target.com
+
+# Check for weak hashing
+grep -r "md5\|sha1" codebase/
+
+# JWT Analysis (if applicable)
+jwt.io # Decode and analyze JWT tokens
+```
+
+### A03:2021 – Injection
+**Risk Level: CRITICAL**
+
+#### Testing Checklist:
+- [ ] **SQL Injection**
+  - Test all input fields with SQL payloads
+  - Check prepared statement usage
+  - Test blind SQL injection
+  - Verify database user permissions
+
+- [ ] **NoSQL Injection** (if applicable)
+  - Test MongoDB injection attacks
+  - Check query parameter injection
+  - Test aggregation pipeline injection
+
+- [ ] **Command Injection**
+  - Test system command execution
+  - Check file path manipulation
+  - Test environment variable injection
+
+- [ ] **LDAP/XPath Injection**
+  - Test directory service queries
+  - Check XML query manipulation
+
+#### Injection Test Payloads:
+```sql
+-- SQL Injection Tests
+' OR '1'='1
+'; DROP TABLE users; --
+' UNION SELECT password FROM users --
+
+-- NoSQL Injection (MongoDB)
+{"$where": "function() { return true; }"}
+{"$regex": ".*"}
+
+-- Command Injection
+; ls -la
+| whoami
+& ping google.com
+```
+
+### A04:2021 – Insecure Design
+**Risk Level: MEDIUM**
+
+#### Design Review Checklist:
+- [ ] **Security Requirements**
+  - Threat modeling completed
+  - Security controls defined
+  - Risk assessment documented
+
+- [ ] **Secure Development Lifecycle**
+  - Security review gates in place
+  - Secure coding standards followed
+  - Regular security training conducted
+
+- [ ] **Architecture Security**
+  - Defense in depth implemented
+  - Fail-secure design patterns used
+  - Security boundaries clearly defined
+
+### A05:2021 – Security Misconfiguration
+**Risk Level: HIGH**
+
+#### Configuration Audit:
+- [ ] **Server Configuration**
+  - Remove default accounts/passwords
+  - Disable unnecessary services
+  - Update all software components
+  - Configure proper error handling
+
+- [ ] **Application Configuration**
+  - Remove debug modes in production
+  - Configure security headers properly
+  - Disable directory listing
+  - Set proper file permissions
+
+- [ ] **Cloud Security** (if applicable)
+  - Check S3 bucket permissions
+  - Verify IAM role configurations
+  - Test security group rules
+
+#### Security Headers Checklist:
+```http
+# Required Security Headers
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+```
+
+### A06:2021 – Vulnerable Components
+**Risk Level: HIGH**
+
+#### Dependency Security Audit:
+- [ ] **Vulnerability Scanning**
+  - Run npm audit / yarn audit
+  - Use Snyk or similar tools
+  - Check OWASP Dependency Check
+  - Monitor CVE databases
+
+- [ ] **Component Inventory**
+  - Maintain software bill of materials (SBOM)
+  - Track all dependencies and versions
+  - Regular update schedule established
+  - Test updates in staging environment
+
+```bash
+# Dependency Scanning Commands
+npm audit --audit-level=moderate
+yarn audit
+snyk test
+retire.js --outputformat json
+```
+
+### A07:2021 – Identification and Authentication Failures
+**Risk Level: CRITICAL**
+
+#### Authentication Testing:
+{{#if (ne authentication_type "none")}}
+- [ ] **Password Security**
+  - Test password complexity requirements
+  - Check for common password blocking
+  - Verify secure password storage
+  - Test password reset security
+
+- [ ] **Session Management**
+  - Test session timeout
+  - Verify session invalidation on logout
+  - Check for session fixation attacks
+  - Test concurrent session handling
+
+- [ ] **Multi-Factor Authentication**
+  - Test MFA bypass attempts
+  - Verify backup code security
+  - Check for MFA brute force protection
+
+{{#if (eq authentication_type "oauth")}}
+- [ ] **OAuth Security**
+  - Test OAuth flow implementation
+  - Check for authorization code injection
+  - Verify state parameter usage
+  - Test redirect URI validation
+{{/if}}
+{{/if}}
+
+### A08:2021 – Software and Data Integrity Failures
+**Risk Level: MEDIUM**
+
+#### Integrity Verification:
+- [ ] **Software Integrity**
+  - Verify package signatures
+  - Check for code tampering
+  - Implement CI/CD pipeline security
+  - Use dependency pinning
+
+- [ ] **Data Integrity**
+  - Implement data validation
+  - Use digital signatures for critical data
+  - Verify backup integrity
+  - Check for unauthorized modifications
+
+{{#if has_file_uploads}}
+### A09:2021 – Security Logging and Monitoring Failures
+**Risk Level: MEDIUM**
+
+#### File Upload Security:
+- [ ] **Upload Validation**
+  - Check file type restrictions
+  - Verify file size limits
+  - Test malicious file upload
+  - Check for path traversal in filenames
+
+- [ ] **File Processing Security**
+  - Test virus/malware scanning
+  - Verify safe file storage locations
+  - Check for executable upload prevention
+  - Test image processing vulnerabilities
+
+```bash
+# File Upload Test Cases
+# 1. Upload executable files
+curl -F "file=@malicious.php" https://target.com/upload
+
+# 2. Test path traversal
+curl -F "file=@../../etc/passwd" https://target.com/upload
+
+# 3. Test large file DoS
+dd if=/dev/zero of=largefile.txt bs=1M count=1000
+```
+{{/if}}
+
+### A10:2021 – Server-Side Request Forgery (SSRF)
+**Risk Level: HIGH**
+
+#### SSRF Testing:
+- [ ] **URL Parameter Testing**
+  - Test internal network access
+  - Check for cloud metadata access
+  - Verify URL validation
+  - Test protocol bypass
+
+```bash
+# SSRF Test Payloads
+http://localhost:22
+http://127.0.0.1:3306
+http://169.254.169.254/latest/meta-data/
+file:///etc/passwd
+ftp://internal-server/
+```
+
+---
+
+## Additional Security Testing
+
+### Cross-Site Scripting (XSS)
+- [ ] **Reflected XSS**
+  - Test all input parameters
+  - Check for filter bypass
+  - Test in different contexts (HTML, JavaScript, CSS)
+
+- [ ] **Stored XSS**
+  - Test persistent data storage
+  - Check user-generated content
+  - Test admin interface XSS
+
+- [ ] **DOM-based XSS**
+  - Analyze client-side JavaScript
+  - Test URL fragment manipulation
+  - Check for unsafe DOM operations
+
+### Cross-Site Request Forgery (CSRF)
+- [ ] **CSRF Token Validation**
+  - Test token absence
+  - Check token predictability
+  - Test token reuse
+  - Verify SameSite cookie attributes
+
+### Business Logic Testing
+- [ ] **Payment Logic** (if applicable)
+{{#if has_payment_processing}}
+  - Test negative amounts
+  - Check for race conditions
+  - Verify transaction atomicity
+  - Test refund logic abuse
+{{/if}}
+
+- [ ] **Workflow Manipulation**
+  - Test step skipping
+  - Check for state manipulation
+  - Verify business rule enforcement
+
+### API Security (if applicable)
+{{#if (eq application_type "api")}}
+- [ ] **REST API Security**
+  - Test HTTP method override
+  - Check for mass assignment
+  - Verify rate limiting
+  - Test API versioning security
+
+- [ ] **GraphQL Security** (if applicable)
+  - Test introspection in production
+  - Check query complexity limits
+  - Test for query depth attacks
+  - Verify field-level authorization
+{{/if}}
+
+## Automated Security Tools
+
+### Static Analysis
+```bash
+# Code scanning tools
+sonarqube-scanner
+bandit -r python_project/  # Python
+eslint-plugin-security     # JavaScript
+brakeman                   # Ruby
+```
+
+### Dynamic Analysis
+```bash
+# Web application scanners
+nmap -sV target.com
+dirb http://target.com
+nikto -h target.com
+sqlmap -u "http://target.com/page?id=1"
+```
+
+### Infrastructure Scanning
+```bash
+# Network and infrastructure
+nessus
+openvas
+nuclei -t vulnerabilities/ -u target.com
+```
+
+## Compliance Verification
+
+{{#if compliance_requirements}}
+{{#each compliance_requirements}}
+### {{this}} Compliance
+{{#if (eq this "GDPR")}}
+- [ ] Data Processing Lawfulness
+- [ ] Right to Erasure implementation
+- [ ] Data Portability features
+- [ ] Privacy by Design verification
+- [ ] Consent management system
+- [ ] Data breach notification procedure
+{{/if}}
+
+{{#if (eq this "SOC2")}}
+- [ ] Access Control procedures
+- [ ] Change Management processes
+- [ ] Monitoring and Logging systems
+- [ ] Incident Response plan
+- [ ] Vendor Management controls
+{{/if}}
+
+{{#if (eq this "PCI-DSS")}}
+- [ ] Cardholder Data Environment security
+- [ ] Payment processing encryption
+- [ ] Network segmentation
+- [ ] Regular security testing
+- [ ] Access control measures
+{{/if}}
+{{/each}}
+{{/if}}
+
+## Security Report Template
+
+### Executive Summary
+**Overall Risk Rating:** [CRITICAL/HIGH/MEDIUM/LOW]
+**Total Vulnerabilities Found:** [Number]
+**Remediation Timeline:** [Days/Weeks]
+
+### Critical Issues Requiring Immediate Attention
+1. **[Vulnerability Name]**
+   - **Risk Level:** Critical
+   - **CVSS Score:** [Score]
+   - **Impact:** [Description]
+   - **Exploitation:** [How it can be exploited]
+   - **Remediation:** [Fix recommendations]
+
+### Detailed Findings
+[For each vulnerability found, provide:]
+- Vulnerability description
+- Steps to reproduce
+- Impact assessment
+- Risk rating
+- Remediation recommendations
+- Testing evidence (screenshots, logs)
+
+### Recommendations
+#### Immediate Actions (0-7 days)
+- [ ] [Critical fixes]
+
+#### Short-term Actions (1-4 weeks)  
+- [ ] [High priority fixes]
+
+#### Long-term Actions (1-3 months)
+- [ ] [Medium/low priority fixes and improvements]
+
+### Security Improvement Roadmap
+1. **Security Training Program**
+2. **Automated Security Testing Integration**
+3. **Continuous Security Monitoring**
+4. **Regular Penetration Testing Schedule**
+
+Remember: This security audit should be performed regularly and integrated into your development lifecycle. Security is not a one-time activity but an ongoing process.

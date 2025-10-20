@@ -1,0 +1,1515 @@
+---
+id: cicd-pipeline-builder
+name: CI/CD Pipeline Builder
+version: 1.0.0  
+description: Complete CI/CD pipeline with testing, security scanning, and deployment automation
+tags: [devops, cicd, deployment, automation]
+parameters:
+  - name: project_type
+    type: string
+    enum: [web-app, api, mobile, library, microservice]
+    required: true
+    description: Type of project being deployed
+  - name: tech_stack
+    type: string
+    required: true
+    description: Technology stack (e.g., "Node.js + React", "Python + Flask")
+  - name: ci_platform
+    type: string
+    enum: [github-actions, jenkins, gitlab-ci, azure-pipelines, circleci]
+    required: true
+    description: CI/CD platform to use
+  - name: deployment_target
+    type: string
+    enum: [kubernetes, docker, aws-ecs, heroku, vercel, traditional-server]
+    required: true
+    description: Deployment target environment
+  - name: environment_stages
+    type: array
+    default: ["dev", "staging", "production"]
+    description: Deployment environments
+  - name: includes_security_scanning
+    type: boolean
+    default: true
+    description: Include security and vulnerability scanning
+  - name: database_migrations
+    type: boolean
+    default: false
+    description: Include automated database migrations
+  - name: monitoring_setup
+    type: boolean
+    default: true
+    description: Setup monitoring and alerting
+---
+
+# CI/CD Pipeline: {{project_type}} - {{tech_stack}}
+
+## Pipeline Overview
+
+**Project Type:** {{project_type}}  
+**Technology Stack:** {{tech_stack}}  
+**CI Platform:** {{ci_platform}}  
+**Deployment Target:** {{deployment_target}}  
+**Environments:** {{#each environment_stages}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}  
+**Security Scanning:** {{#if includes_security_scanning}}Enabled{{else}}Disabled{{/if}}  
+**Database Migrations:** {{#if database_migrations}}Automated{{else}}Manual{{/if}}
+
+---
+
+{{#if (eq ci_platform "github-actions")}}
+## GitHub Actions Pipeline
+
+### Main Workflow (`.github/workflows/main.yml`)
+```yaml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '18'
+  {{#if (includes tech_stack "Python")}}
+  PYTHON_VERSION: '3.11'
+  {{/if}}
+  {{#if (includes tech_stack "Go")}}
+  GO_VERSION: '1.21'
+  {{/if}}
+
+jobs:
+  # ============================================================================
+  # CODE QUALITY & TESTING
+  # ============================================================================
+  
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    {{#if (includes tech_stack "Database")}}
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    {{/if}}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    {{#if (includes tech_stack "Python")}}
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    {{/if}}
+    
+    - name: Install dependencies
+      run: |
+        {{#if (includes tech_stack "Node")}}
+        npm ci
+        {{/if}}
+        {{#if (includes tech_stack "Python")}}
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+        {{/if}}
+    
+    - name: Run linting
+      run: |
+        {{#if (includes tech_stack "Node")}}
+        npm run lint
+        {{/if}}
+        {{#if (includes tech_stack "Python")}}
+        flake8 .
+        black --check .
+        {{/if}}
+    
+    - name: Run type checking
+      run: |
+        {{#if (includes tech_stack "TypeScript")}}
+        npm run type-check
+        {{/if}}
+        {{#if (includes tech_stack "Python")}}
+        mypy .
+        {{/if}}
+    
+    - name: Run unit tests
+      run: |
+        {{#if (includes tech_stack "Node")}}
+        npm run test:unit -- --coverage
+        {{/if}}
+        {{#if (includes tech_stack "Python")}}
+        pytest tests/ --cov=. --cov-report=xml
+        {{/if}}
+      env:
+        {{#if (includes tech_stack "Database")}}
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+        {{/if}}
+        
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+  {{#if (eq project_type "web-app")}}
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Install Playwright
+      run: npx playwright install --with-deps
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Start application
+      run: npm start &
+      
+    - name: Wait for server
+      run: npx wait-on http://localhost:3000 --timeout 60000
+      
+    - name: Run E2E tests
+      run: npx playwright test
+      
+    - name: Upload E2E test results
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: e2e-test-results
+        path: test-results/
+  {{/if}}
+
+  {{#if includes_security_scanning}}
+  # ============================================================================
+  # SECURITY SCANNING  
+  # ============================================================================
+  
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Run dependency vulnerability scan
+      run: |
+        {{#if (includes tech_stack "Node")}}
+        npm audit --audit-level=moderate
+        {{/if}}
+        {{#if (includes tech_stack "Python")}}
+        pip install safety
+        safety check
+        {{/if}}
+    
+    - name: Run SAST scan with CodeQL
+      uses: github/codeql-action/analyze@v3
+      with:
+        languages: javascript{{#if (includes tech_stack "Python")}}, python{{/if}}
+        
+    - name: Run container security scan
+      if: contains(github.ref, 'main')
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'my-app:${{ github.sha }}'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: Upload Trivy scan results
+      if: contains(github.ref, 'main')
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'trivy-results.sarif'
+  {{/if}}
+
+  # ============================================================================
+  # BUILD & DEPLOY
+  # ============================================================================
+  
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: [test{{#if (eq project_type "web-app")}}, e2e-tests{{/if}}{{#if includes_security_scanning}}, security-scan{{/if}}]
+    
+    outputs:
+      image-digest: ${{ steps.build.outputs.digest }}
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    {{#if (eq deployment_target "kubernetes")}}
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Login to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Build and push Docker image
+      id: build
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: |
+          ghcr.io/${{ github.repository }}:${{ github.sha }}
+          ghcr.io/${{ github.repository }}:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        
+    {{else if (eq deployment_target "vercel")}}
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-files
+        path: |
+          .next/
+          public/
+          package.json
+    {{/if}}
+
+  {{#each environment_stages}}
+  deploy-{{this}}:
+    name: Deploy to {{this}}
+    runs-on: ubuntu-latest
+    needs: build
+    {{#if (eq this "production")}}
+    if: github.ref == 'refs/heads/main'
+    {{else if (eq this "staging")}}
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    {{/if}}
+    
+    environment:
+      name: {{this}}
+      url: ${{ steps.deploy.outputs.url }}
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    {{#if (eq ../deployment_target "kubernetes")}}
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.28.0'
+        
+    - name: Setup Helm
+      uses: azure/setup-helm@v3
+      with:
+        version: '3.12.0'
+        
+    - name: Deploy to Kubernetes
+      id: deploy
+      run: |
+        # Configure kubectl context
+        echo "${{ secrets.KUBECONFIG_{{upper this}} }}" | base64 -d > kubeconfig
+        export KUBECONFIG=kubeconfig
+        
+        # Deploy with Helm
+        helm upgrade --install my-app ./helm/my-app \
+          --namespace {{this}} \
+          --set image.tag=${{ github.sha }} \
+          --set environment={{this}} \
+          --set ingress.host={{this}}.myapp.com \
+          --wait --timeout=5m
+          
+        echo "url=https://{{this}}.myapp.com" >> $GITHUB_OUTPUT
+        
+    {{else if (eq ../deployment_target "vercel")}}
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build-files
+        
+    - name: Deploy to Vercel
+      id: deploy
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        {{#if (eq this "production")}}
+        vercel-args: '--prod'
+        {{/if}}
+        
+    {{else if (eq ../deployment_target "aws-ecs")}}
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+        
+    - name: Deploy to ECS
+      id: deploy
+      run: |
+        # Update ECS service
+        aws ecs update-service \
+          --cluster my-app-{{this}} \
+          --service my-app-service \
+          --force-new-deployment \
+          --task-definition my-app-{{this}}:LATEST
+          
+        # Wait for deployment
+        aws ecs wait services-stable \
+          --cluster my-app-{{this}} \
+          --services my-app-service
+          
+        echo "url=https://{{this}}.myapp.com" >> $GITHUB_OUTPUT
+    {{/if}}
+    
+    {{#if ../database_migrations}}
+    - name: Run database migrations
+      run: |
+        {{#if (includes ../tech_stack "Node")}}
+        npm run migrate:{{this}}
+        {{/if}}
+        {{#if (includes ../tech_stack "Python")}}
+        python manage.py migrate --settings=settings.{{this}}
+        {{/if}}
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL_{{upper this}} }}
+    {{/if}}
+    
+    - name: Run smoke tests
+      run: |
+        # Health check
+        curl -f ${{ steps.deploy.outputs.url }}/health || exit 1
+        
+        # Basic functionality test
+        {{#if (eq ../project_type "api")}}
+        curl -f ${{ steps.deploy.outputs.url }}/api/status || exit 1
+        {{/if}}
+
+  {{/each}}
+  
+  {{#if monitoring_setup}}
+  # ============================================================================
+  # POST-DEPLOYMENT MONITORING
+  # ============================================================================
+  
+  monitoring-setup:
+    name: Configure Monitoring
+    runs-on: ubuntu-latest
+    needs: [{{#each environment_stages}}deploy-{{this}}{{#unless @last}}, {{/unless}}{{/each}}]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Setup monitoring alerts
+      run: |
+        # Configure application monitoring
+        curl -X POST "${{ secrets.MONITORING_WEBHOOK_URL }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "service": "my-app",
+            "version": "${{ github.sha }}",
+            "environment": "production",
+            "health_check_url": "https://production.myapp.com/health"
+          }'
+          
+    - name: Update deployment tracking
+      run: |
+        # Track deployment in monitoring system
+        echo "Deployment completed: ${{ github.sha }}"
+        echo "Deployed to: {{#each environment_stages}}{{this}} {{/each}}"
+  {{/if}}
+```
+
+{{else if (eq ci_platform "jenkins")}}
+## Jenkins Pipeline
+
+### Jenkinsfile
+```groovy
+pipeline {
+    agent any
+    
+    environment {
+        NODE_VERSION = '18'
+        {{#if (includes tech_stack "Python")}}
+        PYTHON_VERSION = '3.11'
+        {{/if}}
+        DOCKER_REGISTRY = 'your-registry.com'
+        APP_NAME = 'my-app'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+                script {
+                    env.GIT_COMMIT_SHORT = sh(
+                        script: "git rev-parse --short HEAD",
+                        returnStdout: true
+                    ).trim()
+                }
+            }
+        }
+        
+        stage('Setup') {
+            parallel {
+                stage('Node.js Setup') {
+                    when {
+                        expression { return env.tech_stack.contains('Node') }
+                    }
+                    steps {
+                        sh '''
+                        nvm use ${NODE_VERSION}
+                        npm ci
+                        '''
+                    }
+                }
+                
+                {{#if (includes tech_stack "Python")}}
+                stage('Python Setup') {
+                    steps {
+                        sh '''
+                        python${PYTHON_VERSION} -m venv venv
+                        source venv/bin/activate
+                        pip install -r requirements.txt
+                        pip install -r requirements-dev.txt
+                        '''
+                    }
+                }
+                {{/if}}
+            }
+        }
+        
+        stage('Code Quality') {
+            parallel {
+                stage('Linting') {
+                    steps {
+                        script {
+                            {{#if (includes tech_stack "Node")}}
+                            sh 'npm run lint'
+                            {{/if}}
+                            {{#if (includes tech_stack "Python")}}
+                            sh '''
+                            source venv/bin/activate
+                            flake8 .
+                            black --check .
+                            '''
+                            {{/if}}
+                        }
+                    }
+                    post {
+                        always {
+                            publishCheckStyleResults pattern: 'lint-results.xml'
+                        }
+                    }
+                }
+                
+                stage('Type Checking') {
+                    when {
+                        anyOf {
+                            expression { return env.tech_stack.contains('TypeScript') }
+                            expression { return env.tech_stack.contains('Python') }
+                        }
+                    }
+                    steps {
+                        script {
+                            {{#if (includes tech_stack "TypeScript")}}
+                            sh 'npm run type-check'
+                            {{/if}}
+                            {{#if (includes tech_stack "Python")}}
+                            sh '''
+                            source venv/bin/activate
+                            mypy .
+                            '''
+                            {{/if}}
+                        }
+                    }
+                }
+                
+                {{#if includes_security_scanning}}
+                stage('Security Scan') {
+                    steps {
+                        script {
+                            {{#if (includes tech_stack "Node")}}
+                            sh 'npm audit --audit-level=moderate'
+                            {{/if}}
+                            {{#if (includes tech_stack "Python")}}
+                            sh '''
+                            source venv/bin/activate
+                            safety check
+                            bandit -r .
+                            '''
+                            {{/if}}
+                        }
+                    }
+                    post {
+                        always {
+                            publishHTML([
+                                allowMissing: false,
+                                alwaysLinkToLastBuild: true,
+                                keepAll: true,
+                                reportDir: 'security-reports',
+                                reportFiles: 'security-report.html',
+                                reportName: 'Security Report'
+                            ])
+                        }
+                    }
+                }
+                {{/if}}
+            }
+        }
+        
+        stage('Testing') {
+            parallel {
+                stage('Unit Tests') {
+                    steps {
+                        script {
+                            {{#if (includes tech_stack "Node")}}
+                            sh 'npm run test:unit -- --coverage --reporter=xunit --outputFile=test-results.xml'
+                            {{/if}}
+                            {{#if (includes tech_stack "Python")}}
+                            sh '''
+                            source venv/bin/activate
+                            pytest tests/ --cov=. --cov-report=xml --junit-xml=test-results.xml
+                            '''
+                            {{/if}}
+                        }
+                    }
+                    post {
+                        always {
+                            junit 'test-results.xml'
+                            publishCoverage adapters: [
+                                coberturaAdapter('coverage.xml')
+                            ]
+                        }
+                    }
+                }
+                
+                {{#if (eq project_type "web-app")}}
+                stage('E2E Tests') {
+                    steps {
+                        sh '''
+                        npm run build
+                        npm start &
+                        npx wait-on http://localhost:3000 --timeout 60000
+                        npx playwright test
+                        '''
+                    }
+                    post {
+                        always {
+                            publishHTML([
+                                allowMissing: false,
+                                alwaysLinkToLastBuild: true,
+                                keepAll: true,
+                                reportDir: 'test-results',
+                                reportFiles: 'index.html',
+                                reportName: 'E2E Test Report'
+                            ])
+                        }
+                    }
+                }
+                {{/if}}
+            }
+        }
+        
+        stage('Build') {
+            when {
+                anyOf {
+                    branch 'main'
+                    branch 'develop'
+                }
+            }
+            steps {
+                script {
+                    {{#if (eq deployment_target "kubernetes")}}
+                    def image = docker.build("${DOCKER_REGISTRY}/${APP_NAME}:${env.GIT_COMMIT_SHORT}")
+                    
+                    docker.withRegistry("https://${DOCKER_REGISTRY}", 'registry-credentials') {
+                        image.push()
+                        image.push('latest')
+                    }
+                    {{else}}
+                    {{#if (includes tech_stack "Node")}}
+                    sh 'npm run build'
+                    {{/if}}
+                    {{#if (includes tech_stack "Python")}}
+                    sh '''
+                    source venv/bin/activate
+                    python setup.py bdist_wheel
+                    '''
+                    {{/if}}
+                    
+                    archiveArtifacts artifacts: 'dist/**/*', allowEmptyArchive: false
+                    {{/if}}
+                }
+            }
+        }
+        
+        {{#each environment_stages}}
+        stage('Deploy {{title this}}') {
+            when {
+                anyOf {
+                    {{#if (eq this "production")}}
+                    branch 'main'
+                    {{else if (eq this "staging")}}
+                    branch 'main'
+                    branch 'develop'  
+                    {{else}}
+                    branch 'develop'
+                    {{/if}}
+                }
+            }
+            
+            environment {
+                ENV_NAME = '{{this}}'
+                {{#if ../database_migrations}}
+                DATABASE_URL = credentials('database-url-{{this}}')
+                {{/if}}
+            }
+            
+            steps {
+                script {
+                    {{#if (eq ../deployment_target "kubernetes")}}
+                    sh '''
+                    helm upgrade --install ${APP_NAME}-${ENV_NAME} ./helm/${APP_NAME} \
+                        --namespace ${ENV_NAME} \
+                        --set image.tag=${GIT_COMMIT_SHORT} \
+                        --set environment=${ENV_NAME} \
+                        --wait --timeout=5m
+                    '''
+                    {{else}}
+                    // Custom deployment logic for {{../deployment_target}}
+                    sh './deploy.sh ${ENV_NAME} ${GIT_COMMIT_SHORT}'
+                    {{/if}}
+                    
+                    {{#if ../database_migrations}}
+                    // Run database migrations
+                    sh './scripts/migrate.sh ${ENV_NAME}'
+                    {{/if}}
+                }
+            }
+            
+            post {
+                success {
+                    script {
+                        // Health check
+                        sh "curl -f https://${ENV_NAME}.myapp.com/health || exit 1"
+                        
+                        {{#if (eq this "production")}}
+                        // Slack notification for production deployments
+                        slackSend(
+                            color: 'good',
+                            message: "✅ Production deployment successful: ${APP_NAME} v${GIT_COMMIT_SHORT}"
+                        )
+                        {{/if}}
+                    }
+                }
+                failure {
+                    script {
+                        {{#if (eq this "production")}}
+                        slackSend(
+                            color: 'danger', 
+                            message: "❌ Production deployment failed: ${APP_NAME} v${GIT_COMMIT_SHORT}"
+                        )
+                        {{/if}}
+                    }
+                }
+            }
+        }
+        {{/each}}
+    }
+    
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+            {{#if monitoring_setup}}
+            // Send failure notification
+            sh 'curl -X POST ${WEBHOOK_URL} -d "{\\"status\\": \\"failed\\", \\"build\\": \\"${BUILD_NUMBER}\\"}"'
+            {{/if}}
+        }
+    }
+}
+```
+{{/if}}
+
+---
+
+## Deployment Configurations
+
+{{#if (eq deployment_target "kubernetes")}}
+### Kubernetes Manifests
+
+#### Deployment (`k8s/deployment.yaml`)
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "app.fullname" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "app.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.service.targetPort }}
+          protocol: TCP
+        
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        
+        # Resource limits
+        resources:
+          limits:
+            cpu: {{ .Values.resources.limits.cpu }}
+            memory: {{ .Values.resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
+        
+        # Environment variables
+        env:
+        - name: NODE_ENV
+          value: {{ .Values.environment }}
+        {{#if database_migrations}}  
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "app.fullname" . }}-secret
+              key: database-url
+        {{/if}}
+        - name: LOG_LEVEL
+          value: {{ .Values.logging.level }}
+          
+        # Volume mounts
+        volumeMounts:
+        - name: config
+          mountPath: /app/config
+          readOnly: true
+          
+      volumes:
+      - name: config
+        configMap:
+          name: {{ include "app.fullname" . }}-config
+```
+
+#### Service (`k8s/service.yaml`)
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "app.fullname" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  - port: {{ .Values.service.port }}
+    targetPort: {{ .Values.service.targetPort }}
+    protocol: TCP
+    name: http
+  selector:
+    {{- include "app.selectorLabels" . | nindent 4 }}
+```
+
+#### Ingress (`k8s/ingress.yaml`)
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "app.fullname" . }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+spec:
+  tls:
+  - hosts:
+    - {{ .Values.ingress.host }}
+    secretName: {{ include "app.fullname" . }}-tls
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "app.fullname" . }}
+            port:
+              number: {{ .Values.service.port }}
+```
+
+#### Helm Values (`helm/values.yaml`)
+```yaml
+replicaCount: 3
+
+image:
+  repository: ghcr.io/myorg/myapp
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: true
+  host: myapp.com
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+environment: production
+
+logging:
+  level: info
+
+# Auto-scaling
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+# Horizontal Pod Autoscaler
+{{- if .Values.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "app.fullname" . }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "app.fullname" . }}
+  minReplicas: {{ .Values.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
+{{- end }}
+```
+
+{{else if (eq deployment_target "docker")}}
+### Docker Configuration
+
+#### Multi-stage Dockerfile
+```dockerfile
+# Build stage
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copy source code
+COPY . .
+
+# Build application
+{{#if (includes tech_stack "React")}}
+RUN npm run build
+{{/if}}
+
+# Production stage
+FROM node:18-alpine AS production
+
+# Create app user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S myapp -u 1001
+
+# Set working directory
+WORKDIR /app
+
+# Copy built application
+COPY --from=builder --chown=myapp:nodejs /app/node_modules ./node_modules
+{{#if (includes tech_stack "React")}}
+COPY --from=builder --chown=myapp:nodejs /app/build ./build
+{{/if}}
+COPY --from=builder --chown=myapp:nodejs /app/package*.json ./
+
+# Install production dependencies only
+RUN npm ci --only=production && npm cache clean --force
+
+# Switch to app user
+USER myapp
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/health || exit 1
+
+# Expose port
+EXPOSE 3000
+
+# Start application
+{{#if (includes tech_stack "React")}}
+CMD ["npx", "serve", "-s", "build", "-l", "3000"]
+{{else}}
+CMD ["npm", "start"]
+{{/if}}
+```
+
+#### Docker Compose (`docker-compose.yml`)
+```yaml
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      {{#if database_migrations}}
+      - DATABASE_URL=${DATABASE_URL}
+      {{/if}}
+      - LOG_LEVEL=info
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    
+  {{#if database_migrations}}
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: myapp
+      POSTGRES_USER: myapp
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myapp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+  {{/if}}
+  
+  {{#if monitoring_setup}}
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: unless-stopped
+    
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    restart: unless-stopped
+  {{/if}}
+
+volumes:
+  {{#if database_migrations}}
+  postgres_data:
+  {{/if}}
+  {{#if monitoring_setup}}
+  grafana_data:
+  {{/if}}
+
+networks:
+  default:
+    name: myapp-network
+```
+{{/if}}
+
+---
+
+{{#if monitoring_setup}}
+## Monitoring & Observability Setup
+
+### Application Metrics (Node.js Example)
+```javascript
+// monitoring/metrics.js
+const promClient = require('prom-client');
+
+// Create a Registry to register the metrics
+const register = new promClient.Registry();
+
+// Default metrics
+promClient.collectDefaultMetrics({ register });
+
+// Custom application metrics
+const httpRequestDuration = new promClient.Histogram({
+  name: 'http_request_duration_ms',
+  help: 'Duration of HTTP requests in ms',
+  labelNames: ['method', 'route', 'status_code'],
+  buckets: [1, 5, 15, 50, 100, 500, 1000]
+});
+
+const httpRequestTotal = new promClient.Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests',
+  labelNames: ['method', 'route', 'status_code']
+});
+
+const activeUsers = new promClient.Gauge({
+  name: 'active_users_total',
+  help: 'Total number of active users'
+});
+
+const databaseConnectionPool = new promClient.Gauge({
+  name: 'database_connections_active',
+  help: 'Number of active database connections'
+});
+
+// Register metrics
+register.registerMetric(httpRequestDuration);
+register.registerMetric(httpRequestTotal);
+register.registerMetric(activeUsers);
+register.registerMetric(databaseConnectionPool);
+
+// Middleware to track HTTP requests
+const metricsMiddleware = (req, res, next) => {
+  const start = Date.now();
+  
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    const route = req.route ? req.route.path : req.path;
+    
+    httpRequestDuration
+      .labels(req.method, route, res.statusCode)
+      .observe(duration);
+      
+    httpRequestTotal
+      .labels(req.method, route, res.statusCode)
+      .inc();
+  });
+  
+  next();
+};
+
+// Health check endpoint
+const healthCheck = (req, res) => {
+  const healthStatus = {
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    version: process.env.npm_package_version,
+    {{#if database_migrations}}
+    database: {
+      status: 'connected', // Check actual DB connection
+      connections: databaseConnectionPool.get()
+    }
+    {{/if}}
+  };
+  
+  res.status(200).json(healthStatus);
+};
+
+module.exports = {
+  register,
+  metricsMiddleware,
+  healthCheck,
+  metrics: {
+    httpRequestDuration,
+    httpRequestTotal,
+    activeUsers,
+    databaseConnectionPool
+  }
+};
+```
+
+### Prometheus Configuration (`monitoring/prometheus.yml`)
+```yaml
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'myapp'
+    static_configs:
+      - targets: ['app:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+      
+  {{#if database_migrations}}
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+  {{/if}}
+
+rule_files:
+  - "alert-rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+```
+
+### Alert Rules (`monitoring/alert-rules.yml`)
+```yaml
+groups:
+- name: application-alerts
+  rules:
+  - alert: HighErrorRate
+    expr: rate(http_requests_total{status_code=~"5.."}[5m]) > 0.1
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: High error rate detected
+      description: "Error rate is {{ $value }} errors per second"
+      
+  - alert: HighResponseTime
+    expr: histogram_quantile(0.95, rate(http_request_duration_ms_bucket[5m])) > 1000
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High response time
+      description: "95th percentile response time is {{ $value }}ms"
+      
+  - alert: ApplicationDown
+    expr: up{job="myapp"} == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: Application is down
+      description: "Application has been down for more than 1 minute"
+      
+  {{#if database_migrations}}
+  - alert: DatabaseConnectionsHigh
+    expr: database_connections_active > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: High database connections
+      description: "Database connections are at {{ $value }}"
+  {{/if}}
+```
+{{/if}}
+
+---
+
+## Environment-Specific Configuration
+
+{{#each environment_stages}}
+### {{title this}} Environment
+
+#### Environment Variables (`.env.{{this}}`)
+```bash
+# Application
+NODE_ENV={{this}}
+PORT=3000
+API_VERSION=v1
+
+# Logging
+LOG_LEVEL={{#if (eq this "production")}}warn{{else}}debug{{/if}}
+LOG_FORMAT={{#if (eq this "production")}}json{{else}}simple{{/if}}
+
+{{#if ../database_migrations}}
+# Database
+DATABASE_URL=postgresql://user:pass@db-{{this}}.internal:5432/myapp_{{this}}
+DATABASE_POOL_SIZE={{#if (eq this "production")}}20{{else}}5{{/if}}
+DATABASE_SSL={{#if (eq this "production")}}true{{else}}false{{/if}}
+{{/if}}
+
+# Security
+JWT_SECRET=${JWT_SECRET_{{upper this}}}
+BCRYPT_ROUNDS={{#if (eq this "production")}}12{{else}}10{{/if}}
+CORS_ORIGINS={{#if (eq this "production")}}https://myapp.com{{else}}http://localhost:3000,https://{{this}}.myapp.com{{/if}}
+
+# External Services
+{{#if (eq this "production")}}
+REDIS_URL=redis://redis-prod.internal:6379
+EMAIL_SERVICE_URL=https://api.sendgrid.com
+MONITORING_ENDPOINT=https://monitoring.myapp.com
+{{else}}
+REDIS_URL=redis://redis-{{this}}.internal:6379
+EMAIL_SERVICE_URL=https://api.sendgrid.com/sandbox
+MONITORING_ENDPOINT=https://monitoring-{{this}}.myapp.com
+{{/if}}
+
+# Performance
+MAX_REQUEST_SIZE={{#if (eq this "production")}}10mb{{else}}50mb{{/if}}
+RATE_LIMIT_WINDOW={{#if (eq this "production")}}15{{else}}60{{/if}}
+RATE_LIMIT_MAX={{#if (eq this "production")}}100{{else}}1000{{/if}}
+```
+
+#### Deployment Configuration
+```yaml
+# {{this}}-values.yaml (for Kubernetes)
+environment: {{this}}
+replicaCount: {{#if (eq this "production")}}3{{else if (eq this "staging")}}2{{else}}1{{/if}}
+
+resources:
+  limits:
+    cpu: {{#if (eq this "production")}}1000m{{else}}500m{{/if}}
+    memory: {{#if (eq this "production")}}1Gi{{else}}512Mi{{/if}}
+  requests:
+    cpu: {{#if (eq this "production")}}500m{{else}}250m{{/if}}
+    memory: {{#if (eq this "production")}}512Mi{{else}}256Mi{{/if}}
+
+ingress:
+  host: {{#if (eq this "production")}}myapp.com{{else}}{{this}}.myapp.com{{/if}}
+  
+autoscaling:
+  enabled: {{#if (eq this "production")}}true{{else}}false{{/if}}
+  minReplicas: {{#if (eq this "production")}}3{{else}}1{{/if}}
+  maxReplicas: {{#if (eq this "production")}}10{{else}}3{{/if}}
+```
+
+{{/each}}
+
+---
+
+## Testing & Quality Gates
+
+### Pipeline Quality Requirements
+
+```yaml
+# Quality gates that must pass before deployment
+quality_gates:
+  code_coverage:
+    minimum: 80%
+    
+  security_scan:
+    max_critical: 0
+    max_high: 2
+    
+  performance_tests:
+    response_time_p95: 500ms
+    error_rate_max: 0.1%
+    
+  dependency_scan:
+    max_critical_vulnerabilities: 0
+    max_high_vulnerabilities: 5
+```
+
+### Test Scripts (`scripts/test-all.sh`)
+```bash
+#!/bin/bash
+set -e
+
+echo "🧪 Running comprehensive test suite..."
+
+# Code quality checks
+echo "📝 Running linting..."
+{{#if (includes tech_stack "Node")}}
+npm run lint
+{{/if}}
+{{#if (includes tech_stack "Python")}}
+flake8 .
+black --check .
+{{/if}}
+
+# Type checking
+echo "🔍 Running type checks..."
+{{#if (includes tech_stack "TypeScript")}}
+npm run type-check
+{{/if}}
+{{#if (includes tech_stack "Python")}}
+mypy .
+{{/if}}
+
+# Unit tests
+echo "🔬 Running unit tests..."
+{{#if (includes tech_stack "Node")}}
+npm run test:unit -- --coverage
+{{/if}}
+{{#if (includes tech_stack "Python")}}
+pytest tests/unit/ --cov=. --cov-report=xml
+{{/if}}
+
+# Integration tests
+echo "🔗 Running integration tests..."
+{{#if (includes tech_stack "Node")}}
+npm run test:integration
+{{/if}}
+{{#if (includes tech_stack "Python")}}
+pytest tests/integration/
+{{/if}}
+
+{{#if includes_security_scanning}}
+# Security scanning
+echo "🔒 Running security scans..."
+{{#if (includes tech_stack "Node")}}
+npm audit --audit-level=moderate
+{{/if}}
+{{#if (includes tech_stack "Python")}}
+safety check
+bandit -r .
+{{/if}}
+{{/if}}
+
+{{#if (eq project_type "web-app")}}
+# E2E tests
+echo "🌐 Running E2E tests..."
+npm run build
+npm start &
+SERVER_PID=$!
+npx wait-on http://localhost:3000 --timeout 60000
+npx playwright test
+kill $SERVER_PID
+{{/if}}
+
+echo "✅ All tests passed!"
+```
+
+---
+
+## Rollback & Recovery Procedures
+
+### Automated Rollback Strategy
+```bash
+#!/bin/bash
+# scripts/rollback.sh
+
+ENVIRONMENT=${1:-staging}
+PREVIOUS_VERSION=${2}
+
+echo "🔄 Rolling back $ENVIRONMENT to version $PREVIOUS_VERSION..."
+
+{{#if (eq deployment_target "kubernetes")}}
+# Kubernetes rollback
+kubectl rollout undo deployment/myapp --namespace=$ENVIRONMENT --to-revision=$PREVIOUS_VERSION
+
+# Wait for rollback to complete
+kubectl rollout status deployment/myapp --namespace=$ENVIRONMENT --timeout=300s
+
+{{else if (eq deployment_target "docker")}}
+# Docker rollback
+docker service update --image myapp:$PREVIOUS_VERSION myapp_service
+
+{{else}}
+# Custom rollback logic
+./deploy.sh $ENVIRONMENT $PREVIOUS_VERSION --rollback
+{{/if}}
+
+# Health check after rollback
+echo "🏥 Performing health check..."
+sleep 30
+curl -f https://$ENVIRONMENT.myapp.com/health || {
+    echo "❌ Health check failed after rollback!"
+    exit 1
+}
+
+echo "✅ Rollback completed successfully!"
+
+{{#if monitoring_setup}}
+# Notify monitoring system
+curl -X POST "$MONITORING_WEBHOOK_URL" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"event\": \"rollback\",
+    \"environment\": \"$ENVIRONMENT\",
+    \"version\": \"$PREVIOUS_VERSION\",
+    \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
+  }"
+{{/if}}
+```
+
+Remember: This CI/CD pipeline is production-ready but should be customized based on your specific requirements, infrastructure, and security policies. Always test thoroughly in non-production environments first!

@@ -1,0 +1,89 @@
+---
+id: comprehensive-review
+name: Comprehensive Code Review
+version: 1.0.1
+description: Complete code review covering security, performance, maintainability, and best practices
+inherits: "@prompd.io/core-patterns@2.0.1/templates/analysis-framework.prmd"
+system: "../systems/senior-developer.md"
+parameters:
+  - name: code
+    type: string
+    required: true
+    description: The source code to review (can be multiple files)
+  - name: language
+    type: string
+    required: true
+    description: Programming language (javascript, python, go, etc.)
+  - name: project_type
+    type: string
+    default: "web-app"
+    enum: ["web-app", "api", "library", "cli", "mobile", "desktop"]
+    description: Type of project being reviewed
+  - name: focus_areas
+    type: array
+    default: ["security", "performance", "maintainability", "testing"]
+    description: Areas to focus on during review
+---
+
+# Code Review for {language} {project_type}
+
+You are a senior software engineer conducting a comprehensive code review. Analyze the provided code with expertise in {language} development and focus on the following areas: {focus_areas}
+
+## Code to Review
+
+```{language}
+{code}
+```
+
+## Review Analysis
+
+### 1. Security Review
+- Identify potential security vulnerabilities
+- Check for input validation and sanitization
+- Review authentication and authorization logic
+- Look for sensitive data exposure
+- Evaluate error handling for information leaks
+
+### 2. Performance Analysis
+- Identify performance bottlenecks
+- Review algorithm efficiency and complexity
+- Check for unnecessary computations or loops
+- Evaluate database query optimization (if applicable)
+- Assess memory usage patterns
+
+### 3. Code Quality & Maintainability
+- Evaluate code clarity and readability
+- Check naming conventions and consistency
+- Review code structure and organization
+- Assess error handling and logging
+- Validate documentation and comments
+
+### 4. Best Practices Compliance
+- Language-specific best practices for {language}
+- {% if project_type == "web-app" %}Framework patterns and conventions{% elif project_type == "api" %}REST/GraphQL best practices{% elif project_type == "library" %}Public API design principles{% elif project_type == "cli" %}Command-line interface standards{% else %}General software design principles{% endif %}
+- Testing coverage and quality
+- Dependency management
+
+## Review Output
+
+Provide your review in this format:
+
+### Summary
+Brief overview of code quality and main findings.
+
+### Critical Issues (Fix Immediately)
+Issues that could cause security vulnerabilities, crashes, or data loss.
+
+### Major Issues (Fix Soon)
+Performance problems, maintainability concerns, or significant best practice violations.
+
+### Minor Issues (Consider Fixing)
+Style inconsistencies, minor optimizations, or suggestions for improvement.
+
+### Positive Observations
+What the code does well - good patterns, clear logic, etc.
+
+### Recommendations
+Specific actionable suggestions for improvement.
+
+**Focus Areas Analyzed:** {focus_areas}
