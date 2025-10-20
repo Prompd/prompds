@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Read(//c/git/github/Logikbug/prompd-docs/**)"
-    ],
-    "deny": [],
-    "ask": []
-  }
-}
