@@ -1,8 +1,0 @@
-name: null
-version: 1.0.0
-dependencies:
-  ? ''
-  : 1.0.1
-devDependencies: {}
-registries:
-- http://localhost:4000
