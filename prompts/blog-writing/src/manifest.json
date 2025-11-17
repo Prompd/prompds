@@ -1,0 +1,15 @@
+{
+  "name": "@prompd/blog-writing",
+  "version": "0.0.2",
+  "description": "",
+  "main": "./prompts/blog-writer.prmd",
+  "dependencies": {},
+  "devDependencies": {},
+  "files": [
+    "contexts/ai-enthusiast-role.md",
+    "contexts/tech-enthusiast-role.md",
+    "prompts/ai-blog-writer.prmd",
+    "prompts/blog-writer.prmd",
+    "prompts/tech-blog-writer.prmd"
+  ]
+}
