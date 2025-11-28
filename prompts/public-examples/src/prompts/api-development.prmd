@@ -1,7 +1,7 @@
 ---
 id: api-development-assistant
 name: "API Development Assistant"
-description: "Generate complete API endpoints with validation and documentation"
+description: Generate complete API endpoints with validation and documentation.
 version: 1.0.1
 parameters:
   - name: endpoint_name
@@ -29,7 +29,7 @@ parameters:
     description: "Input validation level"
 ---
 
-# {endpoint_name} API Endpoint
+#  API Endpoint
 
 ## Endpoint Specification
 - **Method**: {http_method}
@@ -45,31 +45,31 @@ parameters:
 ```
 
 ### 2. Input Validation
-{%- if validation_level == "enterprise" %}
+{% if validation_level == "enterprise" %}
 - Schema validation with detailed error messages
 - Rate limiting and request throttling
 - Input sanitization and XSS protection
 - SQL injection prevention
 - CORS configuration
-{%- elif validation_level == "strict" %}
+{% elif validation_level == "strict" %}
 - Schema validation with error messages
 - Input sanitization
 - Basic rate limiting
-{%- elif validation_level == "basic" %}
+{% elif validation_level == "basic" %}
 - Required field validation
 - Type checking
-{%- endif %}
+{% endif %}
 
 ### 3. Authentication & Authorization
-{%- if auth_required %}
+{% if auth_required %}
 - JWT token validation
 - Role-based access control
 - Session management
 - Secure headers
-{%- else %}
+{% else %}
 - Public endpoint (no auth required)
 - Optional user context
-{%- endif %}
+{% endif %}
 
 ### 4. Error Handling
 - Structured error responses
