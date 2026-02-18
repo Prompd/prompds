@@ -1,0 +1,217 @@
+{
+  "version": "1.0.5",
+  "metadata": {
+    "id": "workflow-1770319571041",
+    "name": "test",
+    "description": "",
+    "version": "1.0.5",
+    "modified": 1770479152723
+  },
+  "parameters": [
+    {
+      "name": "topic",
+      "type": "string",
+      "required": true,
+      "description": "",
+      "default": "technology"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "prompt-1770319944701",
+      "type": "prompt",
+      "position": {
+        "x": 360,
+        "y": 15
+      },
+      "data": {
+        "label": "Prompt",
+        "source": "../prompts/topic-researcher.prmd",
+        "parameters": {},
+        "sourceType": "file",
+        "rawPrompt": "",
+        "context": {
+          "previous_output": "auto"
+        },
+        "guardrail": {
+          "expectedFormat": "json",
+          "passWhen": "false",
+          "rejectionExpression": "",
+          "outputMode": "original"
+        },
+        "providerNodeId": "provider-1770583948734"
+      }
+    },
+    {
+      "id": "trigger-1770320005942",
+      "type": "trigger",
+      "position": {
+        "x": 15,
+        "y": 15
+      },
+      "data": {
+        "label": "Start",
+        "triggerType": "schedule",
+        "scheduleCron": "0 * * * *"
+      }
+    },
+    {
+      "id": "output-1770320080452",
+      "type": "output",
+      "position": {
+        "x": 720,
+        "y": 45
+      },
+      "data": {
+        "label": "Output"
+      }
+    },
+    {
+      "id": "callback-1770320850114",
+      "type": "callback",
+      "position": {
+        "x": 450,
+        "y": 105
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "_preDockPosition": {
+          "x": 450,
+          "y": 105
+        },
+        "dockedTo": {
+          "nodeId": "prompt-1770319944701",
+          "handleId": "onCheckpoint"
+        },
+        "logToConsole": true,
+        "logToHistory": true,
+        "pauseInDebug": true,
+        "promptCaptureCompiled": true,
+        "promptCaptureTokens": true,
+        "captureFullContext": true
+      }
+    },
+    {
+      "id": "provider-1770583948734",
+      "type": "provider",
+      "position": {
+        "x": 165,
+        "y": -255
+      },
+      "data": {
+        "label": "Provider",
+        "providerId": "openai",
+        "model": "gpt-4.1-nano"
+      }
+    },
+    {
+      "id": "chat-agent-1771364961185",
+      "type": "chat-agent",
+      "position": {
+        "x": 675,
+        "y": -270
+      },
+      "data": {
+        "label": "Chat Agent",
+        "agentSystemPrompt": "Using the input below, analyze the intent of the user and use the tools provided at your disposal to accomplish the users request.",
+        "agentUserPrompt": "Analyze the users intent: {{ input }}",
+        "maxIterations": 4,
+        "toolCallFormat": "auto",
+        "outputMode": "final-response",
+        "guardrailEnabled": true,
+        "userInputEnabled": true,
+        "userInputPrompt": "Enter your message:",
+        "userInputType": "textarea",
+        "collapsed": false,
+        "_savedWidth": 565,
+        "_savedHeight": 365,
+        "tools": [],
+        "loopMode": "user-driven",
+        "guardrailSystemPrompt": "you are an expert speed reader and word finding expert. Analyze this input for any common swear words and block the propagation of this outside input.",
+        "guardrailProviderNodeId": "provider-1768977563748",
+        "guardrailPassExpression": "{{ input.rejected == false }}",
+        "guardrailScoreThreshold": 0.1,
+        "disabled": false,
+        "guardrailTemperature": 0.3,
+        "agentPromptSourceType": "raw",
+        "agentPromptSource": "",
+        "stopPhrases": [
+          "task completed"
+        ],
+        "userInputShowContext": true,
+        "provider": "openai",
+        "model": "gpt-4.1-nano"
+      },
+      "width": 565,
+      "height": 365
+    },
+    {
+      "id": "tool-1771364961186",
+      "type": "tool",
+      "position": {
+        "x": 45,
+        "y": 135
+      },
+      "data": {
+        "label": "Tool",
+        "toolType": "command",
+        "toolName": "echo",
+        "parameters": {},
+        "commandExecutable": "echo",
+        "commandArgs": "{{ input }}",
+        "description": "this tool echo or prints items to the terminal.",
+        "outputTransform": "{{ output }}"
+      },
+      "parentId": "chat-agent-1771364961185",
+      "extent": "parent"
+    },
+    {
+      "id": "tool-1771364961187",
+      "type": "tool",
+      "position": {
+        "x": 315,
+        "y": 150
+      },
+      "data": {
+        "label": "Tool",
+        "toolType": "http",
+        "toolName": "api_health",
+        "parameters": {},
+        "httpUrl": "https://api.prompd.app/health"
+      },
+      "parentId": "chat-agent-1771364961185",
+      "extent": "parent"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-prompt-1770319944701-output-1770320080452-1770320083258",
+      "source": "prompt-1770319944701",
+      "target": "output-1770320080452",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "docked-callback-1770320850114-prompt-1770319944701-onCheckpoint",
+      "source": "prompt-1770319944701",
+      "target": "callback-1770320850114",
+      "sourceHandle": "onCheckpoint",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-trigger-1770320005942-prompt-1770319944701-1771348051829",
+      "source": "trigger-1770320005942",
+      "target": "prompt-1770319944701",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    }
+  ]
+}

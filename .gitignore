@@ -6,6 +6,8 @@
 .prompd/
 .claude/
 
+**/dist/**
+
 # User-specific files
 *.rsuser
 *.suo
@@ -402,3 +404,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+*.pdpkg

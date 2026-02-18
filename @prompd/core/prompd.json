@@ -1,0 +1,21 @@
+{
+  "name": "@prompd/core",
+  "version": "0.0.2",
+  "description": "This base prompd package provides a foundational template for creating secure and consistent Prompd prompts. It consolidates essential guidelines and security practices to ensure that all derived prompts maintain high standards of input validation and security, thereby fostering a coherent structure across the Prompd project.",
+  "author": "prompd",
+  "license": "MIT",
+  "keywords": [],
+  "readme": "README.md",
+  "repository": "",
+  "main": "prompts/base.prmd",
+  "files": [
+    "prompts/base.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    ".git/**",
+    ".vscode/**",
+    "dist/**",
+    ".env.*"
+  ]
+}

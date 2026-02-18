@@ -1,0 +1,25 @@
+{
+  "name": "@prompd/csv-toolkit",
+  "version": "0.0.11",
+  "description": "Provides great prompts for manipulating and sorting csv data.",
+  "author": "sbaker",
+  "license": "MIT",
+  "keywords": [
+    "csv",
+    "data-tools",
+    "flatfile tools"
+  ],
+  "readme": "README.md",
+  "repository": "",
+  "main": "prompts/csv-sorter.prmd",
+  "files": [
+    "contexts/sample-data-with-duplicates.csv",
+    "contexts/sample-data.csv",
+    "prompts/csv-sorter.prmd",
+    "README.md",
+    "prompts/csv-sort-and-distinct.prmd"
+  ],
+  "ignore": [
+    "dist/**"
+  ]
+}

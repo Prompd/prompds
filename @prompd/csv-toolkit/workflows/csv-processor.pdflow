@@ -1,0 +1,96 @@
+{
+  "version": "0.0.1",
+  "metadata": {
+    "id": "workflow-1771368044385",
+    "name": "CSV Processor",
+    "description": "Processes CSV files",
+    "modified": 1771382777337
+  },
+  "parameters": [
+    {
+      "name": "csv_data",
+      "type": "string",
+      "required": true,
+      "description": ""
+    },
+    {
+      "name": "sort_column",
+      "type": "string",
+      "required": true,
+      "description": ""
+    }
+  ],
+  "nodes": [
+    {
+      "id": "prompt-1771383263101",
+      "type": "prompt",
+      "position": {
+        "x": 195,
+        "y": 120
+      },
+      "data": {
+        "label": "Prompt",
+        "source": "../prompts/csv-sorter.prmd",
+        "parameters": {},
+        "providerNodeId": "provider-1771396117281"
+      }
+    },
+    {
+      "id": "trigger-1771383280015",
+      "type": "trigger",
+      "position": {
+        "x": -285,
+        "y": 90
+      },
+      "data": {
+        "label": "Start",
+        "triggerType": "manual"
+      }
+    },
+    {
+      "id": "output-1771383288809",
+      "type": "output",
+      "position": {
+        "x": 630,
+        "y": 150
+      },
+      "data": {
+        "label": "Output"
+      }
+    },
+    {
+      "id": "provider-1771396117281",
+      "type": "provider",
+      "position": {
+        "x": -30,
+        "y": -210
+      },
+      "data": {
+        "label": "gpt-4o-mini strict",
+        "providerId": "openai",
+        "model": "gpt-4o-mini",
+        "locked": true,
+        "temperature": 0.2,
+        "maxTokens": 4096
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-trigger-1771383280015-prompt-1771383263101-1771383298351",
+      "source": "trigger-1771383280015",
+      "target": "prompt-1771383263101",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-prompt-1771383263101-output-1771383288809-1771383305606",
+      "source": "prompt-1771383263101",
+      "target": "output-1771383288809",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    }
+  ]
+}

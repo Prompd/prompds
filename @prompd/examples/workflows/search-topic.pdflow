@@ -1,0 +1,412 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "id": "workflow-1770610685961",
+    "name": "Search Topic",
+    "description": "",
+    "version": "1.0.0",
+    "modified": 1770649672362
+  },
+  "parameters": [
+    {
+      "name": "topic",
+      "type": "string",
+      "required": true,
+      "description": ""
+    }
+  ],
+  "nodes": [
+    {
+      "id": "trigger-1770610724309",
+      "type": "trigger",
+      "position": {
+        "x": -420,
+        "y": 60
+      },
+      "data": {
+        "label": "Start",
+        "triggerType": "manual"
+      }
+    },
+    {
+      "id": "web-search-1770610749352",
+      "type": "web-search",
+      "position": {
+        "x": 15,
+        "y": -90
+      },
+      "data": {
+        "label": "Web Search",
+        "query": "{{ workflow.topic }}",
+        "resultCount": 10,
+        "provider": "langsearch",
+        "errorHandlerNodeId": "error-handler-1770624278976",
+        "apiKey": ""
+      }
+    },
+    {
+      "id": "prompt-1770610855594",
+      "type": "prompt",
+      "position": {
+        "x": 450,
+        "y": -60
+      },
+      "data": {
+        "label": "Prompt",
+        "source": "",
+        "parameters": {},
+        "sourceType": "raw",
+        "rawPrompt": "Can analyze the json below and sort the search results by relevancy.\n\n```json\n{{ previous_output }}\n```\n\nOutput the same json format but sorted by relevancy. nDo not output backticks or codeblocks.",
+        "providerNodeId": "provider-1770610976800",
+        "errorHandlerNodeId": "error-handler-1770624278976"
+      }
+    },
+    {
+      "id": "provider-1770610976800",
+      "type": "provider",
+      "position": {
+        "x": -30,
+        "y": -330
+      },
+      "data": {
+        "label": "Provider",
+        "providerId": "openai",
+        "model": "gpt-4o-mini",
+        "locked": true
+      }
+    },
+    {
+      "id": "callback-1770624229050",
+      "type": "callback",
+      "position": {
+        "x": 540,
+        "y": 105
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "prompt",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "_preDockWidth": 0,
+        "_preDockHeight": 0,
+        "_preDockPosition": {
+          "x": 540,
+          "y": 105
+        },
+        "dockedTo": {
+          "nodeId": "prompt-1770610855594",
+          "handleId": "onCheckpoint"
+        },
+        "logToConsole": true,
+        "logToHistory": true,
+        "pauseInDebug": true
+      }
+    },
+    {
+      "id": "error-handler-1770624278976",
+      "type": "error-handler",
+      "position": {
+        "x": 255,
+        "y": -345
+      },
+      "data": {
+        "label": "Error Handler",
+        "strategy": "rethrow",
+        "retry": {
+          "maxAttempts": 3,
+          "backoffMs": 1000,
+          "backoffMultiplier": 2
+        },
+        "locked": true
+      }
+    },
+    {
+      "id": "callback-1770791232018",
+      "type": "callback",
+      "position": {
+        "x": 315,
+        "y": -180
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "locked": false,
+        "_preDockPosition": {
+          "x": 315,
+          "y": -180
+        },
+        "dockedTo": {
+          "nodeId": "error-handler-1770624278976",
+          "handleId": "onError"
+        },
+        "logToConsole": true,
+        "logToHistory": true,
+        "pauseInDebug": true
+      }
+    },
+    {
+      "id": "callback-1770791329785",
+      "type": "callback",
+      "position": {
+        "x": 255,
+        "y": 75
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "_preDockPosition": {
+          "x": 255,
+          "y": 75
+        },
+        "dockedTo": {
+          "nodeId": "web-search-1770610749352",
+          "handleId": "onCheckpoint"
+        },
+        "logToConsole": true,
+        "logToHistory": true,
+        "pauseInDebug": true,
+        "webSearchCaptureQuery": true,
+        "webSearchCaptureProvider": true,
+        "webSearchCaptureResults": true
+      }
+    },
+    {
+      "id": "transformer-1770829278277",
+      "type": "transformer",
+      "position": {
+        "x": 720,
+        "y": -105
+      },
+      "data": {
+        "label": "Transform",
+        "mode": "expression",
+        "template": "",
+        "inputVariable": "previous_output",
+        "passthroughOnError": true,
+        "expression": "// Parse the input as JSON if it's a string\r\nlet data = typeof previous_output === 'string' ? JSON.parse(previous_output) : input;\r\n\r\n// Handle both array of results and object with results array\r\nlet results = Array.isArray(data) ? data : (data.results || data.items || [data]);\r\n\r\n// Extract titles from each result\r\nconst titles = results.map(item => item.title).filter(Boolean);\r\n\r\nreturn titles;",
+        "errorHandlerNodeId": "error-handler-1770624278976"
+      }
+    },
+    {
+      "id": "database-query-1770860086998",
+      "type": "database-query",
+      "position": {
+        "x": 420,
+        "y": 225
+      },
+      "data": {
+        "label": "DB Query",
+        "connectionId": "conn-063420f4",
+        "queryType": "select",
+        "query": "{\"username\": \"sample\"}",
+        "parameters": "",
+        "collection": "users",
+        "maxRows": 1000,
+        "timeoutMs": 30000,
+        "description": "",
+        "errorHandlerNodeId": "error-handler-1770624278976"
+      }
+    },
+    {
+      "id": "callback-1770861535049",
+      "type": "callback",
+      "position": {
+        "x": 525,
+        "y": 300
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "_preDockPosition": {
+          "x": 525,
+          "y": 300
+        },
+        "dockedTo": {
+          "nodeId": "database-query-1770860086998",
+          "handleId": "onExecute"
+        },
+        "pauseInDebug": true,
+        "logToHistory": true,
+        "logToConsole": true,
+        "requireApproval": true,
+        "captureFullContext": true
+      }
+    },
+    {
+      "id": "callback-1770947367244",
+      "type": "callback",
+      "position": {
+        "x": 765,
+        "y": 60
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "_preDockPosition": {
+          "x": 765,
+          "y": 60
+        },
+        "dockedTo": {
+          "nodeId": "transformer-1770829278277",
+          "handleId": "onTransform"
+        },
+        "logToConsole": true,
+        "logToHistory": true,
+        "pauseInDebug": true,
+        "errorHandlerNodeId": "error-handler-1770624278976"
+      }
+    },
+    {
+      "id": "merge-1770947740769",
+      "type": "merge",
+      "position": {
+        "x": 1080,
+        "y": 45
+      },
+      "data": {
+        "label": "Merge",
+        "inputs": [],
+        "mergeAs": "array"
+      }
+    },
+    {
+      "id": "output-1770947818106",
+      "type": "output",
+      "position": {
+        "x": 1365,
+        "y": 75
+      },
+      "data": {
+        "label": "Output",
+        "errorHandlerNodeId": "error-handler-1770624278976"
+      }
+    },
+    {
+      "id": "parallel-1770948100071",
+      "type": "parallel",
+      "position": {
+        "x": -165,
+        "y": 60
+      },
+      "width": 350,
+      "height": 200,
+      "data": {
+        "label": "Parallel",
+        "mode": "fork",
+        "forkCount": 2,
+        "branches": [],
+        "waitFor": "all",
+        "mergeStrategy": "object",
+        "locked": false
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-web-search-1770610749352-prompt-1770610855594-1770610861447",
+      "source": "web-search-1770610749352",
+      "target": "prompt-1770610855594",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "docked-callback-1770624229050-prompt-1770610855594-onCheckpoint",
+      "source": "prompt-1770610855594",
+      "target": "callback-1770624229050",
+      "sourceHandle": "onCheckpoint",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-error-handler-1770624278976-callback-1770791232018-1770791243952",
+      "source": "error-handler-1770624278976",
+      "target": "callback-1770791232018",
+      "sourceHandle": "onError",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "docked-callback-1770791329785-web-search-1770610749352-onCheckpoint",
+      "source": "web-search-1770610749352",
+      "target": "callback-1770791329785",
+      "sourceHandle": "onCheckpoint",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-prompt-1770610855594-transformer-1770829278277-1770829324062",
+      "source": "prompt-1770610855594",
+      "target": "transformer-1770829278277",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-transformer-1770829278277-merge-1770947740769-1770947767768",
+      "source": "transformer-1770829278277",
+      "target": "merge-1770947740769",
+      "sourceHandle": "output",
+      "targetHandle": "input-0",
+      "animated": false
+    },
+    {
+      "id": "e-database-query-1770860086998-merge-1770947740769-1770947772635",
+      "source": "database-query-1770860086998",
+      "target": "merge-1770947740769",
+      "sourceHandle": "output",
+      "targetHandle": "input-1",
+      "animated": false
+    },
+    {
+      "id": "e-merge-1770947740769-output-1770947818106-1770947836813",
+      "source": "merge-1770947740769",
+      "target": "output-1770947818106",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-parallel-1770948100071-web-search-1770610749352-1770948129428",
+      "source": "parallel-1770948100071",
+      "target": "web-search-1770610749352",
+      "sourceHandle": "fork-0",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-parallel-1770948100071-database-query-1770860086998-1770948133401",
+      "source": "parallel-1770948100071",
+      "target": "database-query-1770860086998",
+      "sourceHandle": "fork-1",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-trigger-1770610724309-parallel-1770948100071-1770948139107",
+      "source": "trigger-1770610724309",
+      "target": "parallel-1770948100071",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    }
+  ]
+}

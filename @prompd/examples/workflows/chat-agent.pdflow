@@ -1,0 +1,720 @@
+{
+  "version": "0.0.1",
+  "metadata": {
+    "id": "workflow-1768977445722",
+    "name": "Chat Agent",
+    "description": "",
+    "version": "0.0.1",
+    "modified": 1770314352944
+  },
+  "parameters": [],
+  "nodes": [
+    {
+      "id": "provider-1768977563748",
+      "type": "provider",
+      "position": {
+        "x": 120,
+        "y": 240
+      },
+      "data": {
+        "label": "OpenAI",
+        "providerId": "openai",
+        "model": "gpt-4o-mini",
+        "locked": true,
+        "disabled": false
+      }
+    },
+    {
+      "id": "provider-1768977586860",
+      "type": "provider",
+      "position": {
+        "x": 345,
+        "y": 240
+      },
+      "data": {
+        "label": "Anthropic",
+        "providerId": "anthropic",
+        "model": "claude-3-5-haiku-20241022",
+        "locked": true
+      }
+    },
+    {
+      "id": "trigger-1768980494974",
+      "type": "trigger",
+      "position": {
+        "x": 210,
+        "y": 570
+      },
+      "data": {
+        "label": "Start",
+        "triggerType": "manual",
+        "scheduleCron": "* * * * *",
+        "scheduleEnabled": true,
+        "scheduleType": "cron"
+      }
+    },
+    {
+      "id": "output-1768980497201",
+      "type": "output",
+      "position": {
+        "x": 1395,
+        "y": 570
+      },
+      "data": {
+        "label": "Output",
+        "disabled": false
+      }
+    },
+    {
+      "id": "callback-1768981123708",
+      "type": "callback",
+      "position": {
+        "x": 630,
+        "y": 1005
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "logToConsole": true,
+        "logToHistory": true,
+        "pauseInDebug": true,
+        "_preDockPosition": {
+          "x": 630,
+          "y": 1005
+        },
+        "dockedTo": {
+          "nodeId": "chat-agent-1768980757876",
+          "handleId": "rejected"
+        },
+        "requireApproval": true
+      }
+    },
+    {
+      "id": "chat-agent-1768982056713",
+      "type": "chat-agent",
+      "position": {
+        "x": 585,
+        "y": 585
+      },
+      "width": 565,
+      "height": 365,
+      "data": {
+        "label": "Chat Agent",
+        "agentSystemPrompt": "Using the input below, analyze the intent of the user and use the tools provided at your disposal to accomplish the users request.",
+        "agentUserPrompt": "Analyze the users intent: {{ input }}",
+        "maxIterations": 4,
+        "toolCallFormat": "auto",
+        "outputMode": "final-response",
+        "guardrailEnabled": true,
+        "userInputEnabled": true,
+        "userInputPrompt": "Enter your message:",
+        "userInputType": "textarea",
+        "collapsed": false,
+        "_savedWidth": 565,
+        "_savedHeight": 365,
+        "tools": [],
+        "providerNodeId": "provider-1768977586860",
+        "loopMode": "user-driven",
+        "guardrailSystemPrompt": "you are an expert speed reader and word finding expert. Analyze this input for any common swear words and block the propagation of this outside input.",
+        "guardrailProviderNodeId": "provider-1768977563748",
+        "guardrailPassExpression": "{{ input.rejected == false }}",
+        "guardrailScoreThreshold": 0.1,
+        "disabled": false,
+        "guardrailTemperature": 0.3,
+        "agentPromptSourceType": "raw",
+        "agentPromptSource": "",
+        "stopPhrases": [
+          "task completed"
+        ],
+        "userInputShowContext": true
+      }
+    },
+    {
+      "id": "tool-1768986731150",
+      "type": "tool",
+      "position": {
+        "x": 45,
+        "y": 135
+      },
+      "data": {
+        "label": "Tool",
+        "toolType": "command",
+        "toolName": "echo",
+        "parameters": {},
+        "commandExecutable": "echo",
+        "commandArgs": "{{ input }}",
+        "description": "this tool echo or prints items to the terminal.",
+        "outputTransform": "{{ output }}"
+      },
+      "parentId": "chat-agent-1768982056713",
+      "extent": "parent"
+    },
+    {
+      "id": "callback-1769073412534",
+      "type": "callback",
+      "position": {
+        "x": 525,
+        "y": 1185
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "_preDockPosition": {
+          "x": 525,
+          "y": 1185
+        },
+        "dockedTo": {
+          "nodeId": "transformer-1769077994062",
+          "handleId": "onTransform"
+        }
+      }
+    },
+    {
+      "id": "memory-1769100968366",
+      "type": "memory",
+      "position": {
+        "x": 285,
+        "y": 885
+      },
+      "data": {
+        "label": "Memory",
+        "mode": "kv",
+        "operations": [
+          "get"
+        ],
+        "scope": "execution",
+        "_preDockPosition": {
+          "x": 285,
+          "y": 885
+        },
+        "dockedTo": {
+          "nodeId": "agent-1769053464751",
+          "handleId": "memory"
+        }
+      }
+    },
+    {
+      "id": "callback-1769109754512",
+      "type": "callback",
+      "position": {
+        "x": 1020,
+        "y": 630
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "pauseInDebug": true,
+        "logToHistory": true,
+        "logToConsole": true,
+        "_preDockPosition": {
+          "x": 1020,
+          "y": 630
+        },
+        "dockedTo": {
+          "nodeId": "agent-1769104734859",
+          "handleId": "onCheckpoint"
+        }
+      }
+    },
+    {
+      "id": "memory-1769109759069",
+      "type": "memory",
+      "position": {
+        "x": 990,
+        "y": 615
+      },
+      "data": {
+        "label": "Memory",
+        "mode": "kv",
+        "operations": [
+          "get",
+          "set",
+          "delete",
+          "list",
+          "clear"
+        ],
+        "scope": "execution",
+        "_preDockPosition": {
+          "x": 990,
+          "y": 615
+        },
+        "dockedTo": {
+          "nodeId": "agent-1769104734859",
+          "handleId": "memory"
+        }
+      }
+    },
+    {
+      "id": "callback-1769112558168",
+      "type": "callback",
+      "position": {
+        "x": 615,
+        "y": 555
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "_preDockPosition": {
+          "x": 615,
+          "y": 555
+        },
+        "dockedTo": {
+          "nodeId": "guardrail-1769112507828",
+          "handleId": "rejected"
+        },
+        "logToConsole": true,
+        "logToHistory": true,
+        "pauseInDebug": true
+      }
+    },
+    {
+      "id": "callback-1769112639847",
+      "type": "callback",
+      "position": {
+        "x": 630,
+        "y": 1005
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "chat agent checkpoint",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "pauseInDebug": true,
+        "logToHistory": true,
+        "logToConsole": true,
+        "disabled": false,
+        "_preDockWidth": 0,
+        "_preDockHeight": 0,
+        "_preDockPosition": {
+          "x": 630,
+          "y": 1005
+        },
+        "dockedTo": {
+          "nodeId": "chat-agent-1768982056713",
+          "handleId": "onCheckpoint"
+        }
+      }
+    },
+    {
+      "id": "memory-1769112652272",
+      "type": "memory",
+      "position": {
+        "x": 1125,
+        "y": 1050
+      },
+      "data": {
+        "label": "Memory",
+        "mode": "conversation",
+        "operations": [
+          "get",
+          "append",
+          "clear"
+        ],
+        "scope": "execution",
+        "_preDockPosition": {
+          "x": 1125,
+          "y": 1050
+        },
+        "dockedTo": {
+          "nodeId": "chat-agent-1768982056713",
+          "handleId": "memory"
+        }
+      }
+    },
+    {
+      "id": "tool-call-router-1769118360681",
+      "type": "tool-call-router",
+      "position": {
+        "x": 1305,
+        "y": 555
+      },
+      "width": 320,
+      "height": 180,
+      "data": {
+        "label": "Tool Router",
+        "routingMode": "name-match",
+        "onNoMatch": "error",
+        "collapsed": true,
+        "_preDockWidth": 320,
+        "_preDockHeight": 180,
+        "_preDockPosition": {
+          "x": 1305,
+          "y": 555
+        },
+        "dockedTo": {
+          "nodeId": "agent-1769104734859",
+          "handleId": "ai-output"
+        },
+        "_savedWidth": 490,
+        "_savedHeight": 360
+      }
+    },
+    {
+      "id": "tool-1769118399098",
+      "type": "tool",
+      "position": {
+        "x": 35,
+        "y": 60
+      },
+      "data": {
+        "label": "Tool 1",
+        "toolType": "command",
+        "toolName": "",
+        "parameters": {},
+        "commandExecutable": "prompd",
+        "commandAction": "search",
+        "commandArgs": "prompd"
+      },
+      "parentId": "tool-call-router-1769118360681",
+      "extent": "parent"
+    },
+    {
+      "id": "tool-1769118403509",
+      "type": "tool",
+      "position": {
+        "x": 35,
+        "y": 195
+      },
+      "data": {
+        "label": "Tool3",
+        "toolType": "http",
+        "toolName": "",
+        "parameters": {},
+        "httpUrl": "https://api.prompd.app/health"
+      },
+      "parentId": "tool-call-router-1769118360681",
+      "extent": "parent"
+    },
+    {
+      "id": "tool-1769118411904",
+      "type": "tool",
+      "position": {
+        "x": 275,
+        "y": 60
+      },
+      "data": {
+        "label": "Tool2",
+        "toolType": "code",
+        "toolName": "",
+        "parameters": {},
+        "codeSnippet": "({{ previous_output }})"
+      },
+      "parentId": "tool-call-router-1769118360681",
+      "extent": "parent"
+    },
+    {
+      "id": "tool-1769118417729",
+      "type": "tool",
+      "position": {
+        "x": 275,
+        "y": 195
+      },
+      "data": {
+        "label": "Tool4",
+        "toolType": "mcp",
+        "toolName": "web_search",
+        "parameters": {},
+        "mcpServerUrl": "http:l//localhost:3010"
+      },
+      "parentId": "tool-call-router-1769118360681",
+      "extent": "parent"
+    },
+    {
+      "id": "callback-1769131314814",
+      "type": "callback",
+      "position": {
+        "x": 750,
+        "y": 660
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "_preDockPosition": {
+          "x": 750,
+          "y": 660
+        },
+        "dockedTo": {
+          "nodeId": "agent-1769131290410",
+          "handleId": "onCheckpoint"
+        }
+      }
+    },
+    {
+      "id": "callback-1769131979078",
+      "type": "callback",
+      "position": {
+        "x": 720,
+        "y": 630
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "_preDockPosition": {
+          "x": 720,
+          "y": 630
+        },
+        "dockedTo": {
+          "nodeId": "agent-1769131970637",
+          "handleId": "onCheckpoint"
+        }
+      }
+    },
+    {
+      "id": "memory-1769132539378",
+      "type": "memory",
+      "position": {
+        "x": 735,
+        "y": 570
+      },
+      "data": {
+        "label": "Memory",
+        "mode": "kv",
+        "operations": [
+          "get"
+        ],
+        "scope": "execution",
+        "_preDockPosition": {
+          "x": 735,
+          "y": 570
+        },
+        "dockedTo": {
+          "nodeId": "agent-1769131970637",
+          "handleId": "memory"
+        }
+      }
+    },
+    {
+      "id": "callback-1769146532839",
+      "type": "callback",
+      "position": {
+        "x": 525,
+        "y": 555
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "guardrail checkpoint",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "logToConsole": true,
+        "logToHistory": true,
+        "pauseInDebug": true,
+        "_preDockPosition": {
+          "x": 525,
+          "y": 555
+        },
+        "dockedTo": {
+          "nodeId": "guardrail-1769144763706",
+          "handleId": "onCheckpoint"
+        }
+      }
+    },
+    {
+      "id": "callback-1769146613793",
+      "type": "callback",
+      "position": {
+        "x": 120,
+        "y": 615
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "prompt checkpoint",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "logToConsole": true,
+        "pauseInDebug": true,
+        "logToHistory": true,
+        "requireApproval": false,
+        "_preDockPosition": {
+          "x": 120,
+          "y": 615
+        },
+        "dockedTo": {
+          "nodeId": "prompt-1769146606397",
+          "handleId": "onCheckpoint"
+        }
+      }
+    },
+    {
+      "id": "callback-1769149056348",
+      "type": "callback",
+      "position": {
+        "x": 870,
+        "y": 450
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "_preDockPosition": {
+          "x": 870,
+          "y": 450
+        },
+        "dockedTo": {
+          "nodeId": "agent-1769141316907",
+          "handleId": "onCheckpoint"
+        },
+        "logToConsole": true,
+        "logToHistory": true,
+        "pauseInDebug": true,
+        "agentCaptureIterations": true,
+        "agentCaptureConversation": true,
+        "agentCaptureToolCalls": true,
+        "agentCaptureThinking": true
+      }
+    },
+    {
+      "id": "memory-1769149088249",
+      "type": "memory",
+      "position": {
+        "x": 810,
+        "y": 420
+      },
+      "data": {
+        "label": "Memory",
+        "mode": "kv",
+        "operations": [
+          "get"
+        ],
+        "scope": "execution",
+        "_preDockPosition": {
+          "x": 810,
+          "y": 420
+        },
+        "dockedTo": {
+          "nodeId": "agent-1769141316907",
+          "handleId": "memory"
+        }
+      }
+    },
+    {
+      "id": "callback-1769149098528",
+      "type": "callback",
+      "position": {
+        "x": 480,
+        "y": 870
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "logToConsole": true,
+        "logToHistory": true,
+        "pauseInDebug": true,
+        "requireApproval": false,
+        "_preDockPosition": {
+          "x": 480,
+          "y": 870
+        },
+        "dockedTo": {
+          "nodeId": "chat-agent-1768982056713",
+          "handleId": "rejected"
+        }
+      }
+    },
+    {
+      "id": "tool-1769155741958",
+      "type": "tool",
+      "position": {
+        "x": 315,
+        "y": 150
+      },
+      "data": {
+        "label": "Tool",
+        "toolType": "http",
+        "toolName": "api_health",
+        "parameters": {},
+        "httpUrl": "https://api.prompd.app/health",
+        "errorHandlerNodeId": "error-handler-1769156347862"
+      },
+      "parentId": "chat-agent-1768982056713",
+      "extent": "parent"
+    },
+    {
+      "id": "error-handler-1769156347862",
+      "type": "error-handler",
+      "position": {
+        "x": 615,
+        "y": 240
+      },
+      "data": {
+        "label": "Error Handler",
+        "strategy": "rethrow",
+        "retry": {
+          "maxAttempts": 3,
+          "backoffMs": 1000,
+          "backoffMultiplier": 2
+        },
+        "fallback": {
+          "type": "value"
+        },
+        "notify": {
+          "includeStack": true,
+          "includeContext": true
+        },
+        "locked": true
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-trigger-1768980494974-chat-agent-1768982056713-1768986297245",
+      "source": "trigger-1768980494974",
+      "target": "chat-agent-1768982056713",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-chat-agent-1768982056713-output-1768980497201-1768986302224",
+      "source": "chat-agent-1768982056713",
+      "target": "output-1768980497201",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "docked-callback-1769112639847-chat-agent-1768982056713-onCheckpoint",
+      "source": "chat-agent-1768982056713",
+      "target": "callback-1769112639847",
+      "sourceHandle": "onCheckpoint",
+      "targetHandle": "input",
+      "animated": false
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+---
+id: step2
+name: "Step 2"
+description: "A simple example prompt"
+version: 1.0.0
+parameters:
+  - name: previous_step
+    type: object
+    required: true
+    default: {}
+  - name: topic
+    type: string
+    required: true
+  - name: rank
+    type: number
+    required: true
+---
+
+# User
+
+{% set previousJson = previous_step | fromjson %}
+
+# Task
+
+Determine you approval 0>N<1 where N is your score on the previous LLM's analysis: {{ previousJson.analysis }} with a confidence of: {{ previousJson }};
+
+# Response
+
+Return your thoughts on the analysis and your confidence
+
+# Output
+```json
+{
+  "analysis": "[your analysis of {{ topic }}]", 
+  "confidence": "0..1",
+  "valid": true|false
+}
+```

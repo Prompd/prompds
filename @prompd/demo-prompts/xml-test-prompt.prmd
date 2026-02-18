@@ -1,0 +1,49 @@
+---
+id: xml-test-prompt
+name: "Xml Test Prompd"
+description: "Test file to see how XML content renders in the markdown preview"
+version: 1.0.0
+content-type: xml
+parameters:
+  - name: user_input
+    type: string
+    description: "User message about the task"
+    required: true
+  - name: task_name
+    type: string
+    description: "Name of the task to execute"
+    default: "analyze_data"
+  - name: context
+    type: string
+    description: "Additional context for the task"
+    default: "Please be thorough"
+---
+
+<system>You are a helpful AI assistant specialized in data analysis and problem solving.
+
+Always provide clear, structured responses.</system>
+<context>
+  <user_context>{{context}}</user_context>
+  <user_input>{{user_input}}</user_input>
+</context>
+<task name="{{task_name}}">
+  <instructions>
+    <something_else>Please complete the following task with attention to detail.
+
+Break down complex problems into steps.</something_else>
+  </instructions>
+  <output_format>
+    <section name="analysis">Your analysis here</section>
+    <section name="recommendations">Your recommendations</section>
+    <section name="next_steps">Suggested next steps</section>
+  </output_format>
+</task>
+<examples>
+  <example type="good">
+    <input>Analyze sales data for Q4</input>
+    <output>
+      <analysis>Q4 showed 15% growth...</analysis>
+      <recommendations>Focus on top performers...</recommendations>
+    </output>
+  </example>
+</examples>

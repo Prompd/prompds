@@ -1,0 +1,19 @@
+{
+  "name": "@prompd/dog-blog-writing",
+  "version": "0.0.1",
+  "description": "Prompd project: dog-blog-writing",
+  "author": "prompd",
+  "license": "MIT",
+  "keywords": [],
+  "readme": "README.md",
+  "repository": "",
+  "main": "prompts/dog-blog-writer.prmd",
+  "files": [],
+  "ignore": [
+    ".env*",
+    ".git/**"
+  ],
+  "dependencies": {
+    "@prompd/blog-writer": "0.1.6"
+  }
+}

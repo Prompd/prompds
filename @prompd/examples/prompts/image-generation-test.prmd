@@ -1,0 +1,19 @@
+---
+id: image-generation-test
+name: "Image Generation Test"
+version: 1.0.0
+tags: [image]
+parameters:
+  - name: animal
+    type: string
+    required: true
+    default: "ostrich"
+---
+# User
+
+Can you generate me an image of an `{{animal}}`?
+
+# Output
+
+- return only the image.
+- do not provide any explanation or information before or after the generated image.

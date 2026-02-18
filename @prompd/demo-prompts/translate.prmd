@@ -1,0 +1,45 @@
+---
+id: translate
+name: translate
+description: "Translate text to another language"
+version: 1.0.0
+parameters:
+  - name: text
+    type: string
+    required: true
+    description: "The text to translate"
+  - name: language
+    type: string
+    required: true
+    enum: [Spanish, French, German, Italian, Portuguese, Japanese, Chinese, Korean]
+    description: "The target language for translation"
+  - name: formality
+    type: string
+    required: false
+    default: neutral
+    enum: [formal, neutral, informal]
+    description: "The formality level of the translation"
+---
+
+Translate the following text to {{ language }}:
+
+{% include "./summarize.prmd" %}
+
+---
+{{ text | trim }}
+---
+
+# Translation requirements:
+- Provide a complete and accurate translation that conveys the original message.
+- Formality level: {{ formality }}; adapt the tone to match the target audience.
+- Preserve the original meaning and tone; avoid changing the intent of the text.
+- Use natural, native-sounding phrasing, ensuring fluency and coherence in the target language.
+- Maintain any formatting (paragraphs, lists, etc.), and pay attention to cultural nuances and idiomatic expressions.
+- Review for clarity and readability, ensuring that the translation flows naturally.
+- Ensure that the translated text aligns with any specified style guidelines or conventions in the target language.
+- Formality level: {{ formality }}
+- Preserve the original meaning and tone
+- Use natural, native-sounding phrasing
+- Maintain any formatting (paragraphs, lists, etc.)
+
+Provide only the translation, no additional commentary.

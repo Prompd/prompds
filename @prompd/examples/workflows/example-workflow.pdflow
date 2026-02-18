@@ -1,0 +1,615 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "id": "workflow-1768977445722",
+    "name": "New Workflow",
+    "description": ""
+  },
+  "parameters": [],
+  "nodes": [
+    {
+      "id": "provider-1768977563748",
+      "type": "provider",
+      "position": {
+        "x": 120,
+        "y": 240
+      },
+      "data": {
+        "label": "OpenAI",
+        "providerId": "openai",
+        "model": "gpt-4o-mini",
+        "locked": false
+      }
+    },
+    {
+      "id": "provider-1768977586860",
+      "type": "provider",
+      "position": {
+        "x": 345,
+        "y": 240
+      },
+      "data": {
+        "label": "Anthropic",
+        "providerId": "anthropic",
+        "model": "claude-3-5-haiku-20241022",
+        "locked": false
+      }
+    },
+    {
+      "id": "trigger-1768980494974",
+      "type": "trigger",
+      "position": {
+        "x": 315,
+        "y": 780
+      },
+      "data": {
+        "label": "Start",
+        "triggerType": "schedule",
+        "scheduleCron": "0 9 * * *",
+        "scheduleEnabled": true
+      }
+    },
+    {
+      "id": "output-1768980497201",
+      "type": "output",
+      "position": {
+        "x": 1275,
+        "y": 780
+      },
+      "data": {
+        "label": "Output"
+      }
+    },
+    {
+      "id": "callback-1768981123708",
+      "type": "callback",
+      "position": {
+        "x": 630,
+        "y": 1005
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "logToConsole": true,
+        "logToHistory": true,
+        "pauseInDebug": true,
+        "_preDockPosition": {
+          "x": 630,
+          "y": 1005
+        },
+        "dockedTo": {
+          "nodeId": "chat-agent-1768980757876",
+          "handleId": "rejected"
+        },
+        "requireApproval": true
+      }
+    },
+    {
+      "id": "chat-agent-1768982056713",
+      "type": "chat-agent",
+      "position": {
+        "x": 600,
+        "y": 795
+      },
+      "width": 520,
+      "height": 365,
+      "data": {
+        "label": "Chat Agent",
+        "agentSystemPrompt": "You are a helpful AI assistant.",
+        "agentUserPrompt": "{{ input }}",
+        "maxIterations": 10,
+        "toolCallFormat": "auto",
+        "outputMode": "final-response",
+        "guardrailEnabled": true,
+        "userInputEnabled": true,
+        "userInputPrompt": "Enter your message:",
+        "userInputType": "textarea",
+        "collapsed": false,
+        "_savedWidth": 520,
+        "_savedHeight": 365,
+        "tools": [],
+        "providerNodeId": "provider-1768977586860",
+        "loopMode": "user-driven",
+        "guardrailSystemPrompt": "# Assistant\nyou are an expert speed reader and word usage finding expert analyzer. Analyze this input for any common swear words and block the propagation of this outside input.\n\n```txt\n{{ previous_output }}\n```\n\n# Output\nreturn a json object representing the analysis. here is a template you can use for your response.\n```json\n{\n  \"input\": \"{{ previous_output }}\",\n  \"analysis\": \"[your feedback of the input]\",\n  \"score\": 0..1,\n  \"valid\": true | false\n}\n```\n",
+        "guardrailProviderNodeId": "provider-1768977563748",
+        "guardrailPassExpression": "{{ input.valid == true }}",
+        "guardrailScoreThreshold": 0.5
+      }
+    },
+    {
+      "id": "tool-1768986731150",
+      "type": "tool",
+      "position": {
+        "x": 45,
+        "y": 150
+      },
+      "data": {
+        "label": "Tool",
+        "toolType": "command",
+        "toolName": "",
+        "parameters": {},
+        "commandExecutable": "echo",
+        "commandArgs": "{{ input }}"
+      },
+      "parentId": "chat-agent-1768982056713",
+      "extent": "parent"
+    },
+    {
+      "id": "tool-1768987107831",
+      "type": "tool",
+      "position": {
+        "x": 285,
+        "y": 150
+      },
+      "data": {
+        "label": "Tool",
+        "toolType": "code",
+        "toolName": "",
+        "parameters": {},
+        "codeLanguage": "typescript",
+        "codeSnippet": "(function()\r\n{\r\n  const json = JSON.parse(\"{{ input }}\");\r\n  return {\r\n    input: json\r\n  }\r\n})();"
+      },
+      "parentId": "chat-agent-1768982056713",
+      "extent": "parent"
+    },
+    {
+      "id": "callback-1769073412534",
+      "type": "callback",
+      "position": {
+        "x": 525,
+        "y": 1185
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "_preDockPosition": {
+          "x": 525,
+          "y": 1185
+        },
+        "dockedTo": {
+          "nodeId": "transformer-1769077994062",
+          "handleId": "onTransform"
+        }
+      }
+    },
+    {
+      "id": "memory-1769100968366",
+      "type": "memory",
+      "position": {
+        "x": 285,
+        "y": 885
+      },
+      "data": {
+        "label": "Memory",
+        "mode": "kv",
+        "operations": [
+          "get"
+        ],
+        "scope": "execution",
+        "_preDockPosition": {
+          "x": 285,
+          "y": 885
+        },
+        "dockedTo": {
+          "nodeId": "agent-1769053464751",
+          "handleId": "memory"
+        }
+      }
+    },
+    {
+      "id": "agent-1769104734859",
+      "type": "agent",
+      "position": {
+        "x": 1050,
+        "y": 525
+      },
+      "data": {
+        "label": "AI Agent",
+        "systemPrompt": "You are a helpful AI assistant with access to tools. Use the available tools to complete the user's request.",
+        "userPrompt": "{{ input }}",
+        "tools": [
+          {
+            "name": "list",
+            "description": "",
+            "toolType": "function",
+            "parameters": {
+              "type": "object",
+              "properties": {},
+              "required": []
+            }
+          },
+          {
+            "name": "",
+            "description": "",
+            "toolType": "function",
+            "parameters": {
+              "type": "object",
+              "properties": {},
+              "required": []
+            }
+          }
+        ],
+        "maxIterations": 10,
+        "toolCallFormat": "auto",
+        "outputMode": "final-response",
+        "includeHistory": true,
+        "provider": "openai",
+        "model": "gpt-4o-mini"
+      }
+    },
+    {
+      "id": "callback-1769109754512",
+      "type": "callback",
+      "position": {
+        "x": 330,
+        "y": 930
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "_preDockPosition": {
+          "x": 330,
+          "y": 930
+        },
+        "dockedTo": {
+          "nodeId": "agent-1769104734859",
+          "handleId": "onCheckpoint"
+        },
+        "pauseInDebug": true,
+        "logToHistory": true,
+        "logToConsole": true
+      }
+    },
+    {
+      "id": "memory-1769109759069",
+      "type": "memory",
+      "position": {
+        "x": 180,
+        "y": 885
+      },
+      "data": {
+        "label": "Memory",
+        "mode": "kv",
+        "operations": [
+          "get",
+          "set",
+          "delete",
+          "list",
+          "clear"
+        ],
+        "scope": "execution",
+        "_preDockPosition": {
+          "x": 180,
+          "y": 885
+        },
+        "dockedTo": {
+          "nodeId": "agent-1769104734859",
+          "handleId": "memory"
+        }
+      }
+    },
+    {
+      "id": "tool-call-router-1769109765887",
+      "type": "tool-call-router",
+      "position": {
+        "x": 405,
+        "y": 870
+      },
+      "width": 320,
+      "height": 180,
+      "data": {
+        "label": "Tool Router",
+        "routingMode": "name-match",
+        "onNoMatch": "passthrough",
+        "collapsed": true,
+        "_preDockWidth": 320,
+        "_preDockHeight": 180,
+        "_preDockPosition": {
+          "x": 405,
+          "y": 870
+        },
+        "dockedTo": {
+          "nodeId": "agent-1769104734859",
+          "handleId": "ai-output"
+        },
+        "_savedWidth": 400,
+        "_savedHeight": 285
+      }
+    },
+    {
+      "id": "tool-1769112267412",
+      "type": "tool",
+      "position": {
+        "x": 945,
+        "y": 360
+      },
+      "data": {
+        "label": "Tool",
+        "toolType": "function",
+        "toolName": "",
+        "parameters": {},
+        "_preDockPosition": {
+          "x": 945,
+          "y": 360
+        },
+        "dockedTo": {
+          "nodeId": "tool-call-router-1769109765887",
+          "handleId": "ai-input"
+        }
+      }
+    },
+    {
+      "id": "tool-1769112282746",
+      "type": "tool",
+      "position": {
+        "x": 35,
+        "y": 60
+      },
+      "data": {
+        "label": "Tool",
+        "toolType": "function",
+        "toolName": "",
+        "parameters": {},
+        "_preDockPosition": {
+          "x": 35,
+          "y": 60
+        },
+        "dockedTo": {
+          "nodeId": "tool-call-router-1769109765887",
+          "handleId": "ai-input"
+        }
+      },
+      "parentId": "tool-call-router-1769109765887",
+      "extent": "parent"
+    },
+    {
+      "id": "tool-1769112291697",
+      "type": "tool",
+      "position": {
+        "x": 185,
+        "y": 75
+      },
+      "data": {
+        "label": "Tool",
+        "toolType": "function",
+        "toolName": "",
+        "parameters": {}
+      },
+      "parentId": "tool-call-router-1769109765887",
+      "extent": "parent"
+    },
+    {
+      "id": "tool-1769112297707",
+      "type": "tool",
+      "position": {
+        "x": 930,
+        "y": 375
+      },
+      "data": {
+        "label": "Tool",
+        "toolType": "function",
+        "toolName": "",
+        "parameters": {},
+        "_preDockPosition": {
+          "x": 930,
+          "y": 375
+        },
+        "dockedTo": {
+          "nodeId": "tool-call-router-1769109765887",
+          "handleId": "ai-input"
+        }
+      }
+    },
+    {
+      "id": "tool-1769112307596",
+      "type": "tool",
+      "position": {
+        "x": 20,
+        "y": 75
+      },
+      "data": {
+        "label": "Tool",
+        "toolType": "function",
+        "toolName": "",
+        "parameters": {},
+        "_preDockPosition": {
+          "x": 20,
+          "y": 75
+        },
+        "dockedTo": {
+          "nodeId": "tool-call-router-1769109765887",
+          "handleId": "ai-input"
+        }
+      },
+      "parentId": "tool-call-router-1769109765887",
+      "extent": "parent"
+    },
+    {
+      "id": "user-input-1769112427224",
+      "type": "user-input",
+      "position": {
+        "x": 495,
+        "y": 510
+      },
+      "data": {
+        "label": "User Input",
+        "prompt": "Enter your input:",
+        "inputType": "textarea",
+        "required": true,
+        "showContext": true,
+        "placeholder": "what can I help with"
+      }
+    },
+    {
+      "id": "guardrail-1769112507828",
+      "type": "guardrail",
+      "position": {
+        "x": 765,
+        "y": 525
+      },
+      "data": {
+        "label": "Guardrail",
+        "systemPrompt": "Validate the input. Respond with \"PASS\" if the input is appropriate and safe, or \"REJECT\" with a reason if it violates guidelines.",
+        "scoreThreshold": 0.5
+      }
+    },
+    {
+      "id": "callback-1769112558168",
+      "type": "callback",
+      "position": {
+        "x": 615,
+        "y": 555
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "_preDockPosition": {
+          "x": 615,
+          "y": 555
+        },
+        "dockedTo": {
+          "nodeId": "guardrail-1769112507828",
+          "handleId": "rejected"
+        },
+        "logToConsole": true,
+        "logToHistory": true,
+        "pauseInDebug": true
+      }
+    },
+    {
+      "id": "callback-1769112639847",
+      "type": "callback",
+      "position": {
+        "x": 510,
+        "y": 1050
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "_preDockPosition": {
+          "x": 510,
+          "y": 1050
+        },
+        "dockedTo": {
+          "nodeId": "chat-agent-1768982056713",
+          "handleId": "rejected"
+        },
+        "pauseInDebug": true,
+        "logToHistory": true,
+        "logToConsole": true
+      }
+    },
+    {
+      "id": "memory-1769112652272",
+      "type": "memory",
+      "position": {
+        "x": 1125,
+        "y": 1050
+      },
+      "data": {
+        "label": "Memory",
+        "mode": "conversation",
+        "operations": [
+          "get",
+          "append",
+          "clear"
+        ],
+        "scope": "execution",
+        "_preDockPosition": {
+          "x": 1125,
+          "y": 1050
+        },
+        "dockedTo": {
+          "nodeId": "chat-agent-1768982056713",
+          "handleId": "memory"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-trigger-1768980494974-chat-agent-1768982056713-1768986297245",
+      "source": "trigger-1768980494974",
+      "target": "chat-agent-1768982056713",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-chat-agent-1768982056713-output-1768980497201-1768986302224",
+      "source": "chat-agent-1768982056713",
+      "target": "output-1768980497201",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "docked-callback-1769109754512-agent-1769104734859-onCheckpoint",
+      "source": "agent-1769104734859",
+      "target": "callback-1769109754512",
+      "sourceHandle": "onCheckpoint",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "docked-memory-1769109759069-agent-1769104734859-memory",
+      "source": "memory-1769109759069",
+      "target": "agent-1769104734859",
+      "sourceHandle": "output",
+      "targetHandle": "memory",
+      "animated": false
+    },
+    {
+      "id": "docked-tool-call-router-1769109765887-agent-1769104734859-input",
+      "source": "agent-1769104734859",
+      "target": "tool-call-router-1769109765887",
+      "sourceHandle": "ai-output",
+      "targetHandle": "ai-input",
+      "animated": false
+    },
+    {
+      "id": "docked-tool-call-router-1769109765887-agent-1769104734859-output",
+      "source": "tool-call-router-1769109765887",
+      "target": "agent-1769104734859",
+      "sourceHandle": "toolResult",
+      "targetHandle": "toolResult",
+      "animated": false
+    },
+    {
+      "id": "e-user-input-1769112427224-guardrail-1769112507828-1769112515578",
+      "source": "user-input-1769112427224",
+      "target": "guardrail-1769112507828",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-guardrail-1769112507828-agent-1769104734859-1769112520163",
+      "source": "guardrail-1769112507828",
+      "target": "agent-1769104734859",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    }
+  ]
+}

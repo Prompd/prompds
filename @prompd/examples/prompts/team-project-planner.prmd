@@ -1,0 +1,327 @@
+---
+id: team-project-planner
+name: "Team Project Planner"
+version: 1.0.0
+description: "Comprehensive project planning assistant combining architecture, development, and operations perspectives"
+parameters:
+  - name: project_name
+    type: string
+    required: true
+    description: "Name of the project"
+  - name: team_roles
+    type: array
+    description: "Team roles involved in the project"
+    default: ["developer","lead_engineer","system_admin"]
+  - name: project_phase
+    type: string
+    description: "Current project phase"
+    enum: ["planning","development","testing","deployment","maintenance"]
+    default: "planning"
+  - name: tech_stack
+    type: object
+    description: "Technology stack for the project"
+    default: {"language":"typescript","framework":"express","architecture":"microservices"}
+  - name: include_deployment_plan
+    type: boolean
+    description: "Include deployment strategy and operations plan"
+    default: true
+using:
+  - name: "@prompd/core@0.0.1"
+    prefix: "@core"
+inherits: "@core/prompts/base.prmd"
+---
+# {{project_name}} - Team Project Plan
+
+## Project Overview
+
+**Phase:** {{project_phase}} **Technology Stack:** {{tech_stack.language}} with {{tech_stack.framework}} ({{tech_stack.architecture}} architecture)
+
+## Team Composition & Responsibilities
+
+{%- for team_role in team_roles %}
+
+### {{ team_role|title }} Role
+
+{%- if team_role == "developer" %}
+
+- Write clean, maintainable code following best practices
+- Implement features according to specifications
+- Write unit and integration tests
+- Participate in code reviews
+- Follow coding standards and conventions for {{tech_stack.language}} {%- elif team_role == "lead_engineer" %}
+- Define technical architecture and design patterns
+- Review and approve major technical decisions
+- Mentor team members on best practices
+- Conduct code reviews for quality and security
+- Balance technical debt with feature development
+- Architecture pattern: {{tech_stack.architecture}} {%- elif team_role == "system_admin" %}
+- Manage infrastructure and deployment pipelines
+- Configure monitoring and alerting systems
+- Implement backup and disaster recovery procedures
+- Ensure security compliance and patch management
+- Support CI/CD automation {%- elif team_role == "qa" %}
+- Design and execute test plans
+- Perform functional and regression testing
+- Identify and document defects
+- Validate deployment readiness
+- Ensure quality standards are met {%- elif team_role == "product_manager" %}
+- Define product requirements and priorities
+- Coordinate with stakeholders
+- Manage project timeline and deliverables
+- Facilitate communication between teams
+- Track progress and remove blockers {%- endif %}
+
+{% endfor %}
+
+## Phase-Specific Activities
+
+{%- if project_phase == "planning" %}
+
+### Planning Phase Checklist
+
+- [ ] Define project scope and requirements
+- [ ] Select architecture pattern (current: {{tech_stack.architecture}})
+- [ ] Choose technology stack (current: {{tech_stack.language}}/{{tech_stack.framework}})
+- [ ] Estimate effort and timeline
+- [ ] Identify risks and dependencies
+- [ ] Establish team roles and responsibilities
+- [ ] Set up project repository and tools
+- [ ] Define coding standards and conventions
+
+{%- elif project_phase == "development" %}
+
+### Development Phase Checklist
+
+- [ ] Set up development environment
+- [ ] Implement core features using {{tech_stack.language}}
+- [ ] Write unit tests for all new code
+- [ ] Follow {{tech_stack.framework}} best practices
+- [ ] Conduct regular code reviews
+- [ ] Document APIs and components
+- [ ] Track and manage technical debt
+- [ ] Daily standups and progress tracking
+
+{%- elif project_phase == "testing" %}
+
+### Testing Phase Checklist
+
+- [ ] Execute comprehensive test plans
+- [ ] Perform integration testing
+- [ ] Conduct security vulnerability scans
+- [ ] Validate performance benchmarks
+- [ ] Test deployment procedures in staging
+- [ ] Document test results and defects
+- [ ] Regression testing for bug fixes
+- [ ] User acceptance testing (UAT)
+
+{%- elif project_phase == "deployment" %}
+
+### Deployment Phase Checklist
+
+- [ ] Prepare production environment
+- [ ] Execute deployment runbook
+- [ ] Monitor application health checks
+- [ ] Validate all systems operational
+- [ ] Enable monitoring and alerting
+- [ ] Document rollback procedures
+- [ ] Communicate with stakeholdes
+- [ ] Post-deployment verification
+
+{%- elif project_phase == "maintenance" %}
+
+### Maintenance Phase Checklist
+
+- [ ] Monitor system performance metrics
+- [ ] Address production issues promptly
+- [ ] Apply security patches and updates
+- [ ] Review and optimize performance
+- [ ] Maintain documentation currency
+- [ ] Plan and execute backups
+- [ ] Conduct periodic security audit
+- [ ] Gather user feedback for improvements
+
+{%- endif %}
+
+## Architecture Considerations
+
+For **{{ tech_stack.architecture }}** architecture: {%- if tech_stack.architecture == "microservices" %}
+
+- Design independent, loosely-coupled services
+- Implement service discovery and API gateway
+- Plan for distributed logging and tracing
+- Consider eventual consistency patterns
+- Implement circuit breakers and resilience
+
+{%- elif tech_stack.architecture == "monolith" %}
+
+- Organize code into clear module boundaries
+- Implement layered architecture (API, business logic, data)
+- Plan for future modularization if needed
+- Optimize for simplicity and maintainability
+
+{%- elif tech_stack.architecture == "event_driven" %}
+
+- Design event schemas and versioning strategy
+- Implement event sourcing if applicable
+- Plan message queue infrastructure
+- Handle eventual consistency
+- Design idempotent event handlers
+
+{%- elif tech_stack.architecture == "serverless" %}
+
+- Design stateless function handlers
+- Optimize cold start performance
+- Implement proper error handling and retries
+- Plan for function composition
+- Consider vendor lock-in implications
+
+{%- endif %}
+
+## Development Guidelines
+
+### Language-Specific Best Practices **{{ tech_stack.language }}**
+
+{%- if tech_stack.language == "typescript" %}
+
+- Enable strict type checking in tsconfig.json
+- Use interfaces for object shapes and contracts
+- Leverage generics for reusable components
+- Prefer immutability where possible
+- Use async/await for asynchronous operations
+
+{%- elif tech_stack.language == "python" %}
+
+- Follow PEP 8 style guidelines
+- Use type hints for better code clarity
+- Implement virtual environments for dependencies
+- Write docstrings for all public functions
+- Use context managers for resource handling
+
+{%- elif tech_stack.language == "go" %}
+
+- Follow Go conventions and idioms
+- Handle errors explicitly (no exceptions)
+- Use interfaces for abstraction
+- Keep packages focused and cohesive
+- Write table-driven tests
+
+{%- elif tech_stack.language == "javascript" %}
+
+- Use modern ES6+ features
+- Implement proper error handling
+- Avoid callback hell with promises/async-await
+- Use const/let instead of var
+- Follow consistent code formatting
+
+{%- elif tech_stack.language == "java" %}
+
+- Follow Java naming conventions
+- Use appropriate design patterns
+- Leverage streams API for collections
+- Implement proper exception handling
+- Use dependency injection frameworks
+
+{%- elif tech_stack.language == "rust" %}
+
+- Embrace ownership and borrowing rules
+- Use pattern matching effectively
+- Handle errors with Result type
+- Avoid unsafe code unless necessary
+- Write comprehensive tests
+
+{%- endif %}
+
+{%- if include_deployment_plan %}
+
+## Deployment Strategy
+
+### Environment Pipeline
+
+- **Development** → **QA** → **Demo/UAT** → **Production**
+
+### Deployment Approach
+
+- Strategy: Blue-Green deployment with health checks
+- Rollback plan: Automated rollback on health check failures
+- Monitoring: Real-time metrics and alerting
+- Backup: Automated daily backups with 7-day retention
+
+### Pre-Deployment Checklist
+
+- [ ] All tests passing in CI/CD pipeline
+- [ ] Code review approved by lead engineer
+- [ ] Security scan completed with no critical issues
+- [ ] Staging deployment tested successfully
+- [ ] Rollback procedure documented and tested
+- [ ] Stakeholders notified of deployment window
+- [ ] Database migrations prepared (if applicable)
+- [ ] Monitoring dashboards configured
+
+### Post-Deployment Validation
+
+- [ ] Health check endpoints responding correctly
+- [ ] Application metrics within normal ranges
+- [ ] Error rates below threshold (&lt; 1%)
+- [ ] Performance benchmarks met
+- [ ] User authentication working
+- [ ] Critical user flows validated
+- [ ] Monitoring alerts configured and active {%- endif %}
+
+## Communication Plan
+
+- **Daily Standups**: 15-minute sync for each team role to share progress, blockers, and plans
+- **Weekly Planning**: Review sprint goals, adjust priorities, and align on deliverables
+- **Bi-Weekly Retrospectives**: Reflect on what worked, what didn't, and action items for improvement
+- **Stakeholder Updates**: {{project_phase}}-appropriate status reports shared with leadership
+- **Documentation**: All decisions, architecture changes, and runbooks maintained in the project wiki
+- **Escalation Path**: Blockers unresolved within 24 hours escalated to lead engineer → project sponsor
+- **Channels**: Dedicated channels for #{{project_name}}-general, #{{project_name}}-alerts, and #{{project_name}}-releases
+
+## Risk Management
+
+| Risk | Impact | Likelihood | Mitigation |
+| --- | --- | --- | --- |
+| Scope creep | High | Medium | Strict change request process; product manager approval required |
+| Key person dependency | High | Medium | Cross-training across {{team_roles | join(', ')}} |
+| Technical debt accumulation | Medium | High | Dedicate 20% of each sprint to refactoring and debt reduction |
+| Integration failures | High | Medium | Continuous integration with automated tests; staging environment validation |
+| Security vulnerabilities | Critical | Medium | Regular dependency audits, security scans, and penetration testing |
+| Deployment failures | High | Low | Blue-Green deployment with automated rollback; tested runbooks |
+| Performance degradation | Medium | Medium | Baseline benchmarks established; monitoring alerts for anomalies |
+| Timeline slippage | Medium | Medium | Buffer built into estimates; weekly progress tracking against milestones |
+
+### Risk Response Process
+
+1. **Identify**: Any team member can flag a risk during standups or async
+2. **Assess**: Lead engineer and product manager evaluate impact and likelihood
+3. **Plan**: Define mitigation strategy and assign owner
+4. **Monitor**: Track risk status weekly; escalate if likelihood increases
+5. **Review**: Re-evaluate all risks at each phase transition
+
+## Success Metrics
+
+### Delivery Metrics
+
+- **On-time delivery**: Features completed within planned sprint/milestone
+- **Velocity trend**: Consistent or improving story points per sprint
+- **Release frequency**: Target cadence achieved for {{project_phase}} phase
+
+### Quality Metrics
+
+- **Code coverage**: Minimum 80% unit test coverage for {{tech_stack.language}} codebase
+- **Defect rate**: &lt; 5 critical bugs per release; &lt; 1% error rate in production
+- **Code review turnaround**: Reviews completed within 24 hours
+- **Security score**: Zero critical or high vulnerabilities at deployment
+
+### Operational Metrics
+
+- **Uptime**: 99.9% availability target for production systems
+- **Mean Time to Recovery (MTTR)**: &lt; 30 minutes for critical incidents
+- **Deployment success rate**: &gt; 95% of deployments without rollback
+- **Monitoring coverage**: 100% of critical paths instrumented with alerts
+
+### Team Health Metrics
+
+- **Sprint satisfaction**: Team retrospective scores trending positive
+- **Knowledge sharing**: All critical components documented and cross-trained
+- **Blocker resolution time**: Average &lt; 24 hours for identified blockers

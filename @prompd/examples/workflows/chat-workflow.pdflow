@@ -1,0 +1,426 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "id": "workflow-1768816059287",
+    "name": "Chat Workflow",
+    "description": ""
+  },
+  "parameters": [],
+  "nodes": [
+    {
+      "id": "agent-1768844466473",
+      "type": "agent",
+      "position": {
+        "x": 780,
+        "y": 195
+      },
+      "data": {
+        "label": "Anthropic AI Agent",
+        "systemPrompt": "You are a helpful AI assistant with access to tools. Use the available tools to complete the user's request.",
+        "userPrompt": "{{ previous_output }}",
+        "tools": [],
+        "maxIterations": 10,
+        "toolCallFormat": "auto",
+        "outputMode": "full-conversation",
+        "includeHistory": true,
+        "providerNodeId": "provider-1768844476975",
+        "debugConfig": {
+          "debugMode": true,
+          "onIterationStart": {
+            "enabled": true,
+            "pause": true,
+            "includeFullContext": true
+          },
+          "onIterationEnd": {
+            "enabled": true,
+            "pause": true,
+            "includeFullContext": true
+          },
+          "onToolCall": {
+            "enabled": true,
+            "pause": true,
+            "includeFullContext": true
+          },
+          "onToolResult": {
+            "enabled": true,
+            "pause": true,
+            "includeFullContext": true
+          },
+          "onAgentComplete": {
+            "enabled": true,
+            "pause": true,
+            "includeFullContext": true
+          }
+        },
+        "errorHandlerNodeId": "error-handler-1768865699231"
+      },
+      "parentId": "loop-1768939055170",
+      "extent": "parent"
+    },
+    {
+      "id": "provider-1768844476975",
+      "type": "provider",
+      "position": {
+        "x": -12210,
+        "y": -10545
+      },
+      "data": {
+        "label": "Anthropic",
+        "providerId": "anthropic",
+        "model": "claude-3-haiku-20240307",
+        "locked": true
+      }
+    },
+    {
+      "id": "provider-1768850904161",
+      "type": "provider",
+      "position": {
+        "x": -11880,
+        "y": -10545
+      },
+      "data": {
+        "label": "OpenAi",
+        "providerId": "openai",
+        "model": "gpt-4o-mini",
+        "locked": true
+      }
+    },
+    {
+      "id": "callback-1768861413392",
+      "type": "callback",
+      "position": {
+        "x": 270,
+        "y": 780
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "pause",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "errorHandlerNodeId": "error-handler-1768865699231",
+        "listenTo": [
+          "error",
+          "complete"
+        ],
+        "logToConsole": true,
+        "logToHistory": true,
+        "pauseInDebug": true,
+        "captureFullContext": true,
+        "agentCaptureIterations": true,
+        "agentCaptureConversation": true,
+        "agentCaptureToolCalls": true,
+        "agentCaptureThinking": true,
+        "_preDockPosition": {
+          "x": 270,
+          "y": 780
+        },
+        "dockedTo": {
+          "nodeId": "agent-1768844466473",
+          "handleId": "onCheckpoint"
+        }
+      }
+    },
+    {
+      "id": "tool-call-router-1768861521108",
+      "type": "tool-call-router",
+      "position": {
+        "x": 390,
+        "y": 660
+      },
+      "width": 520,
+      "height": 240,
+      "data": {
+        "label": "Tool Router",
+        "routingMode": "name-match",
+        "onNoMatch": "error",
+        "collapsed": true,
+        "_savedWidth": 475,
+        "_savedHeight": 300,
+        "errorHandlerNodeId": "error-handler-1768865699231",
+        "_preDockWidth": 520,
+        "_preDockHeight": 240,
+        "_preDockPosition": {
+          "x": 390,
+          "y": 660
+        },
+        "dockedTo": {
+          "nodeId": "agent-1768844466473",
+          "handleId": "ai-output"
+        }
+      }
+    },
+    {
+      "id": "tool-1768861543376",
+      "type": "tool",
+      "position": {
+        "x": 60,
+        "y": 75
+      },
+      "data": {
+        "label": "Tool",
+        "toolType": "command",
+        "toolName": "searchDatabase",
+        "parameters": {},
+        "errorHandlerNodeId": "error-handler-1768865699231",
+        "commandExecutable": "echo",
+        "commandRequiresApproval": true,
+        "commandArgs": "{{ input }}"
+      },
+      "parentId": "tool-call-router-1768861521108",
+      "extent": "parent"
+    },
+    {
+      "id": "output-1768865564681",
+      "type": "output",
+      "position": {
+        "x": -11175,
+        "y": -10080
+      },
+      "data": {
+        "label": "Output",
+        "errorHandlerNodeId": "error-handler-1768865699231"
+      }
+    },
+    {
+      "id": "error-handler-1768865699231",
+      "type": "error-handler",
+      "position": {
+        "x": -12465,
+        "y": -10560
+      },
+      "data": {
+        "label": "Global Error",
+        "strategy": "fallback",
+        "retry": {
+          "maxAttempts": 3,
+          "backoffMs": 1000,
+          "backoffMultiplier": 2
+        },
+        "fallback": {
+          "type": "node"
+        },
+        "locked": true
+      }
+    },
+    {
+      "id": "callback-1768883058852",
+      "type": "callback",
+      "position": {
+        "x": -12135,
+        "y": -10275
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "pause",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": true,
+        "logToHistory": true,
+        "pauseInDebug": true,
+        "sendWebhook": false,
+        "captureFullContext": true,
+        "logToConsole": true,
+        "requireApproval": false,
+        "locked": true
+      }
+    },
+    {
+      "id": "user-input-1768883916052",
+      "type": "user-input",
+      "position": {
+        "x": 165,
+        "y": 240
+      },
+      "data": {
+        "label": "Prompt user for work",
+        "prompt": "",
+        "inputType": "textarea",
+        "required": true,
+        "showContext": true,
+        "errorHandlerNodeId": "error-handler-1768865699231",
+        "contextTemplate": "{{ input }}",
+        "placeholder": "Enter your input:"
+      },
+      "parentId": "loop-1768939055170",
+      "extent": "parent"
+    },
+    {
+      "id": "trigger-1768932292850",
+      "type": "trigger",
+      "position": {
+        "x": -13125,
+        "y": -10080
+      },
+      "data": {
+        "label": "Start",
+        "triggerType": "schedule",
+        "scheduleCron": "30 02 1/1 * *",
+        "scheduleType": "cron",
+        "errorHandlerNodeId": "error-handler-1768865699231"
+      }
+    },
+    {
+      "id": "loop-1768939055170",
+      "type": "loop",
+      "position": {
+        "x": -12615,
+        "y": -10095
+      },
+      "width": 1170,
+      "height": 500,
+      "data": {
+        "label": "Loop",
+        "loopType": "count",
+        "condition": "",
+        "maxIterations": 10,
+        "body": [],
+        "_savedWidth": 1170,
+        "_savedHeight": 500,
+        "collapsed": false,
+        "errorHandlerNodeId": "error-handler-1768865699231",
+        "count": 2
+      }
+    },
+    {
+      "id": "callback-1768953563755",
+      "type": "callback",
+      "position": {
+        "x": -750,
+        "y": 720
+      },
+      "data": {
+        "label": "Guardrail Checkpoint",
+        "mode": "report",
+        "checkpointName": "guardrail-cp",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "logToConsole": true,
+        "pauseInDebug": true,
+        "promptCaptureCompiled": true,
+        "promptCaptureTokens": true,
+        "captureFullContext": true,
+        "errorHandlerNodeId": "error-handler-1768865699231",
+        "logToHistory": true,
+        "_preDockPosition": {
+          "x": -750,
+          "y": 720
+        },
+        "dockedTo": {
+          "nodeId": "guardrail-1769757242663",
+          "handleId": "onCheckpoint"
+        }
+      }
+    },
+    {
+      "id": "guardrail-1769757242663",
+      "type": "guardrail",
+      "position": {
+        "x": 465,
+        "y": 105
+      },
+      "data": {
+        "label": "Guardrail",
+        "systemPrompt": "Validate the input. Respond with \"PASS\" if the input is appropriate and safe, or \"REJECT\" with a reason if it violates guidelines.",
+        "scoreThreshold": 0.5,
+        "provider": "openai",
+        "model": "gpt-4o-mini"
+      },
+      "parentId": "loop-1768939055170",
+      "extent": "parent"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-error-handler-1768865699231-callback-1768883058852-1768883061807",
+      "source": "error-handler-1768865699231",
+      "target": "callback-1768883058852",
+      "sourceHandle": "onError",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-agent-1768844466473-loop-1768939055170-1768939202401",
+      "source": "agent-1768844466473",
+      "target": "loop-1768939055170",
+      "sourceHandle": "output",
+      "targetHandle": "loop-end",
+      "animated": true
+    },
+    {
+      "id": "e-loop-1768939055170-user-input-1768883916052-1768939206773",
+      "source": "loop-1768939055170",
+      "target": "user-input-1768883916052",
+      "sourceHandle": "loop-start",
+      "targetHandle": "input",
+      "animated": true
+    },
+    {
+      "id": "e-agent-1768844466473-tool-call-router-1768861521108-1768940412964",
+      "source": "agent-1768844466473",
+      "target": "tool-call-router-1768861521108",
+      "sourceHandle": "tools",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-trigger-1768932292850-loop-1768939055170-1768972384733",
+      "source": "trigger-1768932292850",
+      "target": "loop-1768939055170",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-loop-1768939055170-output-1768865564681-1768972390072",
+      "source": "loop-1768939055170",
+      "target": "output-1768865564681",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "docked-tool-call-router-1768861521108-agent-1768844466473-input",
+      "source": "agent-1768844466473",
+      "target": "tool-call-router-1768861521108",
+      "sourceHandle": "ai-output",
+      "targetHandle": "ai-input",
+      "animated": false
+    },
+    {
+      "id": "docked-tool-call-router-1768861521108-agent-1768844466473-output",
+      "source": "tool-call-router-1768861521108",
+      "target": "agent-1768844466473",
+      "sourceHandle": "toolResult",
+      "targetHandle": "toolResult",
+      "animated": false
+    },
+    {
+      "id": "docked-callback-1768953563755-guardrail-1769757242663-onCheckpoint",
+      "source": "guardrail-1769757242663",
+      "target": "callback-1768953563755",
+      "sourceHandle": "onCheckpoint",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-user-input-1768883916052-guardrail-1769757242663-1770449557681",
+      "source": "user-input-1768883916052",
+      "target": "guardrail-1769757242663",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-guardrail-1769757242663-agent-1768844466473-1770449565372",
+      "source": "guardrail-1769757242663",
+      "target": "agent-1768844466473",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    }
+  ]
+}

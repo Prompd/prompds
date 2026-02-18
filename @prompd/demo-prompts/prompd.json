@@ -1,0 +1,22 @@
+{
+  "name": "@prompd/demo-prompts",
+  "version": "0.0.2",
+  "description": "Demo prompts for Prompd video recordings and tutorials",
+  "author": "prompd",
+  "license": "MIT",
+  "keywords": [],
+  "repository": "",
+  "main": "greeting.prmd",
+  "files": [
+    "customer-support-sentiment-analyzer.prmd",
+    "greeting.prmd",
+    "summarize.prmd",
+    "translate.prmd",
+    "xml-test-prompt.prmd",
+    "example-workflow.pdflow"
+  ],
+  "ignore": [
+    "*.log",
+    ".DS_Store"
+  ]
+}

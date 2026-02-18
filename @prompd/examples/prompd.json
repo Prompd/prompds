@@ -1,0 +1,53 @@
+{
+  "name": "@prompd-internal/examples",
+  "version": "0.0.1",
+  "description": "Public example prompts demonstrating inheritance, overriding features, and general usage patterns. Includes practical examples showing how to extend templates, customize prompts, and implement common AI workflow patterns.",
+  "author": "Prompd",
+  "license": "MIT",
+  "keywords": [
+    "examples",
+    "prompd examples",
+    "workflows",
+    "prompts",
+    "prompds",
+    "prompt engineering"
+  ],
+  "readme": "README.md",
+  "repository": "",
+  "main": "prompts/topic-researcher.prmd",
+  "files": [
+    "assistants/code-assistant.prmd",
+    "assistants/unit-test-generator.prmd",
+    "contexts/architecture-patterns.json",
+    "contexts/code-review-checklist.md",
+    "contexts/deployment-config.yaml",
+    "contexts/sample-data-with-duplicates.csv",
+    "contexts/sample-data.csv",
+    "contexts/typescript-examples.ts",
+    "prompts/api-development.prmd",
+    "prompts/base-prompt.prmd",
+    "prompts/package-inheritance.prmd",
+    "prompts/team-project-planner.prmd",
+    "prompts/topic-researcher.prmd",
+    "README.md",
+    "systems/system-admin.md",
+    "users/lead-engineer.md",
+    "users/lead-researcher.md",
+    "workflows/chat-agent.pdflow",
+    "workflows/chat-workflow.pdflow",
+    "workflows/example-workflow.pdflow",
+    "workflows/prompts/step1.prmd",
+    "workflows/prompts/step2.prmd",
+    "workflows/test.pdflow",
+    "workflows/topic-researcher.pdflow",
+    "workflows/search-topic.pdflow",
+    "prompts/image-generation-test.prmd"
+  ],
+  "ignore": [
+    "dist/",
+    ".prompd/"
+  ],
+  "dependencies": {
+    "@prompd-internal/examples": "0.0.1"
+  }
+}

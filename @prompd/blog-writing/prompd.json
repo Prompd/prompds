@@ -1,0 +1,22 @@
+{
+  "name": "@prompd/blog-writer",
+  "version": "0.1.7",
+  "description": "This package offers a collection of three thoughtfully crafted prompts designed to assist users in generating engaging and creative blog posts across various topics and styles.",
+  "author": "prompd",
+  "license": "MIT",
+  "keywords": [],
+  "readme": "README.md",
+  "repository": "",
+  "main": "prompts/blog-writer.prmd",
+  "files": [
+    "contexts/ai-enthusiast-role.md",
+    "contexts/tech-enthusiast-role.md",
+    "prompts/ai-blog-writer.prmd",
+    "prompts/blog-writer.prmd",
+    "prompts/tech-blog-writer.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**"
+  ]
+}

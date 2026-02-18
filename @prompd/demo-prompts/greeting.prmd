@@ -1,0 +1,35 @@
+---
+id: greeting
+name: greeting
+description: "Generate a personalized greeting message"
+version: 1.0.0
+parameters:
+  - name: name
+    type: string
+    required: true
+    description: "The name of the person to greet"
+  - name: tone
+    type: string
+    required: false
+    default: friendly
+    enum: [friendly, professional, casual, enthusiastic]
+    description: "The tone of the greeting"
+  - name: include_emoji
+    type: boolean
+    required: false
+    default: true
+    description: "Whether to include emojis in the greeting"
+---
+
+# Task
+
+Generate a {{ tone }} greeting for {{ name }}.
+
+Requirements:
+- Keep it concise (1-2 sentences)
+- Use a {{ tone }} tone when creating the greeting
+- {% if include_emoji %}Include appropriate emojis{% else %}Do not include any emojis{% endif %}
+
+## Response
+
+Output only the greeting, nothing else.

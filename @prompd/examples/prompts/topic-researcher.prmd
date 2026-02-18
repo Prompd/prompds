@@ -1,0 +1,70 @@
+---
+id: topic-researcher
+name: "Topic Researcher"
+version: 1.0.3
+description: "Advanced topic research and analysis with comprehensive insights"
+parameters:
+  - name: topic
+    type: string
+    description: "Topic to analyze"
+    default: "artificial intelligence"
+  - name: output_format
+    type: string
+    description: "The output format for the analysis results"
+    enum: ["json","xml","markdown"]
+    default: "json"
+  - name: analysis_depth
+    type: string
+    description: "Level of analysis depth"
+    enum: ["basic","detailed","comprehensive"]
+    default: "detailed"
+inherits: ./base-prompt.prmd
+system: "../systems/system-admin.md"
+---
+## Extended Analysis for {{ topic }}
+
+This prompt extends the base analysis with additional insights and structured research methodology.
+
+## Task Execution Guidelines
+
+Follow these guidelines to ensure clarity and precision:
+
+1. **Use Direct Language**: Start commands with action verbs (e.g., "List", "Analyze", "Summarize")
+2. **Provide Context**: Include relevant background information that informs the task
+3. **Specify Formats**: Clearly define the desired output format
+4. **Minimize Ambiguity**: Use specific terms instead of vague language
+5. **Structured Requests**: Use bullet points or numbered lists for multi-part tasks
+
+## Research Areas and Focus
+
+Conduct {{ analysis_depth }} analysis using a structured research approach:
+
+1. **Data Collection**: Gather information from credible sources including academic papers, industry reports, and expert opinions
+2. **Analysis Framework**: Apply systematic analysis based on the specified depth level
+3. **Validation**: Cross-reference findings with multiple sources to ensure accuracy
+4. **Synthesis**: Integrate findings into coherent insights and recommendations
+
+## Research Methodology
+
+Conduct {{ analysis_depth }} analysis using a structured research approach:
+
+1. **Data Collection**: Gather information from credible sources including academic papers, industry reports, and expert opinions
+2. **Analysis Framework**: Apply systematic analysis based on the specified depth level
+3. **Validation**: Cross-reference findings with multiple sources to ensure accuracy
+4. **Synthesis**: Integrate findings into coherent insights and recommendations
+
+## Recommendations and Insights
+
+{% if output_format == null or output_format == "" %} **Note**: No specific output format was specified. Please structure the response clearly with appropriate headings and formatting. {% else %} **Output Format**: Please structure all results in {{ output_format }} format, ensuring:
+
+- Clear organization and logical flow
+- Proper formatting according to {{ output_format }} standards
+- Complete coverage of all requested research areas
+- Actionable insights and recommendations {% endif %}
+
+---
+
+*Analysis Level: {{ analysis_depth }} | Topic: {{ topic }} | Format: {{ output_format }}*
+
+## Output Requirements
+**Can you output the result in \`{{output_format}}\`?**

@@ -1,0 +1,27 @@
+---
+id: customer-support-sentiment-analyzer
+name: "Customer Support Sentiment Analyzer"
+description: "Analyzes customer support interactions to determine sentiment (positive, negative, neutral)"
+version: 1.0.0
+parameters:
+  - name: customer_feedback
+    type: string
+    required: true
+    description: "The feedback from the customer."
+using:
+  - name: "@prompd/core@0.0.1"
+    prefix: "@p"
+inherits: "@p/prompts/base.prmd"
+---
+
+# Customer Support Sentiment Analyzer
+
+This analyzer uses customer feedback to identify sentiment. It provides a sentiment score and classification.
+
+# Task
+
+Analyze the following customer support it's sentiment (positive, negative, neutral).
+
+```text
+{{ customer_feedback }}
+```

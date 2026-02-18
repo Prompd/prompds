@@ -1,0 +1,59 @@
+---
+id: template-inheritance-example
+name: "Template Inheritance and Extension"
+description: "Demonstrates prompd-based inheritance"
+version: 1.0.3
+inherits: "@prompd/core@0.0.1/prompts/base.prmd"
+parameters:
+  - name: domain
+    type: string
+    default: "technology"
+    description: "Domain to focus analysis on"
+  - name: stakeholders
+    type: array
+    enum: [developers, users, executives, regulators]
+    default: ["developers", "users"]
+    description: "Key stakeholder groups"
+context:
+  - "../contexts/typescript-examples.ts"
+---
+## Specialized Analysis for {{ domain }}
+
+### Stakeholder Perspectives
+
+{%- for stakeholder in [stakeholders] %}
+
+### {{stakeholder}} Viewpoint:
+
+- Key concerns and priorities
+- `Success` criteria and metrics
+- Risk factors and mitigation strategies
+
+{%- endfor %}
+
+```typescript
+class User {
+  id: string;
+  username: string;
+  email: string;
+  createdAt: Date;
+  updatedAt: Date;
+
+  constructor(id: string, username: string, email: string, createdAt: Date, updatedAt: Date) {
+    this.id = id;
+    this.username = username;
+    this.email = email;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
+}
+```
+
+### Domain-Specific Considerations
+
+For {{domain}} analysis, evaluate:
+
+- Industry standards and best practices
+- Regulatory compliance requirements
+- Market dynamics and competitive landscape
+- Technical feasibility and constraints

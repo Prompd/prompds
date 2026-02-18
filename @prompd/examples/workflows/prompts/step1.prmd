@@ -1,0 +1,26 @@
+---
+id: step1
+name: "Step 1"
+version: 1.0.0
+description: "A simple example prompt"
+parameters:
+  - name: topic
+    type: string
+    required: true
+  - name: temp
+    type: number
+---
+
+# User
+
+# # Response
+I need you to return your thoughts on: {{ workflow.topic }}; with temp: {{ temp }}
+
+# Output
+
+```json
+{
+  "analysis": "[your analysis of {{ workflow.topic }}]", 
+  "confidence": "0..1"
+}
+```

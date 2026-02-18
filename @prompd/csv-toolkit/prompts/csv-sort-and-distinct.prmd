@@ -1,0 +1,39 @@
+---
+id: csv-sort-and-distinct
+name: "CSV Sort and Distinct"
+version: 1.0.0
+description: "Analyzes CSV data by sorting rows on a specified column, optionally removing duplicates, and handling header rows."
+parameters:
+  - name: csv_data
+    type: string
+    required: true
+    description: "Array of CSV rows as strings, including header row if header_included is true"
+  - name: sort_column
+    type: string
+    required: true
+    description: "Column name to sort by (if header_included is true) or zero-based column index as string (if no header)"
+  - name: distinct
+    type: boolean
+    required: true
+    description: "If true, remove duplicate rows after sorting (excluding header row if present)"
+    default: false
+  - name: sort_direction
+    type: string
+    required: true
+    description: "Sort direction: ascending ('asc') or descending ('desc')"
+    enum: ["asc","desc"]
+    default: "asc"
+  - name: header_included
+    type: boolean
+    required: true
+    description: "Whether the first row in csv_data is a header row"
+    default: true
+inherits: "./csv-sorter.prmd"
+---
+# Distinct Configuration
+
+{% if distinct %}
+
+- Remove duplicates: {{distinct}}} 
+
+{% endif %}

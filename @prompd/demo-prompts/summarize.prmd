@@ -1,0 +1,41 @@
+---
+id: summarize
+name: summarize
+description: "Summarize text to a specified length"
+version: 1.0.0
+parameters:
+  - name: text
+    type: string
+    required: true
+    description: "The text to summarize"
+  - name: length
+    type: string
+    required: false
+    default: medium
+    enum: [brief, medium, detailed]
+    description: "How long the summary should be"
+  - name: style
+    type: string
+    required: false
+    default: paragraph
+    enum: [paragraph, bullets, one-liner]
+    description: "The format of the summary"
+---
+ 
+# Task
+
+**Summarize the following text:**
+
+```txt
+{{ text | trim }}
+```
+
+## Summary requirements 
+
+- Length: {% if length == "brief" %}1-2 sentences{% elif length == "detailed" %}1-2 paragraphs{% else %}3-5 sentences{% endif %}
+
+- Format: {{ style }}
+- Preserve the key points and main ideas
+- Use clear, concise language
+
+Provide only the summary, no additional commentary.

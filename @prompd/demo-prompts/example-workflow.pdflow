@@ -1,0 +1,112 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "id": "workflow-1769159348552",
+    "name": "New Workflow",
+    "description": ""
+  },
+  "parameters": [
+    {
+      "name": "topic",
+      "type": "string",
+      "required": true,
+      "description": ""
+    }
+  ],
+  "nodes": [
+    {
+      "id": "provider-1769220123049",
+      "type": "provider",
+      "position": {
+        "x": 30,
+        "y": 30
+      },
+      "data": {
+        "label": "Provider",
+        "providerId": "openai",
+        "model": "gpt-4o-mini",
+        "locked": true
+      }
+    },
+    {
+      "id": "provider-1769220136761",
+      "type": "provider",
+      "position": {
+        "x": 270,
+        "y": 30
+      },
+      "data": {
+        "label": "Provider",
+        "providerId": "anthropic",
+        "model": "claude-3-haiku-20240307",
+        "locked": true
+      }
+    },
+    {
+      "id": "prompt-1771354931729",
+      "type": "prompt",
+      "position": {
+        "x": 165,
+        "y": 285
+      },
+      "data": {
+        "label": "Prompt",
+        "source": "./prompts/topic-researcher.prmd",
+        "parameters": {},
+        "sourceType": "file",
+        "rawPrompt": "",
+        "context": {
+          "previous_output": "auto"
+        },
+        "guardrail": {
+          "expectedFormat": "json",
+          "passWhen": "false",
+          "rejectionExpression": "",
+          "outputMode": "original"
+        },
+        "providerNodeId": "provider-1769220123049"
+      }
+    },
+    {
+      "id": "trigger-1771355042261",
+      "type": "trigger",
+      "position": {
+        "x": -195,
+        "y": 285
+      },
+      "data": {
+        "label": "Start",
+        "triggerType": "manual"
+      }
+    },
+    {
+      "id": "output-1771355047299",
+      "type": "output",
+      "position": {
+        "x": 630,
+        "y": 330
+      },
+      "data": {
+        "label": "Output"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-prompt-1771354931729-output-1771355047299-1771355050246",
+      "source": "prompt-1771354931729",
+      "target": "output-1771355047299",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-trigger-1771355042261-prompt-1771354931729-1771355054296",
+      "source": "trigger-1771355042261",
+      "target": "prompt-1771354931729",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    }
+  ]
+}

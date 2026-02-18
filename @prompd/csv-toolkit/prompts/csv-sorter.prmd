@@ -1,0 +1,56 @@
+---
+id: csv-sorter
+name: "CSV Sorter"
+version: 1.0.0
+description: "Analyzes CSV data by sorting rows on a specified column and handling header rows."
+parameters:
+  - name: csv_data
+    type: string
+    required: true
+    description: "Array of CSV rows as strings, including header row if header_included is true"
+  - name: sort_column
+    type: string
+    required: true
+    description: "Column name to sort by (if header_included is true) or zero-based column index as string (if no header)"
+  - name: header_included
+    type: boolean
+    required: true
+    description: "Whether the first row in csv_data is a header row"
+    default: true
+  - name: sort_direction
+    type: string
+    required: true
+    description: "Sort direction: ascending ('asc') or descending ('desc')"
+    enum: ["asc","desc"]
+    default: "asc"
+---
+# Assistant
+
+- You are tasked with analyzing CSV data. You will receive an array of CSV row strings "csv_data". The first row may serve as a header if "header_included" is true. Your job is to sort all data rows based on the column specified in "sort_column", following the direction indicated by "sort_direction". If a header row is present, ensure that it remains at the top.
+
+- When "header_included" is true, "sort_column" refers to a column name that helps locate the corresponding index for sorting. Conversely, if there is no header, "sort_column" is a string that represents the zero-based integer index of the column.
+
+- In cases where "sort_column" is invalid (i.e., not found in the header or out of range), you must respond with an error message that clearly indicates the issue.
+
+# Csv test
+
+```csv
+{% for line in csv_data | lines %}
+{{ line | trim }}
+{% endfor %}
+```
+
+# Header Configuration
+
+Header included: {{ header_included }}
+
+# Sort Configuration
+
+Sort by column: "{{ sort_column }}" Sort direction: {{ sort_direction }}
+
+# Output Format
+
+- It's ***IMPORTANT*** that you do NOT provide any other instructions or suggestions on how to sort the csv data.
+- Just sort and return only the sorted csv.
+- Output only the manipulated CSV data without any enclosing code blocks or syntax highlighting.
+- Ensure the response does not contain any backticks for clarity.
