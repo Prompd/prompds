@@ -32,11 +32,11 @@ context:
   - "../contexts/architecture-patterns.json"
   - "../contexts/code-review-checklist.md"
 ---
-# API Endpoint
+## API Endpoint
 
 ## Endpoint Specification
 
-- **Name**: {{ endpoint_name  }}
+- **Name**: {{ endpoint_name }}
 - **Method**: {{ http_method }}
 - **Framework**: {{ framework }}
 - **Authentication**:{{ auth_required }}
