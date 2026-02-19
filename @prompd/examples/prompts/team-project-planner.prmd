@@ -282,7 +282,7 @@ For **{{ tech_stack.architecture }}** architecture: {%- if tech_stack.architectu
 | Risk | Impact | Likelihood | Mitigation |
 | --- | --- | --- | --- |
 | Scope creep | High | Medium | Strict change request process; product manager approval required |
-| Key person dependency | High | Medium | Cross-training across {{team_roles | join(', ')}} |
+| Key person dependency | High | Medium | Cross-training across {{team_roles}} |
 | Technical debt accumulation | Medium | High | Dedicate 20% of each sprint to refactoring and debt reduction |
 | Integration failures | High | Medium | Continuous integration with automated tests; staging environment validation |
 | Security vulnerabilities | Critical | Medium | Regular dependency audits, security scans, and penetration testing |

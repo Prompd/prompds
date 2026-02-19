@@ -15,21 +15,6 @@
   ],
   "nodes": [
     {
-      "id": "provider-1768977563748",
-      "type": "provider",
-      "position": {
-        "x": 120,
-        "y": 240
-      },
-      "data": {
-        "label": "OpenAI",
-        "providerId": "openai",
-        "model": "gpt-4o-mini",
-        "locked": true,
-        "disabled": false
-      }
-    },
-    {
       "id": "provider-1768977586860",
       "type": "provider",
       "position": {
@@ -39,7 +24,7 @@
       "data": {
         "label": "Anthropic",
         "providerId": "anthropic",
-        "model": "claude-3-5-haiku-20241022",
+        "model": "claude-3-haiku-20240307",
         "locked": true
       }
     },
@@ -47,8 +32,8 @@
       "id": "trigger-1768980494974",
       "type": "trigger",
       "position": {
-        "x": 210,
-        "y": 570
+        "x": 90,
+        "y": 510
       },
       "data": {
         "label": "Start",
@@ -62,8 +47,8 @@
       "id": "output-1768980497201",
       "type": "output",
       "position": {
-        "x": 1395,
-        "y": 585
+        "x": 1095,
+        "y": 600
       },
       "data": {
         "label": "Output",
@@ -96,60 +81,6 @@
           "handleId": "rejected"
         },
         "requireApproval": true
-      }
-    },
-    {
-      "id": "chat-agent-1768982056713",
-      "type": "chat-agent",
-      "position": {
-        "x": 630,
-        "y": 570
-      },
-      "width": 565,
-      "height": 365,
-      "data": {
-        "label": "Chat Agent",
-        "agentSystemPrompt": "",
-        "agentUserPrompt": "",
-        "maxIterations": 4,
-        "toolCallFormat": "auto",
-        "outputMode": "full-conversation",
-        "guardrailEnabled": true,
-        "userInputEnabled": false,
-        "userInputPrompt": "Enter your message:",
-        "userInputType": "textarea",
-        "collapsed": false,
-        "_savedWidth": 565,
-        "_savedHeight": 365,
-        "tools": [],
-        "providerNodeId": "provider-1768977586860",
-        "loopMode": "until-complete",
-        "guardrailSystemPrompt": "you are an expert speed reader and word finding expert. Analyze this input for any common swear words and block the propagation of this outside input.",
-        "guardrailProviderNodeId": "provider-1768977563748",
-        "guardrailPassExpression": "{{ input.rejected == false }}",
-        "guardrailScoreThreshold": 0.1,
-        "disabled": false,
-        "guardrailTemperature": 0.3,
-        "agentPromptSourceType": "file",
-        "agentPromptSource": "./prompts/topic-researcher.prmd",
-        "stopPhrases": [
-          "task completed"
-        ],
-        "userInputShowContext": true,
-        "checkpoints": {
-          "onUserInput": {
-            "enabled": false
-          },
-          "beforeGuardrail": {
-            "enabled": true
-          },
-          "afterGuardrail": {
-            "enabled": true
-          },
-          "onToolCall": {
-            "enabled": true
-          }
-        }
       }
     },
     {
@@ -647,24 +578,6 @@
       }
     },
     {
-      "id": "tool-1769155741958",
-      "type": "tool",
-      "position": {
-        "x": 300,
-        "y": 165
-      },
-      "data": {
-        "label": "Web Search",
-        "toolType": "http",
-        "toolName": "web_search",
-        "parameters": {},
-        "httpUrl": "https://api.duckduckgo.com/?q={{ input }}&format=json&no_html=1&no_redirects=1&pretty=1",
-        "errorHandlerNodeId": "error-handler-1769156347862"
-      },
-      "parentId": "chat-agent-1768982056713",
-      "extent": "parent"
-    },
-    {
       "id": "error-handler-1769156347862",
       "type": "error-handler",
       "position": {
@@ -688,30 +601,65 @@
         },
         "locked": true
       }
+    },
+    {
+      "id": "prompt-1771444743654",
+      "type": "prompt",
+      "position": {
+        "x": 825,
+        "y": 615
+      },
+      "data": {
+        "label": "Prompt",
+        "source": "",
+        "parameters": {},
+        "errorHandlerNodeId": "error-handler-1769156347862",
+        "providerNodeId": "provider-1768977586860",
+        "context": {
+          "previous_output": "auto"
+        },
+        "sourceType": "raw",
+        "rawPrompt": "```json\r\n{{ previous_output | tojson }}\r\n```\r\n\r\nanalyze the above search results and pick the one you think I'd like to read the best and do research on the topic\r\nwhen done, return you research as markdown."
+      }
+    },
+    {
+      "id": "web-search-1771444881094",
+      "type": "web-search",
+      "position": {
+        "x": 390,
+        "y": 570
+      },
+      "data": {
+        "label": "Web Search",
+        "query": "{{ workflow.topic }}",
+        "resultCount": 5,
+        "provider": "langsearch",
+        "errorHandlerNodeId": "error-handler-1769156347862"
+      }
     }
   ],
   "edges": [
     {
-      "id": "e-trigger-1768980494974-chat-agent-1768982056713-1768986297245",
-      "source": "trigger-1768980494974",
-      "target": "chat-agent-1768982056713",
-      "sourceHandle": "output",
-      "targetHandle": "input",
-      "animated": false
-    },
-    {
-      "id": "e-chat-agent-1768982056713-output-1768980497201-1768986302224",
-      "source": "chat-agent-1768982056713",
+      "id": "e-prompt-1771444743654-output-1768980497201-1771444812095",
+      "source": "prompt-1771444743654",
       "target": "output-1768980497201",
       "sourceHandle": "output",
       "targetHandle": "input",
       "animated": false
     },
     {
-      "id": "docked-callback-1769112639847-chat-agent-1768982056713-onCheckpoint",
-      "source": "chat-agent-1768982056713",
-      "target": "callback-1769112639847",
-      "sourceHandle": "onCheckpoint",
+      "id": "e-trigger-1768980494974-web-search-1771444881094-1771444888413",
+      "source": "trigger-1768980494974",
+      "target": "web-search-1771444881094",
+      "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-web-search-1771444881094-prompt-1771444743654-1771444891425",
+      "source": "web-search-1771444881094",
+      "target": "prompt-1771444743654",
+      "sourceHandle": "output",
       "targetHandle": "input",
       "animated": false
     }

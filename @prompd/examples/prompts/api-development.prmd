@@ -32,11 +32,11 @@ context:
   - "../contexts/architecture-patterns.json"
   - "../contexts/code-review-checklist.md"
 ---
-
-#  API Endpoint
+# API Endpoint
 
 ## Endpoint Specification
-- **Name**: {{ endpoint_name }}
+
+- **Name**: {{ endpoint_name  }}
 - **Method**: {{ http_method }}
 - **Framework**: {{ framework }}
 - **Authentication**:{{ auth_required }}
@@ -47,31 +47,28 @@ context:
 ### 2. Input Validation
 
 {% if validation_level == "enterprise" %}
+
 - Schema validation with detailed error messages
 - Rate limiting and request throttling
 - Input sanitization and XSS protection
 - SQL injection prevention
-- CORS configuration
-{% elif validation_level == "strict" %}
+- CORS configuration {% elif validation_level == "strict" %}
 - Schema validation with error messages
 - Input sanitization
-- Basic rate limiting
-{% elif validation_level == "basic" %}
+- Basic rate limiting {% elif validation_level == "basic" %}
 - Required field validation
-- Type checking
-{% endif %}
+- Type checking {% endif %}
 
 ### 3. Authentication & Authorization
 
 {% if auth_required %}
+
 - JWT token validation
 - Role-based access control
 - Session management
-- Secure headers
-{% else %}
+- Secure headers {% else %}
 - Public endpoint (no auth required)
-- Optional user context
-{% endif %}
+- Optional user context {% endif %}
 
 ### 4. Error Handling
 
@@ -86,7 +83,7 @@ context:
 - Request/response examples
 - Error code documentation
 - Usage guidelines
- 
+
 ## Testing Strategy
 
 - Unit tests for business logic

@@ -57,7 +57,7 @@
       "id": "output-1768980497201",
       "type": "output",
       "position": {
-        "x": 1395,
+        "x": 1290,
         "y": 570
       },
       "data": {
@@ -97,8 +97,8 @@
       "id": "chat-agent-1768982056713",
       "type": "chat-agent",
       "position": {
-        "x": 585,
-        "y": 585
+        "x": 555,
+        "y": 555
       },
       "width": 565,
       "height": 365,
@@ -106,7 +106,7 @@
         "label": "Chat Agent",
         "agentSystemPrompt": "Using the input below, analyze the intent of the user and use the tools provided at your disposal to accomplish the users request.",
         "agentUserPrompt": "Analyze the users intent: {{ input }}",
-        "maxIterations": 4,
+        "maxIterations": 20,
         "toolCallFormat": "auto",
         "outputMode": "final-response",
         "guardrailEnabled": true,
@@ -317,8 +317,8 @@
       "id": "memory-1769112652272",
       "type": "memory",
       "position": {
-        "x": 1125,
-        "y": 1050
+        "x": 1110,
+        "y": 825
       },
       "data": {
         "label": "Memory",
@@ -328,15 +328,19 @@
           "append",
           "clear"
         ],
-        "scope": "execution",
+        "scope": "global",
+        "outputMode": "passthrough",
+        "namespace": "namespace",
+        "includeSystemInWindow": true,
         "_preDockPosition": {
-          "x": 1125,
-          "y": 1050
+          "x": 1110,
+          "y": 825
         },
         "dockedTo": {
           "nodeId": "chat-agent-1768982056713",
           "handleId": "memory"
-        }
+        },
+        "messageRole": "assistant"
       }
     },
     {

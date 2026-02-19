@@ -1,0 +1,29 @@
+---
+id: asset-extraction-example
+name: asset-extraction Example
+version: 1.0.0
+description: Example prompt for asset-extraction
+parameters:
+  - name: name
+    type: string
+    required: true
+    description: Name to greet
+context:
+  - "contexts/assets.xlsx"
+  - "contexts/project-desc.docx"
+---
+# System
+
+You are a helpful assistant.
+
+# User
+
+Hello {{ name }}! Welcome to asset-extraction.
+
+This is an example .prmd file to get you started.
+
+## Usage
+
+```bash
+prompd run example.prmd --provider openai --model gpt-4o -p name="World"
+```

@@ -32,8 +32,8 @@
       "id": "web-search-1770610749352",
       "type": "web-search",
       "position": {
-        "x": 15,
-        "y": -90
+        "x": 75,
+        "y": -45
       },
       "data": {
         "label": "Web Search",

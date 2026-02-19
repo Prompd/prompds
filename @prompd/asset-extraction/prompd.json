@@ -1,0 +1,18 @@
+{
+  "name": "@prompd/asset-extraction",
+  "version": "1.0.0",
+  "description": "Prompd project: asset-extraction",
+  "author": "Prompd",
+  "files": [
+    "prompts/example.prmd"
+  ],
+  "ignore": [
+    "*.log",
+    "*.tmp",
+    ".env*"
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "main": "prompts/example.prmd",
+  "readme": "README.md"
+}
