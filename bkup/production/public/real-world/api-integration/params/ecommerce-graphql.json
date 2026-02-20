@@ -1,9 +1,0 @@
-{
-  "service_name": "E-commerce Product API",
-  "primary_entity": "Product",
-  "framework": "apollo-server",
-  "database": "mongodb",
-  "real_time_features": true,
-  "auth_strategy": "jwt",
-  "include_mutations": true
-}

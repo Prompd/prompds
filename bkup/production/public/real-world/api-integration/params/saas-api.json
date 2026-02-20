@@ -1,9 +1,0 @@
-{
-  "endpoint_name": "User Management API",
-  "resource_name": "user",
-  "framework": "express",
-  "database": "postgresql",
-  "auth_required": true,
-  "rate_limiting": true,
-  "crud_operations": ["create", "read", "update", "delete"]
-}

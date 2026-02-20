@@ -1,9 +1,0 @@
-{
-  "model_type": "dcf",
-  "company_stage": "startup",
-  "industry": "SaaS",
-  "time_horizon": "5-year",
-  "currency": "USD",
-  "includes_sensitivity_analysis": true,
-  "automation_level": "advanced"
-}

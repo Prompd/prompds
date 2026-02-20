@@ -1,9 +1,0 @@
-{
-  "problem_type": "classification",
-  "framework": "scikit-learn",
-  "data_source": "database",
-  "deployment_target": "batch",
-  "data_size": "medium",
-  "requires_interpretability": true,
-  "performance_metric": "F1"
-}
