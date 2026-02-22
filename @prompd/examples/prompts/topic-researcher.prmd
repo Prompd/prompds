@@ -19,7 +19,8 @@ parameters:
     enum: ["basic","detailed","comprehensive"]
     default: "detailed"
 inherits: ./base-prompt.prmd
-system: "../systems/system-admin.md"
+system:
+  - "../users/lead-researcher.md"
 ---
 ## Extended Analysis for {{ topic }}
 
@@ -67,4 +68,5 @@ Conduct {{ analysis_depth }} analysis using a structured research approach:
 *Analysis Level: {{ analysis_depth }} | Topic: {{ topic }} | Format: {{ output_format }}*
 
 ## Output Requirements
+
 **Can you output the result in \`{{output_format}}\`?**

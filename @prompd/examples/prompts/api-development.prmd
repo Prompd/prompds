@@ -39,12 +39,12 @@ context:
 - **Name**: {{ endpoint_name }}
 - **Method**: {{ http_method }}
 - **Framework**: {{ framework }}
-- **Authentication**:{{ auth_required }}
+- **Authentication**: {{ auth_required }}
 - **Validation**: {{ validation_level }}
 
 ## Implementation Requirements
 
-### 2. Input Validation
+### 1. Input Validation
 
 {% if validation_level == "enterprise" %}
 
@@ -52,32 +52,45 @@ context:
 - Rate limiting and request throttling
 - Input sanitization and XSS protection
 - SQL injection prevention
-- CORS configuration {% elif validation_level == "strict" %}
+- CORS configuration
+
+{% elif validation_level == "strict" %}
+
 - Schema validation with error messages
 - Input sanitization
-- Basic rate limiting {% elif validation_level == "basic" %}
-- Required field validation
-- Type checking {% endif %}
+- Basic rate limiting
 
-### 3. Authentication & Authorization
+{% elif validation_level == "basic" %}
+
+- Required field validation
+- Type checking
+
+{% endif %}
+
+### 2. Authentication & Authorization
 
 {% if auth_required %}
 
 - JWT token validation
 - Role-based access control
 - Session management
-- Secure headers {% else %}
-- Public endpoint (no auth required)
-- Optional user context {% endif %}
+- Secure headers
 
-### 4. Error Handling
+{% else %}
+
+- Public endpoint (no auth required)
+- Optional user context
+
+{% endif %}
+
+### 3. Error Handling
 
 - Structured error responses
 - Appropriate HTTP status codes
 - Request logging and monitoring
 - Graceful failure handling
 
-### 5. Documentation
+### 4. Documentation
 
 - OpenAPI/Swagger specification
 - Request/response examples
@@ -90,3 +103,8 @@ context:
 - Integration tests for API endpoints
 - Security testing for vulnerabilities
 - Load testing for performance
+
+# Output
+
+- Output only the code.
+- Add comments throughout the codebase to explain the functionality. 

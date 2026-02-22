@@ -97,8 +97,8 @@
       "id": "chat-agent-1768982056713",
       "type": "chat-agent",
       "position": {
-        "x": 555,
-        "y": 555
+        "x": 570,
+        "y": 570
       },
       "width": 565,
       "height": 365,
@@ -697,7 +697,15 @@
   ],
   "edges": [
     {
-      "id": "e-trigger-1768980494974-chat-agent-1768982056713-1768986297245",
+      "id": "docked-callback-1769112639847-chat-agent-1768982056713-onCheckpoint",
+      "source": "chat-agent-1768982056713",
+      "target": "callback-1769112639847",
+      "sourceHandle": "onCheckpoint",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "e-trigger-1768980494974-chat-agent-1768982056713-1771621560822",
       "source": "trigger-1768980494974",
       "target": "chat-agent-1768982056713",
       "sourceHandle": "output",
@@ -705,18 +713,10 @@
       "animated": false
     },
     {
-      "id": "e-chat-agent-1768982056713-output-1768980497201-1768986302224",
+      "id": "e-chat-agent-1768982056713-output-1768980497201-1771621563770",
       "source": "chat-agent-1768982056713",
       "target": "output-1768980497201",
       "sourceHandle": "output",
-      "targetHandle": "input",
-      "animated": false
-    },
-    {
-      "id": "docked-callback-1769112639847-chat-agent-1768982056713-onCheckpoint",
-      "source": "chat-agent-1768982056713",
-      "target": "callback-1769112639847",
-      "sourceHandle": "onCheckpoint",
       "targetHandle": "input",
       "animated": false
     }
