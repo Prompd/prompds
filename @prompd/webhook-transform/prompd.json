@@ -1,0 +1,28 @@
+{
+  "name": "@prompd/webhook-transform",
+  "version": "1.0.0",
+  "description": "Transform webhook payloads between service formats using natural language mapping rules. Sits in integration pipelines between services that don't share schemas.",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "webhook",
+    "transformation",
+    "integration",
+    "pipeline",
+    "etl",
+    "schema-mapping",
+    "automation"
+  ],
+  "main": "prompts/transform.prmd",
+  "files": [
+    "prompts/transform.prmd",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "engines": {
+    "prompd": ">=0.2.0"
+  }
+}

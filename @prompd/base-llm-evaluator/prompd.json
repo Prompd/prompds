@@ -1,0 +1,30 @@
+{
+  "name": "@prompd/base-llm-evaluator",
+  "version": "0.1.0",
+  "description": "Base template for building LLM output evaluation prompts. Not intended for direct use — inherit from this to create domain-specific evaluators for your test suites.",
+  "type": "package",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "evaluation",
+    "evals",
+    "llm-testing",
+    "quality",
+    "ci",
+    "testing",
+    "base"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "main": "prompts/base-evaluator.prmd",
+  "files": [
+    "prompts/base-evaluator.prmd",
+    "README.md",
+    "systems/evaluator.md"
+  ],
+  "dependencies": {
+    "@prompd/base-llm-evaluator": "0.1.0"
+  }
+}

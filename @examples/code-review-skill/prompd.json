@@ -1,0 +1,22 @@
+{
+  "name": "@examples/code-review-skill",
+  "version": "1.0.0",
+  "description": "A skill package that provides code review capabilities. Demonstrates the skill package type with tool declarations and system prompts.",
+  "type": "skill",
+  "author": "Prompd LLC",
+  "license": "Elastic-2.0",
+  "keywords": ["skill", "code-review", "development", "example"],
+  "readme": "README.md",
+  "main": "prompts/review-code.prmd",
+  "files": [
+    "prompts/review-code.prmd",
+    "prompts/suggest-tests.prmd",
+    "contexts/review-checklist.md",
+    "systems/code-reviewer.md",
+    "README.md"
+  ],
+  "tools": [
+    "review-code",
+    "suggest-tests"
+  ]
+}

@@ -1,0 +1,16 @@
+---
+id: hello
+name: "Hello World"
+version: 1.0.0
+description: "A simple greeting prompt"
+parameters:
+  - name: name
+    type: string
+    required: true
+    description: "The name to greet"
+    default: "World"
+---
+
+# Hello, {{ name }}!
+
+Write a short, friendly greeting for someone named {{ name }}. Keep it to 2-3 sentences.

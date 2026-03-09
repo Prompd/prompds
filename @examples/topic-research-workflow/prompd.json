@@ -1,0 +1,16 @@
+{
+  "name": "@examples/topic-research-workflow",
+  "version": "1.0.0",
+  "description": "A simple workflow that researches a topic using a prompt node. Demonstrates the basic trigger-prompt-output pattern.",
+  "type": "workflow",
+  "author": "Prompd LLC",
+  "license": "Elastic-2.0",
+  "keywords": ["workflow", "research", "example"],
+  "readme": "README.md",
+  "main": "main.pdflow",
+  "files": [
+    "prompts/topic-researcher.prmd",
+    "README.md",
+    "main.pdflow"
+  ]
+}

@@ -1,0 +1,39 @@
+---
+id: review-code
+name: "Code Review"
+version: 1.0.0
+description: "Reviews code for correctness, security, performance, and best practices"
+parameters:
+  - name: code
+    type: string
+    required: true
+    description: "The code to review"
+  - name: language
+    type: string
+    required: true
+    description: "Programming language of the code"
+  - name: focus
+    type: string
+    description: "Specific area to focus the review on"
+    enum: ["security", "performance", "maintainability", "all"]
+    default: "all"
+system:
+  - ../systems/code-reviewer.md
+context:
+  - ../contexts/review-checklist.md
+---
+
+# Code Review: {{ language }}
+
+Review the following {{ language }} code{% if focus != "all" %} with a focus on **{{ focus }}**{% endif %}:
+
+```{{ language }}
+{{ code }}
+```
+
+## Review Requirements
+
+1. List each finding with severity (critical/high/medium/low)
+2. Include the specific line or section for each issue
+3. Provide a corrected code snippet for critical and high severity items
+4. End with a summary: total findings by severity and overall assessment

@@ -1,0 +1,66 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "id": "topic-research-workflow",
+    "name": "Topic Research Workflow",
+    "description": "A simple workflow that takes a topic, sends it to an LLM for research, and outputs the result."
+  },
+  "parameters": [
+    {
+      "name": "topic",
+      "type": "string",
+      "required": true,
+      "description": "The topic to research"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "trigger-1",
+      "type": "trigger",
+      "position": { "x": 150, "y": 300 },
+      "data": {
+        "label": "Start",
+        "triggerType": "manual"
+      }
+    },
+    {
+      "id": "prompt-1",
+      "type": "prompt",
+      "position": { "x": 450, "y": 300 },
+      "data": {
+        "label": "Research Topic",
+        "source": "./prompts/topic-researcher.prmd",
+        "provider": "openai",
+        "model": "gpt-4o",
+        "parameters": {
+          "topic": "{{ workflow.topic }}"
+        },
+        "sourceType": "file"
+      }
+    },
+    {
+      "id": "output-1",
+      "type": "output",
+      "position": { "x": 750, "y": 300 },
+      "data": {
+        "label": "Output"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-trigger-prompt",
+      "source": "trigger-1",
+      "target": "prompt-1",
+      "sourceHandle": "output",
+      "targetHandle": "input"
+    },
+    {
+      "id": "e-prompt-output",
+      "source": "prompt-1",
+      "target": "output-1",
+      "sourceHandle": "output",
+      "targetHandle": "input"
+    }
+  ]
+}

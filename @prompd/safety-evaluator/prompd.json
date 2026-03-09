@@ -1,0 +1,29 @@
+{
+  "name": "@prompd/safety-evaluator",
+  "version": "0.1.0",
+  "description": "Evaluate LLM outputs for safety compliance. Inherits from base-evaluator with pre-configured safety criteria. Designed for automated guardrail testing in CI.",
+  "type": "package",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "safety",
+    "guardrails",
+    "evaluation",
+    "evals",
+    "testing",
+    "compliance",
+    "red-teaming"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "main": "prompts/safety-eval.prmd",
+  "files": [
+    "prompts/safety-eval.prmd",
+    "README.md"
+  ],
+  "dependencies": {
+    "@prompd/public-examples": "1.1.0"
+  }
+}

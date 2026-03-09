@@ -1,110 +1,50 @@
 # Prompd Community Prompts
 
-A collection of open-source prompt packages and templates for the [Prompd](https://github.com/Prompd/prompd-app) ecosystem. Use these as starting points for your own prompts, or install them directly as dependencies in your projects.
+A collection of prompt packages and templates for the [Prompd](https://github.com/prompd/prompd-cli) ecosystem. Use these as starting points for your own prompts, or install them directly as dependencies in your projects.
 
-## What's Inside
+## Repository Structure
 
-This repository contains `@prompd/public-examples` — a reference package demonstrating the core features of the Prompd prompt composition system: inheritance, template composition, typed parameters, and context injection.
-
-### Prompts
-
-| Prompt | Description |
-|--------|-------------|
-| `api-development.prmd` | API endpoint development with conditional logic for auth, validation, and framework selection |
-| `base-prompt.prmd` | Foundation template for inheritance — clean structure other prompts build on |
-| `basic-inheritance.prmd` | Inherits from `base-prompt.prmd` with Jinja2 conditionals and analysis depth |
-| `package-inheritance.prmd` | Cross-package versioned inheritance from a published registry package |
-| `team-project-planner.prmd` | Multi-role project planning with object and array parameters |
-
-### Assistants
-
-| Prompt | Description |
-|--------|-------------|
-| `code-assistant.prmd` | General-purpose coding assistant supporting 6 languages and 5 task modes |
-
-### Context Files
-
-| File | Type | Description |
-|------|------|-------------|
-| `typescript-examples.ts` | Code | Sample TypeScript class structures |
-| `architecture-patterns.json` | Data | Architecture patterns with pros, cons, and tradeoffs |
-| `deployment-config.yaml` | Config | Deployment strategies, monitoring, and backup policies |
-| `code-review-checklist.md` | Documentation | Comprehensive code review checklist |
-
-### Persona Files
-
-| File | Description |
-|------|-------------|
-| `systems/system-admin.md` | System administrator role definition and competencies |
-| `users/user-lead-engineer.md` | Technical lead role definition and responsibilities |
-
-## Usage
-
-### Install as a dependency
-
-```bash
-prompd install @prompd/public-examples@latest
+```
+prompds/
+├── @prompd/                         # Official Prompd packages
+│   ├── safety-evaluator/            # LLM safety evaluation toolkit
+│   ├── structured-extractor/        # Structured data extraction
+│   ├── batch-classifier/            # Batch classification workflows
+│   ├── incident-triage/             # Incident response prompts
+│   ├── webhook-transform/           # Webhook data transformation
+│   ├── ci-gate/                     # CI/CD quality gate prompts
+│   └── base-llm-evaluator/         # Base LLM evaluation framework
+└── @examples/                       # Example packages and templates
+    ├── hello-world/                 # Simplest possible package (start here)
+    ├── examples/                    # Comprehensive examples (inheritance, composition, contexts)
+    ├── core/                        # Core prompt patterns
+    ├── blog-writing/                # Blog content generation
+    ├── csv-toolkit/                 # CSV data processing
+    ├── dog-blog-writing/            # Cross-package inheritance demo
+    ├── asset-extraction/            # Binary file extraction (Excel, PDF, images)
+    ├── demo-prompts/                # Demo prompts
+    ├── code-review-skill/           # Skill package example (tools, system prompts)
+    └── topic-research-workflow/     # Workflow example (trigger → prompt → output)
 ```
 
-### Run the main prompt
+## Quick Start
 
 ```bash
-prompd run "@prompd/public-examples@latest" \
-  --provider openai \
-  -p endpoint_name="user authentication"
-```
+# Install the CLI
+npm install -g @prompd/cli
 
-### Run a specific prompt
+# Clone this repo and try the hello-world example
+git clone https://github.com/Prompd/prompds
+cd prompds/@examples/hello-world
 
-```bash
-prompd run "@prompd/public-examples@latest/prompts/basic-inheritance.prmd" \
-  --provider anthropic \
-  -p topic="distributed systems" \
-  -p analysis_depth="comprehensive"
-```
+# Compile to see the rendered prompt
+prompd compile prompts/hello.prmd --param name="World"
 
-### Compile to provider JSON
+# Run with a provider
+prompd run prompts/hello.prmd --provider openai --model gpt-4o --param name="World"
 
-```bash
-prompd compile "src/prompts/api-development.prmd" \
-  --to-provider-json openai \
-  -p endpoint_name="login" \
-  -p auth_required=true
-```
-
-## Examples
-
-### API Development
-
-```bash
-prompd run "@prompd/public-examples@latest" \
-  --provider openai \
-  -p endpoint_name="payment processing" \
-  -p http_method="POST" \
-  -p framework="fastify" \
-  -p auth_required=true \
-  -p validation_level="enterprise"
-```
-
-### Team Project Planning
-
-```bash
-prompd run "@prompd/public-examples@latest/prompts/team-project-planner.prmd" \
-  --provider anthropic \
-  -p project_name="E-commerce Platform" \
-  -p project_phase="development" \
-  -p tech_stack='{"language":"typescript","framework":"fastify","architecture":"microservices"}' \
-  -p team_roles='["developer","lead_engineer","system_admin","qa"]'
-```
-
-### Code Assistant
-
-```bash
-prompd run "@prompd/public-examples@latest/assistants/code-assistant.prmd" \
-  --provider anthropic \
-  -p language="typescript" \
-  -p task_mode="implement" \
-  -p include_tests=true
+# Install a published package from the registry
+prompd install @prompd/safety-evaluator@latest
 ```
 
 ## File Format
@@ -129,7 +69,7 @@ You are an expert analyst.
 
 # User
 
-Analyze {topic} in depth.
+Analyze {{ topic }} in depth.
 
 {%- if analysis_depth == "comprehensive" %}
 Include historical context and future projections.
@@ -138,13 +78,13 @@ Include historical context and future projections.
 
 ### Key Concepts
 
-**Inheritance** — Prompts can extend other prompts, locally or from published packages:
+**Inheritance** -- Prompts can extend other prompts, locally or from published packages:
 ```yaml
-inherits: "./base-prompt.prmd"                              # Local file
-inherits: "@prompd/public-examples@^1.0.0/prompts/base.prmd"  # Package
+inherits: "./base-prompt.prmd"                                  # Local file
+inherits: "@prompd/safety-evaluator@^1.0.0/prompts/base.prmd"  # Package
 ```
 
-**Parameters** — Typed, validated inputs with defaults and enums:
+**Parameters** -- Typed, validated inputs with defaults and enums:
 ```yaml
 parameters:
   - name: language
@@ -153,25 +93,11 @@ parameters:
     default: typescript
 ```
 
-**Context injection** — Reference files that get compiled into the prompt:
+**Context injection** -- Reference files that get compiled into the prompt:
 ```yaml
 contexts:
   - "contexts/typescript-examples.ts"
   - "contexts/architecture-patterns.json"
-```
-
-## Project Structure
-
-```
-public-examples/
-├── src/
-│   ├── manifest.json           # Package metadata and dependencies
-│   ├── prompts/                # Prompt files (.prmd)
-│   ├── assistants/             # Assistant role prompts
-│   ├── systems/                # System persona files (.md)
-│   ├── users/                  # User persona files (.md)
-│   └── contexts/               # Context files (code, data, docs)
-└── dist/                       # Built package bundles (.pdpkg)
 ```
 
 ## Contributing
@@ -185,11 +111,12 @@ Want to add your own prompts to the community collection?
 
 ## Related
 
-- [Prompd Desktop App](https://github.com/Prompd/prompd-app) — Visual IDE for building and deploying AI workflows
-- [Prompd CLI](https://github.com/Prompd/prompd-cli) — Command-line toolchain for compiling and managing prompts
-- [Prompd Docs](https://github.com/Prompd/prompd-docs) — Format spec, guides, and reference documentation
-- [Prompd Registry](https://www.prompdhub.ai/registry) — Browse and install community packages
+- [Prompd CLI](https://github.com/prompd/prompd-cli) -- Command-line tools for compiling and managing prompts
+- [Prompd App](https://github.com/prompd/prompd-app) -- Desktop IDE for AI workflows
+- [Prompd API](https://github.com/prompd/prompd-api) -- API integration packages
+- [Prompd Docs](https://github.com/prompd/prompd-docs) -- Format spec, guides, and reference
+- [PrompdHub](https://prompdhub.ai) -- Package registry
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+Elastic License 2.0 (ELv2) -- see [LICENSE](LICENSE) for details.

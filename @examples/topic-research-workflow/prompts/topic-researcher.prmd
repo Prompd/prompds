@@ -1,0 +1,31 @@
+---
+id: topic-researcher
+name: "Topic Researcher"
+version: 1.0.0
+description: "Researches a topic and returns a structured analysis"
+parameters:
+  - name: topic
+    type: string
+    required: true
+    description: "The topic to research"
+  - name: depth
+    type: string
+    description: "Level of analysis depth"
+    enum: ["brief", "detailed", "comprehensive"]
+    default: "detailed"
+---
+
+# Topic Research: {{ topic }}
+
+Research the following topic and provide a {{ depth }} analysis.
+
+## Instructions
+
+1. Provide a clear overview of the topic
+2. Identify key concepts and terminology
+3. Summarize current trends and developments
+4. List notable resources or references
+
+## Output
+
+Structure your response with clear headings and bullet points. Keep the analysis focused and actionable.

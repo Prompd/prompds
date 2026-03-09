@@ -1,0 +1,36 @@
+---
+id: suggest-tests
+name: "Test Suggestions"
+version: 1.0.0
+description: "Suggests unit tests for a given code snippet"
+parameters:
+  - name: code
+    type: string
+    required: true
+    description: "The code to generate test suggestions for"
+  - name: language
+    type: string
+    required: true
+    description: "Programming language of the code"
+  - name: framework
+    type: string
+    description: "Testing framework to use"
+    default: ""
+system:
+  - ../systems/code-reviewer.md
+---
+
+# Test Suggestions: {{ language }}
+
+Given the following {{ language }} code, suggest unit tests that cover the key paths:
+
+```{{ language }}
+{{ code }}
+```
+
+## Requirements
+
+1. Cover happy path, edge cases, and error scenarios
+2. Each test should have a clear name describing what it verifies
+3. Include the test code{% if framework %} using {{ framework }}{% endif %}
+4. Prioritize tests by coverage impact

@@ -1,0 +1,26 @@
+{
+  "name": "@prompd/batch-classifier",
+  "version": "0.1.0",
+  "description": "Classify arrays of text items into predefined categories with confidence scores. Built for data pipeline batch processing with deterministic, structured output.",
+  "type": "package",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "classification",
+    "batch-processing",
+    "pipeline",
+    "nlp",
+    "categorization",
+    "structured-output",
+    "multi-label"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "main": "prompts/classify.prmd",
+  "files": [
+    "prompts/classify.prmd",
+    "README.md"
+  ]
+}

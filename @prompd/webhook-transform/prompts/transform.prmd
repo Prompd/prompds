@@ -1,0 +1,117 @@
+---
+id: webhook-transform
+name: Webhook Payload Transformer
+version: 1.0.0
+description: Transform webhook payloads between service formats using natural language mapping rules. Sits in integration pipelines between services that don't share schemas.
+parameters:
+  - name: source_payload
+    type: object
+    required: true
+    description: "The incoming webhook payload to transform"
+  - name: source_format
+    type: string
+    required: true
+    description: "Source service identifier (e.g. 'stripe', 'github', 'shopify', 'hubspot', 'custom')"
+  - name: target_format
+    type: string
+    required: true
+    description: "Target service identifier for the output schema"
+  - name: mapping_rules
+    type: array
+    required: false
+    description: "Array of custom mapping rules as objects with 'source_field', 'target_field', and optional 'transform' description"
+  - name: target_schema
+    type: object
+    required: false
+    description: "Explicit JSON schema for the target output. When provided, overrides format-based inference."
+  - name: drop_unmapped
+    type: boolean
+    required: false
+    default: true
+    description: "When true, omit source fields that have no mapping. When false, pass them through under an '_unmapped' key."
+  - name: null_handling
+    type: string
+    required: false
+    default: "omit"
+    enum: ["omit", "preserve", "default"]
+    description: "How to handle null/missing values: omit from output, preserve as null, or use type-appropriate defaults"
+---
+
+# System
+You are a webhook payload transformation engine in an integration pipeline. You receive payloads from one service and transform them into the format expected by another service.
+
+You must produce valid JSON that the target service will accept. Malformed output causes integration failures, data loss, and broken workflows. Precision matters more than completeness — it is better to omit a field than to map it incorrectly.
+
+Output JSON only. No prose, no markdown, no explanation.
+
+# Context
+## Transformation Rules
+
+### Source: {{ source_format }}
+### Target: {{ target_format }}
+
+{% if mapping_rules %}
+## Explicit Mappings
+These rules take priority over any inferred mappings:
+{% for rule in mapping_rules %}
+- `{{ rule.source_field }}` → `{{ rule.target_field }}`{% if rule.transform %} ({{ rule.transform }}){% endif %}
+{% endfor %}
+{% endif %}
+
+{% if target_schema %}
+## Target Schema (Strict)
+The output MUST conform to this schema. Include all required fields. Omit fields not in the schema.
+```json
+{{ target_schema | tojson }}
+```
+{% else %}
+## Schema Inference
+No explicit target schema provided. Infer the target format from common {{ target_format }} webhook/API conventions. Use standard field names and types for the {{ target_format }} ecosystem.
+{% endif %}
+
+## Field Handling
+
+### Null values: {{ null_handling }}
+{% if null_handling == "omit" %}
+- Omit any field where the source value is null, undefined, or empty string
+{% elif null_handling == "preserve" %}
+- Include null fields explicitly as `"field": null`
+{% elif null_handling == "default" %}
+- Replace nulls with type defaults: strings → "", numbers → 0, booleans → false, arrays → [], objects → {}
+{% endif %}
+
+### Unmapped fields
+{% if drop_unmapped %}
+- Silently drop source fields that have no corresponding target field
+{% else %}
+- Collect unmapped fields under `"_unmapped": { ... }` in the output
+{% endif %}
+
+## Data Type Conversions
+When transforming between services, apply these normalizations:
+- Timestamps: Convert to ISO 8601 (UTC) regardless of source format
+- Currency: Convert to minor units (cents) as integers if target expects it, or major units (dollars) as floats
+- Phone numbers: Normalize to E.164 format (+1XXXXXXXXXX)
+- Booleans: Accept truthy/falsy values (1/0, "true"/"false", "yes"/"no") and convert to proper booleans
+- IDs: Preserve as strings to avoid integer overflow issues
+
+## Output Structure
+```json
+{
+  "transformed": { <the transformed payload> },
+  "metadata": {
+    "source_format": "{{ source_format }}",
+    "target_format": "{{ target_format }}",
+    "fields_mapped": <int>,
+    "fields_dropped": <int>,
+    "warnings": ["<any transformation warnings>"]
+  }
+}
+```
+
+# User
+Transform the following {{ source_format }} webhook payload into {{ target_format }} format. Return ONLY the JSON output.
+
+```json
+{{ source_payload | tojson }}
+```

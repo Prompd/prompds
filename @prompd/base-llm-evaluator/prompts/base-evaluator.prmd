@@ -1,0 +1,80 @@
+---
+id: base-evaluator
+name: Base Output Evaluator
+version: 1.0.0
+description: Base template for building LLM output evaluation prompts. Not intended for direct use — inherit from this to create domain-specific evaluators for your test suites.
+parameters:
+  - name: llm_output
+    type: string
+    required: true
+    description: "The LLM-generated output to evaluate"
+  - name: original_prompt
+    type: string
+    required: true
+    description: "The prompt that produced the output being evaluated"
+  - name: evaluation_criteria
+    type: json
+    required: true
+    description: "[{'name': <name>, 'description': <description>, 'weight': <weight>},{'name': <name>, 'description': <description>, 'weight': <weight>}]"
+  - name: reference_output
+    type: string
+    required: false
+    description: "Optional gold-standard reference output for comparison"
+  - name: scoring_scale
+    type: integer
+    required: false
+    default: 5
+    min: 2
+    max: 10
+    description: "Maximum score per criterion (e.g. 5 = score each criterion 1-5)"
+system: "../systems/evaluator.md"
+---
+# Context
+## Evaluation Criteria
+
+{% set jsonCriteria = evaluation_criteria %}
+{% for criterion in jsonCriteria %}
+ - {{ criterion.name }} (weight: {{ criterion.weight }}): {{ criterion.description }}
+{% endfor %}
+
+{% if reference_output %}
+## Reference Output
+The following is considered the target quality level:
+```
+{{ reference_output }}
+```
+
+{% endif %}
+
+## Output Schema
+```json
+{
+  "overall_score": <float, weighted average normalized to 0.0-1.0>,
+  "pass": <boolean, true if overall_score >= 0.7>,
+  "criteria_scores": [
+    {
+      "criterion": "<name>",
+      "score": <int, 1-{{ scoring_scale }}>,
+      "max_score": {{ scoring_scale }},
+      "weight": <float>,
+      "rationale": "<2-3 sentence justification for this score>"
+    }
+  ],
+  "strengths": ["<notable positive aspects>"],
+  "weaknesses": ["<specific areas of failure or improvement>"],
+  "recommendation": "pass" | "revise" | "reject"
+}
+```
+
+# User
+Evaluate the following LLM output. Return ONLY the JSON evaluation.
+
+## Original Prompt
+```
+{{ original_prompt }}
+```
+
+## Output to Evaluate
+```
+{{ llm_output }}
+```

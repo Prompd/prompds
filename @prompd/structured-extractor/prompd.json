@@ -1,0 +1,29 @@
+{
+  "name": "@prompd/structured-extractor",
+  "version": "1.0.0",
+  "description": "Extract structured JSON from unstructured text using a caller-defined schema. Designed for ETL pipelines, data ingestion, and automated processing.",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "extraction",
+    "json",
+    "schema",
+    "etl",
+    "pipeline",
+    "structured-data",
+    "data-ingestion",
+    "automation"
+  ],
+  "main": "prompts/extract.prmd",
+  "files": [
+    "prompts/extract.prmd",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "engines": {
+    "prompd": ">=0.2.0"
+  }
+}
