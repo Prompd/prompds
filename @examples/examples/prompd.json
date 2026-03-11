@@ -1,8 +1,8 @@
 {
-  "name": "@prompd.io/skillz",
-  "version": "0.1.1",
+  "name": "@examples/advanced",
+  "version": "0.0.1",
   "description": "Public example prompts demonstrating inheritance, overriding features, and general usage patterns. Includes practical examples showing how to extend templates, customize prompts, and implement common AI workflow patterns.",
-  "type": "skill",
+  "type": "package",
   "author": "Prompd",
   "license": "Elastic-2.0",
   "keywords": [
@@ -27,6 +27,7 @@
     "contexts/typescript-examples.ts",
     "prompts/api-development.prmd",
     "prompts/base-prompt.prmd",
+    "prompts/image-generation-test.prmd",
     "prompts/package-inheritance.prmd",
     "prompts/team-project-planner.prmd",
     "prompts/topic-researcher.prmd",
@@ -37,12 +38,11 @@
     "workflows/chat-agent.pdflow",
     "workflows/chat-workflow.pdflow",
     "workflows/example-workflow.pdflow",
+    "workflows/parallel-workflow.pdflow",
     "workflows/prompts/step1.prmd",
     "workflows/prompts/step2.prmd",
     "workflows/test.pdflow",
-    "workflows/topic-researcher.pdflow",
-    "workflows/search-topic.pdflow",
-    "prompts/image-generation-test.prmd"
+    "workflows/topic-researcher.pdflow"
   ],
   "ignore": [
     "dist/",
@@ -52,7 +52,6 @@
     "terminal-echo"
   ],
   "dependencies": {
-    "@prompd.io/skillz": "0.1.1",
-    "@baker-private/loop": "1.0.2"
+    "@prompd/core": "0.0.2"
   }
 }

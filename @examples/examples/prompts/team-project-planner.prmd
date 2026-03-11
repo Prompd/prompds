@@ -48,28 +48,42 @@ inherits: "@core/prompts/base.prmd"
 - Implement features according to specifications
 - Write unit and integration tests
 - Participate in code reviews
-- Follow coding standards and conventions for {{tech_stack.language}} {%- elif team_role == "lead_engineer" %}
+- Follow coding standards and conventions for {{tech_stack.language}}
+
+{%- elif team_role == "lead_engineer" %}
+
 - Define technical architecture and design patterns
 - Review and approve major technical decisions
 - Mentor team members on best practices
 - Conduct code reviews for quality and security
 - Balance technical debt with feature development
-- Architecture pattern: {{tech_stack.architecture}} {%- elif team_role == "system_admin" %}
+- Architecture pattern: {{tech_stack.architecture}}
+
+{%- elif team_role == "system_admin" %}
+
 - Manage infrastructure and deployment pipelines
 - Configure monitoring and alerting systems
 - Implement backup and disaster recovery procedures
 - Ensure security compliance and patch management
-- Support CI/CD automation {%- elif team_role == "qa" %}
+- Support CI/CD automation
+
+{%- elif team_role == "qa" %}
+
 - Design and execute test plans
 - Perform functional and regression testing
 - Identify and document defects
 - Validate deployment readiness
-- Ensure quality standards are met {%- elif team_role == "product_manager" %}
+- Ensure quality standards are met
+
+{%- elif team_role == "product_manager" %}
+
 - Define product requirements and priorities
 - Coordinate with stakeholders
 - Manage project timeline and deliverables
 - Facilitate communication between teams
-- Track progress and remove blockers {%- endif %}
+- Track progress and remove blockers
+
+{%- endif %}
 
 {% endfor %}
 

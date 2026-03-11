@@ -1,11 +1,17 @@
 {
   "name": "@examples/hello-world",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "The simplest possible Prompd package. A single prompt with one parameter.",
+  "type": "package",
   "author": "Prompd LLC",
   "license": "Elastic-2.0",
-  "keywords": ["hello-world", "beginner", "example"],
+  "keywords": [
+    "hello-world",
+    "beginner",
+    "example"
+  ],
   "readme": "README.md",
+  "repository": "",
   "main": "prompts/hello.prmd",
   "files": [
     "prompts/hello.prmd",

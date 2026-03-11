@@ -32,7 +32,7 @@
       "id": "web-search-1770610749352",
       "type": "web-search",
       "position": {
-        "x": -225,
+        "x": -165,
         "y": 30
       },
       "data": {
@@ -48,7 +48,7 @@
       "id": "prompt-1770610855594",
       "type": "prompt",
       "position": {
-        "x": 465,
+        "x": 435,
         "y": -120
       },
       "data": {
@@ -71,7 +71,7 @@
       "data": {
         "label": "Provider",
         "providerId": "openai",
-        "model": "gpt-4o-mini",
+        "model": "gpt-4.1-nano",
         "locked": true
       }
     },
@@ -285,8 +285,8 @@
       "id": "parallel-1770948100071",
       "type": "parallel",
       "position": {
-        "x": 315,
-        "y": 45
+        "x": 210,
+        "y": 60
       },
       "width": 350,
       "height": 200,
@@ -297,7 +297,13 @@
         "branches": [],
         "waitFor": "all",
         "mergeStrategy": "object",
-        "locked": false
+        "locked": false,
+        "disabled": false,
+        "forkLabels": [
+          "analysis",
+          "transform"
+        ],
+        "errorHandlerNodeId": "error-handler-1770624278976"
       }
     },
     {

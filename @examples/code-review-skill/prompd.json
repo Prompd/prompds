@@ -1,12 +1,18 @@
 {
   "name": "@examples/code-review-skill",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A skill package that provides code review capabilities. Demonstrates the skill package type with tool declarations and system prompts.",
   "type": "skill",
   "author": "Prompd LLC",
   "license": "Elastic-2.0",
-  "keywords": ["skill", "code-review", "development", "example"],
+  "keywords": [
+    "skill",
+    "code-review",
+    "development",
+    "example"
+  ],
   "readme": "README.md",
+  "repository": "",
   "main": "prompts/review-code.prmd",
   "files": [
     "prompts/review-code.prmd",

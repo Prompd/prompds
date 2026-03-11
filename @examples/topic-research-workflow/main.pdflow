@@ -17,7 +17,10 @@
     {
       "id": "trigger-1",
       "type": "trigger",
-      "position": { "x": 150, "y": 300 },
+      "position": {
+        "x": 150,
+        "y": 300
+      },
       "data": {
         "label": "Start",
         "triggerType": "manual"
@@ -26,7 +29,10 @@
     {
       "id": "prompt-1",
       "type": "prompt",
-      "position": { "x": 450, "y": 300 },
+      "position": {
+        "x": 450,
+        "y": 300
+      },
       "data": {
         "label": "Research Topic",
         "source": "./prompts/topic-researcher.prmd",
@@ -35,15 +41,64 @@
         "parameters": {
           "topic": "{{ workflow.topic }}"
         },
-        "sourceType": "file"
+        "sourceType": "file",
+        "errorHandlerNodeId": "error-handler-1773178013540"
       }
     },
     {
       "id": "output-1",
       "type": "output",
-      "position": { "x": 750, "y": 300 },
+      "position": {
+        "x": 750,
+        "y": 300
+      },
       "data": {
         "label": "Output"
+      }
+    },
+    {
+      "id": "callback-1773177976633",
+      "type": "callback",
+      "position": {
+        "x": 480,
+        "y": 360
+      },
+      "data": {
+        "label": "Research Checkpoint",
+        "mode": "report",
+        "checkpointName": "Research Checkpoint",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "_preDockPosition": {
+          "x": 480,
+          "y": 360
+        },
+        "dockedTo": {
+          "nodeId": "prompt-1",
+          "handleId": "onCheckpoint"
+        },
+        "logToHistory": true,
+        "logToConsole": true,
+        "promptCaptureCompiled": true,
+        "promptCaptureTokens": true
+      }
+    },
+    {
+      "id": "error-handler-1773178013540",
+      "type": "error-handler",
+      "position": {
+        "x": 345,
+        "y": 45
+      },
+      "data": {
+        "label": "Error Handler",
+        "strategy": "rethrow",
+        "retry": {
+          "maxAttempts": 3,
+          "backoffMs": 1000,
+          "backoffMultiplier": 2
+        }
       }
     }
   ],
@@ -53,13 +108,22 @@
       "source": "trigger-1",
       "target": "prompt-1",
       "sourceHandle": "output",
-      "targetHandle": "input"
+      "targetHandle": "input",
+      "animated": false
     },
     {
       "id": "e-prompt-output",
       "source": "prompt-1",
       "target": "output-1",
       "sourceHandle": "output",
+      "targetHandle": "input",
+      "animated": false
+    },
+    {
+      "id": "docked-callback-1773177976633-prompt-1-onCheckpoint",
+      "source": "prompt-1",
+      "target": "callback-1773177976633",
+      "sourceHandle": "onCheckpoint",
       "targetHandle": "input"
     }
   ]

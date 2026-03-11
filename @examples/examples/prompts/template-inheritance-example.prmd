@@ -3,7 +3,7 @@ id: template-inheritance-example
 name: "Template Inheritance and Extension"
 description: "Demonstrates prompd-based inheritance"
 version: 1.0.3
-inherits: "@prompd/core@0.0.1/prompts/base.prmd"
+inherits: "@prompd/core@0.0.2/prompts/use-tools.prmd"
 parameters:
   - name: domain
     type: string

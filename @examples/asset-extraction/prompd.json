@@ -1,18 +1,30 @@
 {
-  "name": "@prompd/asset-extraction",
-  "version": "1.0.0",
+  "name": "@examples/asset-extraction",
+  "version": "0.0.1",
   "description": "Prompd project: asset-extraction",
+  "type": "package",
   "author": "Prompd",
+  "license": "MIT",
+  "keywords": [
+    "asset-extraction",
+    "xlsx-csv-extraction",
+    "xlsx",
+    "docx",
+    "jpg"
+  ],
+  "readme": "README.md",
+  "repository": "",
+  "main": "prompts/asset-extraction-example.prmd",
   "files": [
-    "prompts/example.prmd"
+    "prompts/asset-extraction-example.prmd",
+    "README.md",
+    "contexts/assets.xlsx",
+    "contexts/project-desc.docx",
+    "contexts/prompd.io-home-page.png"
   ],
   "ignore": [
     "*.log",
     "*.tmp",
     ".env*"
-  ],
-  "dependencies": {},
-  "devDependencies": {},
-  "main": "prompts/example.prmd",
-  "readme": "README.md"
+  ]
 }

@@ -9,8 +9,8 @@ parameters:
     required: true
     description: Name to greet
 context:
-  - "contexts/assets.xlsx"
-  - "contexts/project-desc.docx"
+  - "../contexts/assets.xlsx"
+  - "../contexts/project-desc.docx"
 ---
 # System
 

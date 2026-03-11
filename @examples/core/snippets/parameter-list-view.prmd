@@ -1,0 +1,73 @@
+---
+id: parameter-list-view
+name: "Parameter List View"
+description: ""
+version: 1.0.0
+parameters:
+  - name: tools
+    type: json
+    description: "List of tools with name and description"
+    required: true
+    default:
+    - name: edit_file
+      description: "Edit an existing file by replacing a specific string with new content"
+      parameters:
+        - name: file_path
+          type: string
+          description: "Path to the file to edit"
+          required: true
+        - name: old_string
+          type: string
+          description: "The exact string to find and replace"
+          required: true
+        - name: new_string
+          type: string
+          description: "The replacement string"
+          required: true
+    - name: write_file
+      description: "Create or overwrite a file with the given content"
+      parameters:
+        - name: file_path
+          type: string
+          description: "Path to the file to create or overwrite"
+          required: true
+        - name: content
+          type: string
+          description: "The full file content to write"
+          required: true
+    - name: get_document_errors
+      description: "Get validation errors and warnings for the current document"
+      parameters: []
+  - name: schema
+    type: json
+    description: "Tool call schema defining the XML format for tool invocations"
+    required: false
+    default: >-
+      {"call": "<tool_call><tool>[[tool]]</tool><params>[[params]]</params></tool_call>"}
+---
+## Tool Call Instructions
+
+When you need to perform an action, use the following XML format to invoke a tool:
+
+{% set schema_obj = schema %}
+{% for tool in tools %}
+
+### {{ tool.name }}
+
+{{ tool.description }}
+
+{% if tool.parameters and tool.parameters | length > 0 %} **Parameters:**
+{% for param in tool.parameters %}
+
+- `{{ param.name }}` ({{ param.type }}{% if param.required %}, required{% endif %}): {{ param.description }}
+
+{% endfor %}
+{% endif %}
+
+{% raw %}```{% endraw %}xml 
+
+{{ schema_obj.call | replace("[[tool]]", tool.name) | replace("[[params]]", "...") }}
+
+{% raw %}```{% endraw %}
+
+{% endfor %}

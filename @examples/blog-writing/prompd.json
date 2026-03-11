@@ -1,10 +1,15 @@
 {
-  "name": "@prompd/blog-writer",
-  "version": "0.1.7",
+  "name": "@examples/blog-writer",
+  "version": "0.0.1",
   "description": "This package offers a collection of three thoughtfully crafted prompts designed to assist users in generating engaging and creative blog posts across various topics and styles.",
+  "type": "package",
   "author": "prompd",
   "license": "Elastic-2.0",
-  "keywords": [],
+  "keywords": [
+    "blogging",
+    "blog-writing",
+    "blog-authoring"
+  ],
   "readme": "README.md",
   "repository": "",
   "main": "prompts/blog-writer.prmd",

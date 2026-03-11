@@ -23,7 +23,7 @@ parameters:
     description: "Whether to include technical specifications and details"
     default: true
 using:
-  - name: "@prompd/blog-writer@0.1.6"
+  - name: "@examples/blog-writer@0.0.1"
     prefix: "@blog"
 inherits: "@blog/prompts/blog-writer.prmd"
 ---

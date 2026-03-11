@@ -1,19 +1,26 @@
 {
-  "name": "@prompd/dog-blog-writing",
+  "name": "@examples/dog-blog-writing",
   "version": "0.0.1",
-  "description": "Prompd project: dog-blog-writing",
+  "description": "Prompd project: dog-blog-writing\nShows inheritance from a prompd in a different package.",
+  "type": "package",
   "author": "prompd",
   "license": "Elastic-2.0",
-  "keywords": [],
+  "keywords": [
+    "blog",
+    "blogging",
+    "dogs",
+    "dog blogging",
+    "blogging about dogs"
+  ],
   "readme": "README.md",
   "repository": "",
   "main": "prompts/dog-blog-writer.prmd",
-  "files": [],
+  "files": [
+    "prompts/dog-blog-writer.prmd",
+    "README.md"
+  ],
   "ignore": [
     ".env*",
     ".git/**"
-  ],
-  "dependencies": {
-    "@prompd/blog-writer": "0.1.6"
-  }
+  ]
 }

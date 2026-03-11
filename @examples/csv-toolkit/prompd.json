@@ -1,7 +1,8 @@
 {
-  "name": "@prompd/csv-toolkit",
-  "version": "0.0.11",
+  "name": "@examples/csv-toolkit",
+  "version": "0.0.1",
   "description": "Provides great prompts for manipulating and sorting csv data.",
+  "type": "package",
   "author": "sbaker",
   "license": "Elastic-2.0",
   "keywords": [
