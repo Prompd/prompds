@@ -108,7 +108,7 @@
         "agentUserPrompt": "Analyze the users intent: {{ input }}",
         "maxIterations": 20,
         "toolCallFormat": "auto",
-        "outputMode": "final-response",
+        "outputMode": "full-conversation",
         "guardrailEnabled": true,
         "userInputEnabled": true,
         "userInputPrompt": "Enter your message:",
@@ -131,7 +131,8 @@
           "task completed"
         ],
         "userInputShowContext": true,
-        "errorHandlerNodeId": "error-handler-1769156347862"
+        "errorHandlerNodeId": "error-handler-1769156347862",
+        "temperature": 0.1
       }
     },
     {

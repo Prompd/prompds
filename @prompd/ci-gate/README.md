@@ -62,8 +62,6 @@ Language detection is automatic by default (`auto`) but can be set explicitly fo
 | `context_files` | string | no | — | Additional source for broader context (signatures, types) |
 | `max_findings` | integer | no | `50` | Cap on findings returned; prioritizes higher severity (1–200) |
 
-## Use cases
-
 ## GitHub Actions Example
 
 To use this prompt in a GitHub Action, you can create a workflow file like the following:
@@ -84,12 +82,13 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Install dependencies
-        run: npm install
+        run: npm install @prompd/cli
 
       - name: Run CI Gate
         run: |
-          git diff HEAD^1 > diff.txt
-          npx prompd run prompts/my-prompt.prmd --diff $(cat diff.txt)
+          DIFF_CONTENT=$(git diff origin/main...HEAD)
+          npx prompd run @prompd/ci-gate --param diff="$DIFF_CONTENT" --param rules='["security","error-handling"]' --param severity_threshold="warning"
+```
 
 ## Use cases
 

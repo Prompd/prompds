@@ -1,7 +1,8 @@
 {
   "name": "@prompd/incident-triage",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Automated incident classification, severity assessment, and routing for ops/SRE pipelines. Ingests alerts, logs, and metrics context to produce structured triage decisions.",
+  "type": "package",
   "author": "Prompd",
   "license": "ELv2",
   "keywords": [
@@ -14,16 +15,14 @@
     "pagerduty",
     "automation"
   ],
-  "main": "prompts/triage.prmd",
-  "files": [
-    "prompts/triage.prmd",
-    "README.md"
-  ],
+  "readme": "README.md",
   "repository": {
     "type": "git",
     "url": "https://github.com/prompd/packages"
   },
-  "engines": {
-    "prompd": ">=0.2.0"
-  }
+  "main": "prompts/incident-triage.prmd",
+  "files": [
+    "README.md",
+    "prompts/incident-triage.prmd"
+  ]
 }

@@ -40,7 +40,7 @@ parameters:
         weight: 0.2
 
 using:
-  - name: "@prompd/base-llm-evaluator@0.1.0"
+  - name: "@prompd/base-llm-evaluator@0.0.1"
     prefix: "@eval"
 inherits: "@eval/prompts/base-evaluator.prmd"
 ---

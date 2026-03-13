@@ -1,17 +1,25 @@
 {
   "name": "@prompd/core",
-  "version": "0.0.2",
-  "description": "This base prompd package provides a foundational template for creating secure and consistent Prompd prompts. It consolidates essential guidelines and security practices to ensure that all derived prompts maintain high standards of input validation and security, thereby fostering a coherent structure across the Prompd project.",
+  "version": "0.0.1",
+  "description": "This base prompd package provides templates for creating secure and consistent prompts.",
   "type": "package",
   "author": "prompd",
   "license": "Elastic-2.0",
-  "keywords": [],
+  "keywords": [
+    "core",
+    "use tools",
+    "base prompts",
+    "security",
+    "inheritance",
+    "composition"
+  ],
   "readme": "README.md",
   "repository": "",
   "main": "prompts/use-tools.prmd",
   "files": [
     "README.md",
-    "prompts/use-tools.prmd"
+    "prompts/use-tools.prmd",
+    "snippets/parameter-list-view.prmd"
   ],
   "ignore": [
     ".git/**",

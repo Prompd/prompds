@@ -1,5 +1,5 @@
 ---
-id: batch-classifier
+id: classify
 name: Batch Classifier
 version: 1.0.0
 description: Classify arrays of text items into predefined categories with confidence scores. Built for data pipeline batch processing with deterministic, structured output.

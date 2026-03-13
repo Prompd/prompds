@@ -53,6 +53,7 @@ False positives waste developer time and erode trust in the gate. Be conservativ
 ### {{ rule | upper }}
 
 {% if rule == "security" %}
+
 - Hardcoded secrets, API keys, tokens, or credentials
 - SQL injection vectors (string concatenation in queries)
 - Path traversal vulnerabilities (unsanitized user input in file paths)
@@ -61,61 +62,68 @@ False positives waste developer time and erode trust in the gate. Be conservativ
 - Insecure cryptographic usage
 
 {% elif rule == "error-handling" %}
+
 - Bare except/catch blocks that swallow errors silently
 - Missing error handling on I/O operations, network calls, or parsing
 - Error messages that leak internal details (stack traces, paths, versions)
 - Unchecked return values from fallible operations
 
 {% elif rule == "naming" %}
+
 - Variables named i, j, x, tmp, data, result outside trivial loops
 - Boolean variables not prefixed with is/has/should/can
 - Functions that don't describe their action (e.g. process, handle, do)
 - Inconsistent naming conventions within the diff
 
 {% elif rule == "complexity" %}
+
 - Functions exceeding \~30 lines added in this diff
 - Nesting depth &gt; 3 levels
 - Functions with &gt; 5 parameters
 - Cyclomatic complexity concerns (many branches/conditions)
 
 {% elif rule == "documentation" %}
+
 - Public functions/methods without docstrings or comments
 - Complex logic blocks without explanatory comments
 - Changed function signatures without updated documentation
 
 {% elif rule == "testing" %}
+
 - New public functions without corresponding test additions
 - Test files modified to weaken assertions (removing checks, loosening matchers)
 - Conditional logic added without branch coverage
 
 {% elif rule == "logging" %}
+
 - Sensitive data in log statements
 - Missing logging on error/exception paths
 - Inconsistent log levels (debug for errors, error for info)
 
 {% elif rule == "performance" %}
+
 - Database queries inside loops
 - Missing pagination on collection endpoints
 - Unbounded list/array operations
 - Synchronous I/O where async is available
 
 {% endif %}
+
 {% endfor %}
 
 ## Language
 
 {% if language == "auto" %}
- - Detect the programming language from file extensions and syntax in the diff.
- 
- {% else %}
- Target language: {{ language }}. Apply language-specific idioms and conventions.
- 
- {% endif %}
+
+- Detect the programming language from file extensions and syntax in the diff.
+
+{% else %} Target language: {{ language }}. Apply language-specific idioms and conventions.
+
+{% endif %}
 
 ## Output Schema
 
-Keep the findings array length under: {{ max_findings }}
-if there are more findings than `{{ max_findings }}` prioritize them by severity descending.
+Keep the findings array length under: {{ max_findings }} if there are more findings than `{{ max_findings }}` prioritize them by severity descending.
 
 Respond with ONLY this JSON structure:
 

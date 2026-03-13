@@ -1,7 +1,7 @@
 {
   "name": "@examples/asset-extraction",
   "version": "0.0.1",
-  "description": "Prompd project: asset-extraction",
+  "description": "Prompd package containing a prompd showing extraction of assets from binary files.",
   "type": "package",
   "author": "Prompd",
   "license": "MIT",
@@ -16,15 +16,13 @@
   "repository": "",
   "main": "prompts/asset-extraction-example.prmd",
   "files": [
-    "prompts/asset-extraction-example.prmd",
-    "README.md",
     "contexts/assets.xlsx",
     "contexts/project-desc.docx",
-    "contexts/prompd.io-home-page.png"
+    "contexts/prompd.io-home-page.png",
+    "prompts/asset-extraction-example.prmd",
+    "README.md"
   ],
   "ignore": [
-    "*.log",
-    "*.tmp",
     ".env*"
   ]
 }

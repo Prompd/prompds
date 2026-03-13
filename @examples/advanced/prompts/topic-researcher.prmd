@@ -18,7 +18,7 @@ parameters:
     description: "Level of analysis depth"
     enum: ["basic","detailed","comprehensive"]
     default: "detailed"
-inherits: ./base-prompt.prmd
+inherits: ./base-analysis-prompt.prmd
 system:
   - "../users/lead-researcher.md"
 ---

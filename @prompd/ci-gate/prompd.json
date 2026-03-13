@@ -1,10 +1,10 @@
 {
   "name": "@prompd/ci-gate",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Automated code quality gate for CI/CD pipelines. Analyzes diffs against configurable rules and returns structured pass/fail verdicts with machine-parseable output.",
+  "type": "package",
   "author": "Prompd",
   "license": "ELv2",
-  "readme": "README.md",
   "keywords": [
     "ci-cd",
     "code-review",
@@ -14,16 +14,14 @@
     "automation",
     "diff-analysis"
   ],
-  "main": "prompts/gate.prmd",
-  "files": [
-    "prompts/gate.prmd",
-    "README.md"
-  ],
+  "readme": "README.md",
   "repository": {
     "type": "git",
     "url": "https://github.com/prompd/packages"
   },
-  "engines": {
-    "prompd": ">=0.2.0"
-  }
+  "main": "prompts/ci-gate.prmd",
+  "files": [
+    "README.md",
+    "prompts/ci-gate.prmd"
+  ]
 }

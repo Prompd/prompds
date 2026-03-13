@@ -25,10 +25,13 @@ parameters:
     type: boolean
     description: "Include deployment strategy and operations plan"
     default: true
+  - name: enable_tools
+    type: boolean
+    default: true
 using:
-  - name: "@prompd/core@0.0.1"
+  - name: "@prompd/core@0.0.2"
     prefix: "@core"
-inherits: "@core/prompts/base.prmd"
+inherits: "@core/prompts/use-tools.prmd"
 ---
 # {{project_name}} - Team Project Plan
 
@@ -93,66 +96,66 @@ inherits: "@core/prompts/base.prmd"
 
 ### Planning Phase Checklist
 
-- [ ] Define project scope and requirements
-- [ ] Select architecture pattern (current: {{tech_stack.architecture}})
-- [ ] Choose technology stack (current: {{tech_stack.language}}/{{tech_stack.framework}})
-- [ ] Estimate effort and timeline
-- [ ] Identify risks and dependencies
-- [ ] Establish team roles and responsibilities
-- [ ] Set up project repository and tools
-- [ ] Define coding standards and conventions
+- \[ \] Define project scope and requirements
+- \[ \] Select architecture pattern (current: {{tech_stack.architecture}})
+- \[ \] Choose technology stack (current: {{tech_stack.language}}/{{tech_stack.framework}})
+- \[ \] Estimate effort and timeline
+- \[ \] Identify risks and dependencies
+- \[ \] Establish team roles and responsibilities
+- \[ \] Set up project repository and tools
+- \[ \] Define coding standards and conventions
 
 {%- elif project_phase == "development" %}
 
 ### Development Phase Checklist
 
-- [ ] Set up development environment
-- [ ] Implement core features using {{tech_stack.language}}
-- [ ] Write unit tests for all new code
-- [ ] Follow {{tech_stack.framework}} best practices
-- [ ] Conduct regular code reviews
-- [ ] Document APIs and components
-- [ ] Track and manage technical debt
-- [ ] Daily standups and progress tracking
+- \[ \] Set up development environment
+- \[ \] Implement core features using {{tech_stack.language}}
+- \[ \] Write unit tests for all new code
+- \[ \] Follow {{tech_stack.framework}} best practices
+- \[ \] Conduct regular code reviews
+- \[ \] Document APIs and components
+- \[ \] Track and manage technical debt
+- \[ \] Daily standups and progress tracking
 
 {%- elif project_phase == "testing" %}
 
 ### Testing Phase Checklist
 
-- [ ] Execute comprehensive test plans
-- [ ] Perform integration testing
-- [ ] Conduct security vulnerability scans
-- [ ] Validate performance benchmarks
-- [ ] Test deployment procedures in staging
-- [ ] Document test results and defects
-- [ ] Regression testing for bug fixes
-- [ ] User acceptance testing (UAT)
+- \[ \] Execute comprehensive test plans
+- \[ \] Perform integration testing
+- \[ \] Conduct security vulnerability scans
+- \[ \] Validate performance benchmarks
+- \[ \] Test deployment procedures in staging
+- \[ \] Document test results and defects
+- \[ \] Regression testing for bug fixes
+- \[ \] User acceptance testing (UAT)
 
 {%- elif project_phase == "deployment" %}
 
 ### Deployment Phase Checklist
 
-- [ ] Prepare production environment
-- [ ] Execute deployment runbook
-- [ ] Monitor application health checks
-- [ ] Validate all systems operational
-- [ ] Enable monitoring and alerting
-- [ ] Document rollback procedures
-- [ ] Communicate with stakeholdes
-- [ ] Post-deployment verification
+- \[ \] Prepare production environment
+- \[ \] Execute deployment runbook
+- \[ \] Monitor application health checks
+- \[ \] Validate all systems operational
+- \[ \] Enable monitoring and alerting
+- \[ \] Document rollback procedures
+- \[ \] Communicate with stakeholdes
+- \[ \] Post-deployment verification
 
 {%- elif project_phase == "maintenance" %}
 
 ### Maintenance Phase Checklist
 
-- [ ] Monitor system performance metrics
-- [ ] Address production issues promptly
-- [ ] Apply security patches and updates
-- [ ] Review and optimize performance
-- [ ] Maintain documentation currency
-- [ ] Plan and execute backups
-- [ ] Conduct periodic security audit
-- [ ] Gather user feedback for improvements
+- \[ \] Monitor system performance metrics
+- \[ \] Address production issues promptly
+- \[ \] Apply security patches and updates
+- \[ \] Review and optimize performance
+- \[ \] Maintain documentation currency
+- \[ \] Plan and execute backups
+- \[ \] Conduct periodic security audit
+- \[ \] Gather user feedback for improvements
 
 {%- endif %}
 
@@ -262,24 +265,24 @@ For **{{ tech_stack.architecture }}** architecture: {%- if tech_stack.architectu
 
 ### Pre-Deployment Checklist
 
-- [ ] All tests passing in CI/CD pipeline
-- [ ] Code review approved by lead engineer
-- [ ] Security scan completed with no critical issues
-- [ ] Staging deployment tested successfully
-- [ ] Rollback procedure documented and tested
-- [ ] Stakeholders notified of deployment window
-- [ ] Database migrations prepared (if applicable)
-- [ ] Monitoring dashboards configured
+- \[ \] All tests passing in CI/CD pipeline
+- \[ \] Code review approved by lead engineer
+- \[ \] Security scan completed with no critical issues
+- \[ \] Staging deployment tested successfully
+- \[ \] Rollback procedure documented and tested
+- \[ \] Stakeholders notified of deployment window
+- \[ \] Database migrations prepared (if applicable)
+- \[ \] Monitoring dashboards configured
 
 ### Post-Deployment Validation
 
-- [ ] Health check endpoints responding correctly
-- [ ] Application metrics within normal ranges
-- [ ] Error rates below threshold (&lt; 1%)
-- [ ] Performance benchmarks met
-- [ ] User authentication working
-- [ ] Critical user flows validated
-- [ ] Monitoring alerts configured and active {%- endif %}
+- \[ \] Health check endpoints responding correctly
+- \[ \] Application metrics within normal ranges
+- \[ \] Error rates below threshold (&lt; 1%)
+- \[ \] Performance benchmarks met
+- \[ \] User authentication working
+- \[ \] Critical user flows validated
+- \[ \] Monitoring alerts configured and active {%- endif %}
 
 ## Communication Plan
 

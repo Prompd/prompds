@@ -1,6 +1,6 @@
 {
   "name": "@examples/advanced",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Public example prompts demonstrating inheritance, overriding features, and general usage patterns. Includes practical examples showing how to extend templates, customize prompts, and implement common AI workflow patterns.",
   "type": "package",
   "author": "Prompd",
@@ -25,11 +25,11 @@
     "contexts/sample-data-with-duplicates.csv",
     "contexts/sample-data.csv",
     "contexts/typescript-examples.ts",
-    "prompts/api-development.prmd",
-    "prompts/base-prompt.prmd",
+    "prompts/api-development-assistant.prmd",
+    "prompts/base-analysis-prompt.prmd",
     "prompts/image-generation-test.prmd",
-    "prompts/package-inheritance.prmd",
     "prompts/team-project-planner.prmd",
+    "prompts/template-inheritance-example.prmd",
     "prompts/topic-researcher.prmd",
     "README.md",
     "systems/system-admin.md",
@@ -47,11 +47,5 @@
   "ignore": [
     "dist/",
     ".prompd/"
-  ],
-  "tools": [
-    "terminal-echo"
-  ],
-  "dependencies": {
-    "@prompd/core": "0.0.2"
-  }
+  ]
 }
