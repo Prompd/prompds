@@ -1,0 +1,51 @@
+---
+id: base-filter
+name: "Base Filter Template"
+version: 1.0.0
+description: "Base template that all content filters inherit from. Provides standardized parameters and output format."
+parameters:
+  - name: input
+    type: string
+    required: true
+    description: "The text to analyze"
+  - name: details
+    type: json
+    required: false
+    description: "The json object used to override the detials json reslult schema."
+    default: {}
+---
+
+# Content Analysis
+
+## Text to Analyze
+```
+{{ input }}
+```
+
+## Required Output Format
+
+All filters must return JSON matching this standardized schema:
+
+```json
+{
+  "flagged": <boolean, true if content violates filter criteria>,
+  "confidence": <0.0 to 1.0, confidence in the analysis>,
+  "severity": "<none|low|medium|high|critical>",
+  "summary": "<brief one-sentence description of findings>",
+  "details": {{ details | tojson(2) }}
+  "metadata": {
+    "threshold_used": <number>,
+    "filter_version": "<version of the specific filter>",
+    "analysis_timestamp": "<ISO timestamp when analysis was performed>"
+  }
+}
+```
+
+### Field Definitions
+
+- **flagged**: Boolean indicating if content should be blocked/flagged
+- **confidence**: How certain the analysis is (0.0 = very uncertain, 1.0 = very certain)
+- **severity**: Impact level of any issues found
+- **summary**: Human-readable summary for logging/reporting
+- **details**: Filter-specific analysis data (e.g., specific violations, flagged words, etc.)
+- **metadata**: Common tracking information across all filters

@@ -1,0 +1,81 @@
+---
+id: output-validator
+name: "Output Validator"
+version: 0.0.1
+description: "Validate LLM output against an expected format specification. Checks schema compliance, required fields, types, and constraints."
+system: ../systems/output-validator.md
+parameters:
+  - name: output
+    type: string
+    required: true
+    description: "The LLM-generated output to validate"
+  - name: expected_format
+    type: string
+    required: true
+    description: "The expected format specification. Can be a JSON schema, a plain-text description of expected structure, or an example of valid output."
+  - name: format_type
+    type: string
+    required: false
+    enum: ["json_schema", "example", "description"]
+    default: "json_schema"
+    description: "How to interpret the expected_format parameter"
+  - name: strict_mode
+    type: boolean
+    required: false
+    default: false
+    description: "When true, extra fields not in the schema are treated as errors instead of warnings"
+  - name: required_fields
+    type: json
+    required: false
+    description: "Explicit list of field paths that must be present (e.g., ['$.name', '$.results[*].score'])"
+    default: []
+---
+
+# Output Validation Task
+
+Validate the following LLM output against the expected format.
+
+**Format type:** {{ format_type }}
+**Strict mode:** {{ strict_mode }}
+
+## Expected Format
+
+{{ expected_format }}
+
+{% if required_fields | length > 0 %}
+
+## Required Fields
+
+These fields must be present and non-empty:
+
+{% for field in required_fields %}
+- `{{ field }}`
+{% endfor %}
+
+{% endif %}
+
+## Output to Validate
+
+{{ output }}
+
+## Required Output Format
+
+```json
+{
+  "valid": <boolean>,
+  "parseable": <boolean, could the output be parsed at all>,
+  "error_count": <number>,
+  "warning_count": <number>,
+  "violations": [
+    {
+      "path": "<JSON path e.g. $.results[0].score>",
+      "type": "<missing_field|wrong_type|invalid_value|extra_field|format_error|parse_error>",
+      "severity": "<error|warning>",
+      "expected": "<what was expected>",
+      "actual": "<what was found>",
+      "message": "<human readable description>"
+    }
+  ],
+  "summary": "<one sentence summary>"
+}
+```

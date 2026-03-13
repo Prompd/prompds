@@ -23,5 +23,6 @@
     "prompts/base-evaluator.prmd",
     "README.md",
     "systems/evaluator.md"
-  ]
+  ],
+  "dependencies": {}
 }

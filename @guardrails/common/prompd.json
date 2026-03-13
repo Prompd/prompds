@@ -1,0 +1,45 @@
+{
+  "name": "@guardrails/common",
+  "version": "0.0.1",
+  "description": "Common guardrail prompts for inline filtering of LLM inputs and outputs. Includes PII detection, content policy enforcement, topic fencing, output validation, toxicity filtering, and hallucination checking.",
+  "type": "package",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "guardrails",
+    "safety",
+    "pii",
+    "content-policy",
+    "toxicity",
+    "hallucination",
+    "validation",
+    "filtering",
+    "moderation",
+    "vulgarity",
+    "profanity"
+  ],
+  "readme": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "main": "prompts/content-policy.prmd",
+  "files": [
+    "prompts/pii-filter.prmd",
+    "prompts/content-policy.prmd",
+    "prompts/topic-fence.prmd",
+    "prompts/output-validator.prmd",
+    "prompts/toxicity-filter.prmd",
+    "prompts/hallucination-check.prmd",
+    "systems/pii-filter.md",
+    "systems/content-policy.md",
+    "systems/topic-fence.md",
+    "systems/output-validator.md",
+    "systems/toxicity-filter.md",
+    "systems/hallucination-check.md",
+    "README.md",
+    "prompts/vulgarity-filter.prmd",
+    "systems/vulgarity-filter.md",
+    "prompts/base-filter.prmd"
+  ]
+}

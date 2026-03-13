@@ -1,0 +1,82 @@
+---
+id: toxicity-filter
+name: "Toxicity Filter"
+version: 0.0.1
+description: "Analyze text for toxic, hostile, or offensive language. Returns per-dimension toxicity scores and an overall toxicity rating."
+system: ../systems/toxicity-filter.md
+inherits: "./base-filter.prmd"
+parameters:
+  - name: dimensions
+    type: json
+    required: false
+    description: "Restrict evaluation to specific toxicity dimensions. When omitted, all dimensions are checked."
+    default:
+      - "insults"
+      - "profanity"
+      - "threats"
+      - "sarcasm_passive_aggression"
+      - "dismissiveness"
+      - "aggressive_tone"
+  - name: per_segment
+    type: boolean
+    required: false
+    default: false
+    description: "When true, break the text into segments and score each individually in addition to the overall score"
+---
+
+# Toxicity Analysis
+
+Analyze the following text for toxic, hostile, or offensive language across multiple dimensions.
+
+**Per-segment analysis:** {{ per_segment }}
+
+{% if dimensions %}
+
+## Dimensions to Evaluate
+
+{% for dimension in dimensions %}
+- {{ dimension }}
+{% endfor %}
+
+{% endif %}
+
+## Analysis Instructions
+
+1. Evaluate the text for toxicity across all specified dimensions
+2. Consider context when provided to avoid false positives
+3. Score each dimension from 0.0 (no toxicity) to 1.0 (highly toxic)
+4. If per_segment is true, break text into logical segments and analyze each
+5. Return results in the standardized filter format
+
+## Output Requirements
+
+Use the standardized filter JSON format with toxicity-specific details:
+
+```json
+{
+  "flagged": <boolean, true if overall confidence >= threshold>,
+  "confidence": <0.0 to 1.0, overall toxicity score>,
+  "severity": "<none|low|medium|high|critical>",
+  "summary": "<brief description of toxicity findings>",
+  "details": {
+    "dimension_scores": {
+      "<dimension_name>": {
+        "score": <0.0 to 1.0>,
+        "flagged_text": "<specific text that contributed to this score or null>"
+      }
+    },
+    "segments": [
+      {
+        "text": "<segment>",
+        "score": <0.0 to 1.0>,
+        "primary_dimension": "<most relevant dimension>"
+      }
+    ]
+  },
+  "metadata": {
+    "threshold_used": <number>,
+    "filter_version": "0.0.1",
+    "analysis_timestamp": "<ISO timestamp>"
+  }
+}
+```

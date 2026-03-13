@@ -1,0 +1,93 @@
+---
+id: pii-filter
+name: "PII Filter"
+version: 0.0.1
+description: "Detect and flag personally identifiable information in text. Returns structured results with PII locations, categories, and severity."
+system: ../systems/pii-filter.md
+inherits: "./base-filter.prmd"
+parameters:
+  - name: input
+    type: string
+    required: true
+    description: "The text to analyze"
+  - name: direction
+    type: string
+    required: false
+    enum: ["input", "output", "both"]
+    default: "both"
+    description: "Whether this text is user input, LLM output, or being checked in both directions"
+  - name: categories
+    type: json
+    required: false
+    description: "Restrict detection to specific PII categories. When omitted, all categories are checked."
+    default: ["names", "emails", "phone_numbers", "ssn", "addresses", "financial", "health", "dates_of_birth"]
+  - name: sensitivity
+    type: string
+    required: false
+    enum: ["low", "medium", "high"]
+    default: "medium"
+    description: "Detection sensitivity. High catches more but increases false positives."
+  - name: allow_list
+    type: json
+    required: false
+    description: "List of specific values to ignore (e.g., a company name that resembles a person's name)"
+    default: []
+  - name: details
+    type: json
+    required: true
+    description: "The details specific to this guardrail."
+    default:
+      {
+        "pii_count": <number of PII instances found>,
+        "findings":
+        [
+          {
+            "category": "<pii category>",
+            "start_index": <character offset>,
+            "end_index": <character offset>,
+            "confidence": <0.0 to 1.0>,
+            "severity": "<low|medium|high|critical>"
+          }
+        ],
+        "categories_detected": ["<list of PII categories found>"]
+      }
+---
+
+# PII Detection Task
+
+Scan the following text for personally identifiable information.
+
+**Detection sensitivity:** {{ sensitivity }}
+**Direction:** {{ direction }}
+
+{% if allow_list | length > 0 %}
+
+## Allow List
+
+The following values should NOT be flagged as PII:
+
+{% for item in allow_list %}
+- {{ item }}
+{% endfor %}
+
+{% endif %}
+
+{% if categories %}
+
+## Categories to Check
+
+Only scan for these PII categories:
+
+{% for category in categories %}
+- {{ category }}
+{% endfor %}
+
+{% endif %}
+
+## Analysis Instructions
+
+1. Scan the text for PII entities matching the specified categories
+2. Consider the detection sensitivity level to balance accuracy vs false positives
+3. Respect the allow_list to avoid flagging approved entities
+4. Calculate confidence scores based on pattern certainty and context
+5. Return results in the standardized filter format

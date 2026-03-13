@@ -1,0 +1,81 @@
+---
+id: vulgarity-filter
+name: "Vulgarity Filter"
+version: 0.0.1
+description: "Analyze text for vulgarity and profanity across multiple age/rating-appropriate levels (G, PG, PG-13, R, Unrated). Returns flagged violations and a severity score."
+system: ../systems/vulgarity-filter.md
+inherits: "./base-filter.prmd"
+parameters:
+  - name: input
+    type: string
+    required: true
+    description: "The text to analyze"
+  - name: rating_level
+    type: string
+    required: false
+    enum: ["G", "PG", "PG-13", "R", "Unrated"]
+    default: "PG-13"
+    description: "Target content rating level. Allowed values: 'G', 'PG', 'PG-13', 'R', 'Unrated'. Determines which language is flagged as violations."
+  - name: exclude_mild
+    type: boolean
+    required: false
+    default: false
+    description: "When true, exclude mild profanity like 'damn' or 'hell' from violation reports (useful if only checking for strong language)"
+  - name: check_slurs
+    type: boolean
+    required: false
+    default: true
+    description: "When true, flag offensive slurs and derogatory terms regardless of rating level"
+  - name: details
+    type: json
+    required: true
+    description: "The details specific to this guardrail."
+    default:
+      {
+        "rating_level": "{{ rating_level }}",
+        "passed": <boolean, true if content is acceptable for the rating level>,
+        "violations":
+        [
+          {
+            "text": "<exact text from input that triggered violation>",
+            "category": "<profanity|vulgarity|slur|aggression|mild_language>",
+            "severity": "<low|medium|high|critical>",
+            "reason": "<explanation of why this violates the rating>"
+          }
+        ],
+        "recommended_rating": "<G|PG|PG-13|R|Unrated if content should be rated higher to pass>",
+        "violation_count": <number of violations found>
+      }
+---
+
+# Vulgarity Analysis
+
+Analyze the following text for vulgarity, profanity, and offensive language based on the specified age/content rating level.
+
+**Rating Level:** {{ rating_level }}
+**Check Slurs:** {{ check_slurs }}
+**Exclude Mild Profanity:** {{ exclude_mild }}
+
+## Analysis Instructions
+
+1. Analyze the text for vulgarity and profanity based on the specified rating level
+2. Consider context when provided to avoid false positives in appropriate settings
+3. Flag slurs and derogatory terms with critical severity regardless of rating (when check_slurs is true)
+4. Apply exclude_mild setting to filter out minor profanity if requested
+5. Return results in the standardized filter format
+
+## Analysis Guidelines
+
+- **G rating**: Flag any profanity, vulgarity, slurs, or aggressive language
+- **PG rating**: Allow mild words (damn, hell, crap) but flag stronger profanity
+- **PG-13 rating**: Allow moderate profanity (1–2 instances) but flag excessive vulgarity or slurs
+- **R rating**: Allow strong language and vulgarity but always flag slurs unless context explicitly permits (rare)
+- **Unrated**: Pass all text without flagging (only note in summary if relevant)
+
+{% if check_slurs %}
+- Always flag slurs and derogatory terms regardless of rating level with "critical" severity
+{% endif %}
+
+{% if exclude_mild %}
+- Do not include mild profanity (damn, hell, crap, piss, sucks) in violations array, only strong language
+{% endif %}

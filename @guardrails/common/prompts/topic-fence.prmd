@@ -1,0 +1,84 @@
+---
+id: topic-fence
+name: "Topic Fence"
+version: 0.0.1
+description: "Evaluate whether text stays within defined topic boundaries. Detects off-topic content and intentional derailment attempts."
+system: ../systems/topic-fence.md
+parameters:
+  - name: text
+    type: string
+    required: true
+    description: "The text to evaluate for topic relevance"
+  - name: allowed_topics
+    type: json
+    required: true
+    description: "List of allowed topic definitions. Each should be a clear description of what is on-topic."
+  - name: conversation_history
+    type: string
+    required: false
+    description: "Prior conversation turns for multi-turn drift detection. Format as a transcript."
+  - name: strictness
+    type: string
+    required: false
+    enum: ["loose", "moderate", "strict"]
+    default: "moderate"
+    description: "How strictly to enforce topic boundaries. Loose allows tangential content, strict does not."
+  - name: redirect_message
+    type: string
+    required: false
+    description: "A custom message to include in the output when content is off-topic, for downstream use as a user-facing redirect"
+---
+
+# Topic Relevance Evaluation
+
+Evaluate whether the following text stays within the defined topic boundaries.
+
+**Strictness:** {{ strictness }}
+
+## Allowed Topics
+
+{% for topic in allowed_topics %}
+- {{ topic }}
+{% endfor %}
+
+{% if conversation_history %}
+
+## Conversation History
+
+{{ conversation_history }}
+
+{% endif %}
+
+## Text to Evaluate
+
+{{ text }}
+
+{% if redirect_message %}
+
+## Redirect Message
+
+If the content is off-topic, include this redirect message in the output:
+
+{{ redirect_message }}
+
+{% endif %}
+
+## Required Output Format
+
+```json
+{
+  "on_topic": <boolean>,
+  "classification": "<on_topic|tangential|off_topic|derailment_attempt>",
+  "confidence": <0.0 to 1.0>,
+  "off_topic_segments": [
+    {
+      "text": "<the off-topic text segment>",
+      "reason": "<why this is off-topic>",
+      "classification": "<off_topic|derailment_attempt>"
+    }
+  ],
+  "drift_detected": <boolean, true if conversation is trending off-topic>,
+  "redirect_message": "<custom redirect or null>",
+  "summary": "<one sentence summary>"
+}
+```

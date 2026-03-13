@@ -1,0 +1,84 @@
+---
+id: hallucination-check
+name: "Hallucination Check"
+version: 0.0.1
+description: "Compare LLM output against source documents to detect fabricated facts, distorted claims, unsupported inferences, and invented citations."
+system: ../systems/hallucination-check.md
+parameters:
+  - name: output
+    type: string
+    required: true
+    description: "The LLM-generated output to check for hallucinations"
+  - name: sources
+    type: string
+    required: true
+    description: "The source documents or reference material to check against. Concatenate multiple sources with clear separators."
+  - name: original_prompt
+    type: string
+    required: false
+    description: "The prompt that produced the output, for understanding what was asked"
+  - name: grounding_threshold
+    type: number
+    required: false
+    default: 0.7
+    description: "Minimum grounding score (0.0-1.0) for the output to pass. Below this threshold, the output is flagged."
+  - name: check_citations
+    type: boolean
+    required: false
+    default: true
+    description: "When true, verify that any citations, references, or URLs in the output exist in the sources"
+  - name: allow_common_knowledge
+    type: boolean
+    required: false
+    default: true
+    description: "When true, do not flag widely known facts that don't need source support (e.g., 'the earth orbits the sun')"
+---
+
+# Hallucination Detection Task
+
+Compare the following LLM output against the provided source material and identify any unsupported or fabricated claims.
+
+**Grounding threshold:** {{ grounding_threshold }}
+**Check citations:** {{ check_citations }}
+**Allow common knowledge:** {{ allow_common_knowledge }}
+
+{% if original_prompt %}
+
+## Original Prompt
+
+{{ original_prompt }}
+
+{% endif %}
+
+## Source Material
+
+{{ sources }}
+
+## LLM Output to Check
+
+{{ output }}
+
+## Required Output Format
+
+```json
+{
+  "grounded": <boolean, true if grounding_score >= threshold>,
+  "grounding_score": <0.0 to 1.0>,
+  "total_claims": <number of factual claims identified>,
+  "supported_claims": <number>,
+  "unsupported_claims": <number>,
+  "contradicted_claims": <number>,
+  "claims": [
+    {
+      "claim": "<the factual claim>",
+      "status": "<supported|partially_supported|unsupported|contradicted>",
+      "source_reference": "<quote from source that supports/contradicts, or null>",
+      "explanation": "<why this assessment>"
+    }
+  ],
+  "invented_citations": [
+    "<any citations/URLs/references not found in sources>"
+  ],
+  "summary": "<one sentence summary>"
+}
+```
