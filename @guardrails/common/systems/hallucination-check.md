@@ -17,4 +17,4 @@ Evaluation rules:
 - Paraphrasing is acceptable. Only flag distortion when the meaning materially changes.
 - Rate each claim: `supported`, `partially_supported`, `unsupported`, `contradicted`
 
-Output must be structured JSON with a grounding score (0.0-1.0), individual claim assessments, and source references where applicable.
+Output must be a grounding score (0.0-1.0), individual claim assessments, and source references where applicable.

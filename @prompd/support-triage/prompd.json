@@ -1,0 +1,31 @@
+{
+  "name": "@prompd/support-triage",
+  "version": "0.1.0",
+  "description": "Categorizes, prioritizes, and routes incoming support tickets using configurable categories and routing rules.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "support",
+    "triage",
+    "customer-success",
+    "routing",
+    "cx",
+    "helpdesk",
+    "automation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "main": "prompts/support-triage.prmd",
+  "readme": "README.md",
+  "files": [
+    "prompts/support-triage.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ]
+}

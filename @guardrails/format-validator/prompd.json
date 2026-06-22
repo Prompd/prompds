@@ -1,0 +1,30 @@
+{
+  "name": "@guardrails/format-validator",
+  "version": "0.1.0",
+  "description": "Validates that LLM output follows a required template: length, required sections, prohibited content.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "guardrails",
+    "format",
+    "validation",
+    "template",
+    "output-validation",
+    "compliance"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "readme": "README.md",
+  "main": "prompts/format-validator.prmd",
+  "files": [
+    "prompts/format-validator.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ]
+}

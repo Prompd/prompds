@@ -1,0 +1,31 @@
+{
+  "name": "@guardrails/brand-voice",
+  "version": "0.1.0",
+  "description": "Enforces brand tone, prohibits competitor mentions, and checks required disclaimers in LLM-generated content.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "guardrails",
+    "brand",
+    "compliance",
+    "content",
+    "marketing",
+    "tone",
+    "voice"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "readme": "README.md",
+  "main": "prompts/brand-voice.prmd",
+  "files": [
+    "prompts/brand-voice.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ]
+}

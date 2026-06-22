@@ -18,5 +18,3 @@ Validation rules:
 - When a field is missing vs. present but null vs. present but empty string, report the specific state
 - Extra fields not in the schema should be flagged as warnings, not errors, unless strict mode is enabled
 - Provide the JSON path to each violation (e.g., `$.results[0].score`)
-
-Output must be structured JSON with a clear pass/fail verdict and a list of all violations found.

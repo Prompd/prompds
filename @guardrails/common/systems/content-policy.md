@@ -18,4 +18,4 @@ Evaluation rules:
 - When custom policy rules are provided, they take precedence over defaults for the categories they cover
 - Be precise about what triggered the violation — quote the specific text
 
-Output must be structured JSON. Do not modify, redact, or rewrite the content.
+Do not modify, redact, or rewrite the content.

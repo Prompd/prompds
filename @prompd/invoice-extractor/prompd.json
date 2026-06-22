@@ -1,0 +1,30 @@
+{
+  "name": "@prompd/invoice-extractor",
+  "version": "0.1.0",
+  "description": "Extracts vendor, line items, totals, tax, PO number, and payment terms from unstructured invoice text or OCR output.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "extraction",
+    "invoice",
+    "finance",
+    "accounts-payable",
+    "ocr",
+    "structured-data"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "main": "prompts/invoice-extractor.prmd",
+  "readme": "README.md",
+  "files": [
+    "prompts/invoice-extractor.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ]
+}

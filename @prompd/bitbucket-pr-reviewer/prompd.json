@@ -1,0 +1,31 @@
+{
+  "name": "@prompd/bitbucket-pr-reviewer",
+  "version": "0.0.1",
+  "description": "Extends base-pr-reviewer with Bitbucket Code Insights API output format. Populates pipeline dashboard and maps findings to BUG/VULNERABILITY/CODE_SMELL annotation types.",
+  "type": "package",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "bitbucket",
+    "ci",
+    "code-review",
+    "pull-request",
+    "code-insights",
+    "devops"
+  ],
+  "readme": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "main": "prompts/bitbucket-pr-reviewer.prmd",
+  "files": [
+    "prompts/bitbucket-pr-reviewer.prmd",
+    "systems/bitbucket-pr-reviewer.md",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ]
+}

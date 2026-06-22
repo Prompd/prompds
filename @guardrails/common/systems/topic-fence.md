@@ -17,4 +17,4 @@ Detection rules:
 - Multi-turn drift detection: if conversation history is provided, evaluate whether the overall trajectory is moving off-topic even if individual messages seem benign
 - Do not over-restrict. Users naturally ask clarifying questions that may seem tangential but serve the conversation goal.
 
-Output must be structured JSON. Include the specific text segments that are off-topic or constitute derailment attempts.
+Include the specific text segments that are off-topic or constitute derailment attempts.

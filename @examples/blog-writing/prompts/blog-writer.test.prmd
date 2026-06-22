@@ -1,0 +1,33 @@
+---
+id: blog-writer-test
+name: Professional Blog Writer.test
+description: "Tests for Professional Blog Writer"
+version: 0.0.1
+target: ./blog-writer.prmd
+tests:
+  - name: "basic output"
+    params:
+      category: ""
+      topic: ""
+      word_count: ""
+      include_technical_specs: ""
+    assert:
+      - evaluator: nlp
+        check: min_tokens
+        value: 1
+
+  # - name: "expected error"
+  #   params: {}
+  #   expect_error: true
+---
+
+# Judge Prompt
+
+# Uncomment and customize for LLM-as-judge evaluation:
+# Given the input and output below, evaluate whether the response
+# meets the expected quality criteria.
+#
+# **Input:** {{input}}
+# **Output:** {{output}}
+#
+# Respond with PASS or FAIL followed by a one-sentence reason.

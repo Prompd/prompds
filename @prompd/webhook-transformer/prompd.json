@@ -1,0 +1,31 @@
+{
+  "name": "@prompd/webhook-transformer",
+  "version": "0.1.0",
+  "description": "Normalizes and transforms arbitrary webhook payloads to a target schema using natural language mapping rules.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "webhook",
+    "etl",
+    "transformation",
+    "pipeline",
+    "data",
+    "integration",
+    "automation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "main": "prompts/webhook-transformer.prmd",
+  "readme": "README.md",
+  "files": [
+    "prompts/webhook-transformer.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ]
+}

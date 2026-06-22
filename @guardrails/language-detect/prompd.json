@@ -1,0 +1,30 @@
+{
+  "name": "@guardrails/language-detect",
+  "version": "0.1.0",
+  "description": "Detects the language of input text and validates it against expected locales.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "guardrails",
+    "language",
+    "localization",
+    "i18n",
+    "bcp47",
+    "detection"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "readme": "README.md",
+  "main": "prompts/language-detect.prmd",
+  "files": [
+    "prompts/language-detect.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ]
+}

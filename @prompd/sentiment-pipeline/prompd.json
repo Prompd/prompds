@@ -1,0 +1,34 @@
+{
+  "name": "@prompd/sentiment-pipeline",
+  "version": "0.1.0",
+  "description": "Production-grade sentiment analysis with confidence scores, aspect-level breakdown, and trend signals.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "sentiment",
+    "nlp",
+    "analytics",
+    "cx",
+    "feedback",
+    "pipeline",
+    "aspect-based"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "main": "prompts/sentiment-pipeline.prmd",
+  "readme": "README.md",
+  "files": [
+    "prompts/sentiment-pipeline.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ],
+  "dependencies": {
+    "@prompd/base-llm-evaluator": "^0.0.1"
+  }
+}

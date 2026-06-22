@@ -1,0 +1,104 @@
+---
+id: base-pr-reviewer
+name: "Base PR Reviewer"
+version: 1.0.0
+description: "Base template for automated PR review. Inherit from this to create platform-specific reviewers."
+temperature: 0.1
+max_tokens: 4096
+parameters:
+  - name: diff
+    type: string
+    required: true
+    description: "The unified diff of the pull request"
+  - name: title
+    type: string
+    required: true
+    description: "Title of the pull request"
+  - name: description
+    type: string
+    description: "Body/description of the pull request"
+    default: ""
+  - name: base_branch
+    type: string
+    description: "Target branch being merged into"
+    default: "main"
+  - name: language
+    type: string
+    description: "Primary programming language (auto-detect if not specified)"
+    default: "auto"
+  - name: review_focus
+    type: array
+    description: "Areas to focus the review on"
+    default: ["security","correctness","performance","maintainability","tests"]
+  - name: max_findings
+    type: integer
+    description: "Maximum number of findings to return"
+    default: 20
+system: "../systems/pr-reviewer.md"
+---
+
+Review the following pull request and return a structured JSON analysis.
+
+## Pull Request
+
+**Title:** {{ title }}
+
+**Description:** {{ description }}
+
+**Target Branch:** {{ base_branch }}
+
+**Review Focus:** {{ review_focus }}
+
+## Diff
+
+```diff
+{{ diff }}
+```
+
+## Instructions
+
+Analyze this diff and return a JSON object with the following structure:
+
+```json
+{
+  "summary": {
+    "verdict": "APPROVE | REQUEST_CHANGES | COMMENT",
+    "confidence": 0.0-1.0,
+    "overview": "2-3 sentence summary of the change and its quality",
+    "stats": {
+      "files_changed": 0,
+      "lines_added": 0,
+      "lines_removed": 0,
+      "critical_count": 0,
+      "high_count": 0,
+      "medium_count": 0,
+      "low_count": 0,
+      "praise_count": 0
+    }
+  },
+  "findings": [
+    {
+      "id": "unique-id",
+      "severity": "CRITICAL | HIGH | MEDIUM | LOW | PRAISE",
+      "category": "security | correctness | performance | maintainability | tests | style",
+      "file": "path/to/file.ext",
+      "line": 42,
+      "title": "Short descriptive title",
+      "detail": "Detailed explanation of the issue and why it matters",
+      "suggestion": "Specific code or approach suggestion",
+      "blocking": true
+    }
+  ],
+  "test_coverage": {
+    "has_tests": true,
+    "tests_adequate": true,
+    "missing_cases": ["edge case description"]
+  },
+  "security": {
+    "risk_level": "NONE | LOW | MEDIUM | HIGH | CRITICAL",
+    "vulnerabilities": []
+  }
+}
+```
+
+Limit findings to {{ max_findings }}. Prioritize by severity. Return only valid JSON.

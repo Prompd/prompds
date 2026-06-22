@@ -23,4 +23,4 @@ Thresholds (configurable):
 - `high` (0.6 - 0.8): Clearly toxic, likely should be filtered
 - `critical` (0.8 - 1.0): Severely toxic, must be filtered
 
-Output must be structured JSON. Do not modify or redact the input text.
+Do not modify or redact the input text.

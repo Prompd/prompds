@@ -14,14 +14,6 @@ parameters:
     description: "The json object used to override the detials json reslult schema."
     default: {}
 ---
-
-# Content Analysis
-
-## Text to Analyze
-```
-{{ input }}
-```
-
 ## Required Output Format
 
 All filters must return JSON matching this standardized schema:
@@ -49,3 +41,14 @@ All filters must return JSON matching this standardized schema:
 - **summary**: Human-readable summary for logging/reporting
 - **details**: Filter-specific analysis data (e.g., specific violations, flagged words, etc.)
 - **metadata**: Common tracking information across all filters
+
+# Response
+
+## Content Analysis
+
+- Only return the json summary. Do not include any text before or after the json. 
+
+## Text to Analyze
+```
+{{ input }}
+```

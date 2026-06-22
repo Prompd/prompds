@@ -1,0 +1,31 @@
+{
+  "name": "@guardrails/hipaa",
+  "version": "0.1.0",
+  "description": "Detects Protected Health Information (PHI) beyond basic PII — MRNs, diagnosis codes, procedure codes, insurance IDs, and provider DEA numbers.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "guardrails",
+    "hipaa",
+    "phi",
+    "healthcare",
+    "compliance",
+    "pii",
+    "redaction"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "readme": "README.md",
+  "main": "prompts/hipaa.prmd",
+  "files": [
+    "prompts/hipaa.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ]
+}

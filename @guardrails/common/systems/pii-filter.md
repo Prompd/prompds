@@ -15,5 +15,3 @@ Detection rules:
 - Err on the side of flagging — false positives are preferable to missed PII
 - Detect PII even when obfuscated with spaces, dashes, or character substitution (e.g., "s0cial security" or "SS N")
 - Do not flag obviously fictional or example data (e.g., "John Doe", "123-45-6789", "test@example.com") unless the user explicitly asks you to
-
-Output must be structured JSON. Do not editorialize or provide advice unless asked.

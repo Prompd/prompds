@@ -1,0 +1,111 @@
+---
+id: bitbucket-pr-reviewer
+name: "Bitbucket PR Reviewer"
+version: 1.0.0
+description: "Bitbucket-native pull request reviewer. Outputs Bitbucket Code Insights and Annotations API compatible review data."
+parameters:
+  - name: diff
+    type: string
+    required: true
+    description: "Unified diff from the Bitbucket pipeline"
+  - name: title
+    type: string
+    required: true
+    description: "Pull request title"
+  - name: description
+    type: string
+    description: "Pull request description"
+    default: ""
+  - name: base_branch
+    type: string
+    description: "Destination branch (BITBUCKET_PR_DESTINATION_BRANCH)"
+    default: "main"
+  - name: pr_id
+    type: integer
+    description: "Pull request ID (BITBUCKET_PR_ID)"
+  - name: workspace
+    type: string
+    description: "Bitbucket workspace slug"
+  - name: repository
+    type: string
+    description: "Repository slug (BITBUCKET_REPO_SLUG)"
+  - name: author
+    type: string
+    description: "PR author display name"
+  - name: review_focus
+    type: array
+    default: ["security","correctness","performance","maintainability","tests"]
+  - name: max_findings
+    type: integer
+    default: 20
+  - name: language
+    type: string
+    description: "Primary programming language (auto-detect if not specified)"
+    default: "auto"
+  - name: output_format
+    type: string
+    description: "The JSON schema used in the output."
+    default: |
+      { 
+        "report":
+        {
+          "title": "AI Code Review",
+          "details": "Top-level summary of the pull request review",
+          "report_type": "BUG | VULNERABILITY | CODE_SMELL | COVERAGE",
+          "result": "PASSED | FAILED",
+          "data":
+          [
+            {
+              "title": "Critical Issues",
+              "type": "NUMBER",
+              "value": 0
+            },
+            {
+              "title": "High Issues",
+              "type": "NUMBER",
+              "value": 0
+            },
+            {
+              "title": "Review Verdict",
+              "type": "TEXT",
+              "value": "APPROVE | REQUEST_CHANGES"
+            }
+          ]
+        },
+        "annotations":
+        [
+          {
+            "external_id": "unique-finding-id",
+            "path": "path/to/file.ext",
+            "line": 42,
+            "message": "Finding description. Prefix with severity: [CRITICAL] | [HIGH] | [MEDIUM] | [LOW] | [PRAISE]",
+            "severity": "CRITICAL | HIGH | MEDIUM | LOW",
+            "type": "BUG | VULNERABILITY | CODE_SMELL",
+            "link": null
+          }
+        ],
+        "pr_comment": "Markdown summary comment for the PR thread",
+        "stats":
+        {
+          "critical": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 0,
+          "praise": 0,
+          "verdict": "APPROVE | REQUEST_CHANGES"
+        }
+      }
+using:
+- name: "@prompd/pr-reviewer-base@0.0.2"
+  prefix: "@base"
+inherits: "@base/prompts/base-pr-reviewer.prmd"
+system: "../systems/bitbucket-pr-reviewer.md"
+---
+
+Review pull request #{{ pr_id }} by {{ author }} in {{ workspace }}/{{ repository }}.
+
+## Response
+
+Return a JSON object formatted for the Bitbucket Code Insights and Annotations API:
+
+Set `result: FAILED` when CRITICAL or HIGH findings exist. Return only valid JSON.

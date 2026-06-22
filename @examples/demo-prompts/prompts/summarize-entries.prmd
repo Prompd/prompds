@@ -1,0 +1,15 @@
+---
+id: summarize-entries
+name: Summarize Entries
+version: 1.0.0
+parameters:
+  - name: entries
+    type: array
+    default: []
+---
+
+Please provide a detailed summary of the provided entries:
+
+{% for entry in entries %}
+- {{ entry }}
+{% endfor %}

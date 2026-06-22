@@ -1,0 +1,30 @@
+{
+  "name": "@prompd/document-summarizer",
+  "version": "0.1.0",
+  "description": "Base template for long-form document summarization with configurable output format. Designed to be extended by domain-specific summarizers.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "summarization",
+    "documents",
+    "nlp",
+    "base",
+    "pipeline",
+    "content"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "main": "prompts/document-summarizer.prmd",
+  "readme": "README.md",
+  "files": [
+    "prompts/document-summarizer.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ]
+}

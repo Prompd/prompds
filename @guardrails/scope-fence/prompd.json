@@ -1,0 +1,31 @@
+{
+  "name": "@guardrails/scope-fence",
+  "version": "0.1.0",
+  "description": "Validates that agent output stays within defined task boundaries — detects off-topic responses, out-of-scope actions, and role drift.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "guardrails",
+    "scope",
+    "agent",
+    "boundaries",
+    "safety",
+    "agentic",
+    "containment"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "readme": "README.md",
+  "main": "prompts/scope-fence.prmd",
+  "files": [
+    "prompts/scope-fence.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ]
+}

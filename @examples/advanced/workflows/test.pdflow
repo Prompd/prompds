@@ -21,11 +21,11 @@
       "id": "prompt-1770319944701",
       "type": "prompt",
       "position": {
-        "x": 360,
-        "y": 15
+        "x": 345,
+        "y": 30
       },
       "data": {
-        "label": "Prompt",
+        "label": "Topic Researcher",
         "source": "../prompts/topic-researcher.prmd",
         "parameters": {},
         "sourceType": "file",
@@ -37,17 +37,21 @@
           "expectedFormat": "json",
           "passWhen": "false",
           "rejectionExpression": "",
-          "outputMode": "original"
+          "outputMode": "original",
+          "enabled": false,
+          "failAction": "continue"
         },
-        "providerNodeId": "provider-1770583948734"
+        "providerNodeId": "provider-1770583948734",
+        "disabled": false,
+        "errorHandlerNodeId": "error-handler-1773977629402"
       }
     },
     {
       "id": "trigger-1770320005942",
       "type": "trigger",
       "position": {
-        "x": 15,
-        "y": 15
+        "x": 105,
+        "y": 30
       },
       "data": {
         "label": "Start",
@@ -59,8 +63,8 @@
       "id": "output-1770320080452",
       "type": "output",
       "position": {
-        "x": 720,
-        "y": 45
+        "x": 630,
+        "y": 30
       },
       "data": {
         "label": "Output"
@@ -100,13 +104,60 @@
       "id": "provider-1770583948734",
       "type": "provider",
       "position": {
-        "x": 165,
-        "y": -255
+        "x": 255,
+        "y": -225
       },
       "data": {
         "label": "Provider",
         "providerId": "openai",
-        "model": "gpt-4.1-nano"
+        "model": "gpt-4.1-mini",
+        "locked": true
+      }
+    },
+    {
+      "id": "error-handler-1773977629402",
+      "type": "error-handler",
+      "position": {
+        "x": 525,
+        "y": -225
+      },
+      "data": {
+        "label": "Error Handler",
+        "strategy": "retry",
+        "retry": {
+          "maxAttempts": 2,
+          "backoffMs": 1000,
+          "backoffMultiplier": 2
+        },
+        "locked": true
+      }
+    },
+    {
+      "id": "callback-1773977686110",
+      "type": "callback",
+      "position": {
+        "x": 600,
+        "y": -75
+      },
+      "data": {
+        "label": "Checkpoint",
+        "mode": "report",
+        "checkpointName": "",
+        "includePreviousOutput": true,
+        "includeNextNodeInfo": true,
+        "waitForAck": false,
+        "_preDockPosition": {
+          "x": 600,
+          "y": -75
+        },
+        "dockedTo": {
+          "nodeId": "error-handler-1773977629402",
+          "handleId": "onError"
+        },
+        "logToConsole": true,
+        "logToHistory": true,
+        "pauseInDebug": true,
+        "captureFullContext": true
       }
     }
   ],

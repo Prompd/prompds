@@ -1,6 +1,6 @@
 {
   "name": "@guardrails/common",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Common guardrail prompts for inline filtering of LLM inputs and outputs. Includes PII detection, content policy enforcement, topic fencing, output validation, toxicity filtering, and hallucination checking.",
   "type": "package",
   "author": "Prompd",

@@ -1,0 +1,31 @@
+{
+  "name": "@guardrails/sox-safe",
+  "version": "0.1.0",
+  "description": "Detects patterns of material non-public information (MNPI), material financial data, and insider information risk in LLM outputs.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "guardrails",
+    "sox",
+    "mnpi",
+    "compliance",
+    "financial",
+    "insider-trading",
+    "sec"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "readme": "README.md",
+  "main": "prompts/sox-safe.prmd",
+  "files": [
+    "prompts/sox-safe.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "@prompd/pr-reviewer-base",
+  "version": "0.0.2",
+  "description": "Base template for automated PR review that analyzes diffs and returns structured JSON feedback on security, correctness, performance, maintainability, and test coverage. Inherit from this to create platform-specific reviewers.",
+  "type": "package",
+  "author": "Prompd",
+  "license": "MIT",
+  "keywords": [
+    "code-review",
+    "pull-request",
+    "automation",
+    "security",
+    "base-template"
+  ],
+  "readme": "README.md",
+  "repository": "",
+  "main": "prompts/base-pr-reviewer.prmd",
+  "files": [
+    "prompts/base-pr-reviewer.prmd",
+    "README.md",
+    "systems/pr-reviewer.md"
+  ],
+  "ignore": [
+    "*.log",
+    "*.tmp",
+    ".env*"
+  ]
+}

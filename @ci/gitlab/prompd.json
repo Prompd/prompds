@@ -1,0 +1,33 @@
+{
+  "name": "@ci/gitlab",
+  "version": "0.1.0",
+  "description": "Extends base-pr-reviewer with GitLab Discussions API output format. Handles approval state, GFM suggestion blocks, and label automation.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "gitlab",
+    "ci",
+    "code-review",
+    "merge-request",
+    "devops",
+    "discussions"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "readme": "README.md",
+  "main": "prompts/gitlab.prmd",
+  "files": [
+    "prompts/gitlab.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ],
+  "dependencies": {
+    "@prompd/base-pr-reviewer": "^0.1.0"
+  }
+}

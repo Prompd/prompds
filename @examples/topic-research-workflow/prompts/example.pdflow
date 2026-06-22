@@ -1,0 +1,165 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "id": "example",
+    "name": "example"
+  },
+  "nodes": [
+    {
+      "id": "provider",
+      "type": "provider",
+      "position": {
+        "x": 0,
+        "y": -126
+      },
+      "data": {
+        "label": "Provider",
+        "providerId": "openai",
+        "model": "gpt-4.1-mini"
+      }
+    },
+    {
+      "id": "trigger",
+      "type": "trigger",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "data": {
+        "label": "Start",
+        "triggerType": "manual"
+      }
+    },
+    {
+      "id": "prompt-research",
+      "type": "prompt",
+      "position": {
+        "x": 244,
+        "y": 0
+      },
+      "data": {
+        "label": "Research Topic",
+        "source": "",
+        "provider": "openai",
+        "model": "gpt-4.1-mini",
+        "parameters": {},
+        "sourceType": "raw",
+        "providerNodeId": "provider",
+        "context": {
+          "previous_output": "auto"
+        },
+        "rawPrompt": "Conduct research on {{ topic }} from {{ start_date }} to {{ end_date }} and provide a {{ depth }} analysis."
+      }
+    },
+    {
+      "id": "prompt-tldr",
+      "type": "prompt",
+      "position": {
+        "x": 488,
+        "y": 0
+      },
+      "data": {
+        "label": "Summary",
+        "source": "",
+        "provider": "openai",
+        "model": "gpt-4.1-mini",
+        "parameters": {},
+        "sourceType": "raw",
+        "providerNodeId": "provider",
+        "context": {
+          "previous_output": "auto"
+        },
+        "rawPrompt": "tl;dr: {{ previous_output }}"
+      }
+    },
+    {
+      "id": "agent-hivavb",
+      "type": "agent",
+      "position": {
+        "x": 732,
+        "y": 0
+      },
+      "data": {
+        "label": "AI Agent",
+        "systemPrompt": "You are a helpful AI assistant with access to tools. Use the available tools to complete the user's request.",
+        "userPrompt": "{{ input }}",
+        "tools": [],
+        "maxIterations": 10,
+        "toolCallFormat": "auto",
+        "outputMode": "final-response",
+        "includeHistory": true,
+        "providerNodeId": "provider",
+        "inputGuardrail": {
+          "enabled": true,
+          "preset": "safety",
+          "systemPrompt": "You are a content-safety reviewer. Evaluate whether the INPUT is free of harmful, hateful, violent, sexual, self-harm, or illegal content. Respond with ONLY a JSON object: {\"pass\": boolean, \"reason\": string}. Set pass to false if the input violates any safety guideline.",
+          "passExpression": "{{ pass }}"
+        },
+        "outputGuardrail": {
+          "enabled": false,
+          "preset": "safety",
+          "systemPrompt": "You are a content-safety reviewer. Evaluate whether the INPUT is free of harmful, hateful, violent, sexual, self-harm, or illegal content. Respond with ONLY a JSON object: {\"pass\": boolean, \"reason\": string}. Set pass to false if the input violates any safety guideline.",
+          "passExpression": "{{ pass }}"
+        }
+      }
+    },
+    {
+      "id": "output",
+      "type": "output",
+      "position": {
+        "x": 976,
+        "y": 0
+      },
+      "data": {
+        "label": "Output"
+      }
+    }
+  ],
+  "connections": [],
+  "edges": [
+    {
+      "id": "e-trigger-prompt-research",
+      "source": "trigger",
+      "target": "prompt-research"
+    },
+    {
+      "id": "e-prompt-research-prompt-tldr",
+      "source": "prompt-research",
+      "target": "prompt-tldr"
+    },
+    {
+      "id": "e-prompt-tldr-agent-hivavb",
+      "source": "prompt-tldr",
+      "target": "agent-hivavb"
+    },
+    {
+      "id": "e-agent-hivavb-output",
+      "source": "agent-hivavb",
+      "target": "output"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "topic",
+      "type": "string",
+      "default": "",
+      "required": true
+    },
+    {
+      "name": "depth",
+      "type": "string",
+      "default": "detailed",
+      "required": true
+    },
+    {
+      "name": "start_date",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "end_date",
+      "type": "string",
+      "default": ""
+    }
+  ]
+}

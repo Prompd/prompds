@@ -1,0 +1,30 @@
+{
+  "name": "@guardrails/prompt-injection",
+  "version": "0.1.0",
+  "description": "Detects jailbreak attempts, instruction overrides, and role-play attacks in LLM inputs before they reach the model.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "guardrails",
+    "security",
+    "prompt-injection",
+    "jailbreak",
+    "safety",
+    "input-validation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "readme": "README.md",
+  "main": "prompts/prompt-injection.prmd",
+  "files": [
+    "prompts/prompt-injection.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ]
+}

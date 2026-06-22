@@ -1,0 +1,30 @@
+{
+  "name": "@prompd/data-quality-checker",
+  "version": "0.1.0",
+  "description": "Validates and scores incoming data records against configurable quality rules.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "data-quality",
+    "validation",
+    "pipeline",
+    "etl",
+    "data-engineering",
+    "scoring"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "main": "prompts/data-quality-checker.prmd",
+  "readme": "README.md",
+  "files": [
+    "prompts/data-quality-checker.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ]
+}

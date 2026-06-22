@@ -1,0 +1,52 @@
+---
+id: base-analysis-prompt-test
+name: Base Analysis Framework.test
+version: 0.0.1
+description: "Tests for Base Analysis Framework"
+target: ./base-analysis-prompt.prmd
+tests:
+  - name: "basic output"
+    params:
+      topic: ""
+      output_format: ""
+    assert:
+      - evaluator: nlp
+        evaluate: response          # response | prompt | both - required for nlp
+        check: min_tokens
+        value: 1
+  #     - evaluator: nlp
+  #       evaluate: prompt
+  #       check: contains
+  #       value: "expected text"
+  #     - evaluator: script
+  #       script: "./test/eval-script.js"
+  #       evaluate: both            # defaults for prmd
+  #     - evaluator: prmd
+  #       evaluate: both            # defaults for prmd
+  #       prompt: "@prompd/eval-coherence@^1.0.0"
+
+  # - name: "expected error"
+  #   params: {}
+  #   expect_error: true
+---
+
+# Evaluator
+
+<!-- Evaluator Prompt
+
+Uncomment and customize this block for LLM-based evaluation.
+Given the prompt and response below, evaluate whether the output
+meets the expected quality criteria.
+
+## Prompt
+```prompt
+{{ prompt }}
+```
+
+## Response
+```response
+{{ response }}
+```
+
+Respond with PASS or FAIL followed by a one-sentence reason.
+-->

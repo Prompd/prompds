@@ -1,0 +1,86 @@
+---
+id: gitlab-pr-reviewer
+name: "Gitlab PR Reviewer"
+version: 1.0.0
+description: "GitLab-native merge request reviewer. Outputs GitLab Discussions API compatible review comments."
+tags: [gitlab, pr-reviewer, pr, code-review]
+provider: anthropic
+model: claude-3-haiku-20240307
+temperature: 0.1
+max_tokens: 4096
+parameters:
+  - name: diff
+    type: string
+    required: true
+    description: "Unified diff from the merge_request pipeline"
+  - name: title
+    type: string
+    required: true
+    description: "Merge request title (CI_MERGE_REQUEST_TITLE)"
+  - name: description
+    type: string
+    description: "Merge request description body"
+    default: ""
+  - name: base_branch
+    type: string
+    description: "Target branch (CI_MERGE_REQUEST_TARGET_BRANCH_NAME)"
+    default: "main"
+  - name: pr_iid
+    type: integer
+    description: "Merge request internal ID (CI_MERGE_REQUEST_IID)"
+  - name: project_path
+    type: string
+    description: "GitLab project path (CI_PROJECT_PATH)"
+  - name: author
+    type: string
+    description: "MR author username"
+  - name: review_focus
+    type: array
+    default: ["security","correctness","performance","maintainability","tests"]
+  - name: max_findings
+    type: integer
+    default: 20
+  - name: language
+    type: string
+    description: "Primary programming language (auto-detect if not specified)"
+    default: "auto"
+inherits: ./base-pr-reviewer.prmd
+system: "../systems/gitlab-pr-reviewer.md"
+---
+
+Review merge request !{{ pr_iid }} by @{{ author }} in {{ project_path }}.
+
+## Output Format
+
+Return a JSON object formatted for the GitLab Discussions API:
+
+```json
+{
+  "state": "approved | unapproved",
+  "summary": "Top-level summary comment in GitLab Flavored Markdown",
+  "discussions": [
+    {
+      "position": {
+        "position_type": "text",
+        "new_path": "path/to/file.ext",
+        "new_line": 42
+      },
+      "body": "Markdown comment. Use severity prefix: 🔴 **CRITICAL** | 🟠 **HIGH** | 🟡 **MEDIUM** | 🔵 **LOW** | ✅ **PRAISE**\n\n**Issue:** Description\n\n**Suggestion:** Specific fix"
+    }
+  ],
+  "labels": {
+    "add": [],
+    "remove": []
+  },
+  "stats": {
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "praise": 0,
+    "verdict": "approved | unapproved"
+  }
+}
+```
+
+Only set `state: approved` when there are zero CRITICAL or HIGH findings. Return only valid JSON.

@@ -1,0 +1,31 @@
+{
+  "name": "@guardrails/gdpr",
+  "version": "0.1.0",
+  "description": "Detects EU personal data, flags consent signal requirements, and identifies right-to-erasure triggers in text.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "guardrails",
+    "gdpr",
+    "privacy",
+    "eu",
+    "compliance",
+    "personal-data",
+    "dpa"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "readme": "README.md",
+  "main": "prompts/gdpr.prmd",
+  "files": [
+    "prompts/gdpr.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ]
+}

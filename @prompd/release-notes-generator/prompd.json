@@ -1,0 +1,30 @@
+{
+  "name": "@prompd/release-notes-generator",
+  "version": "0.1.0",
+  "description": "Transforms git commit messages into structured, human-readable release notes categorized by type.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "release-notes",
+    "changelog",
+    "git",
+    "devops",
+    "engineering",
+    "documentation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "readme": "README.md",
+  "main": "prompts/release-notes-generator.prmd",
+  "files": [
+    "prompts/release-notes-generator.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ]
+}

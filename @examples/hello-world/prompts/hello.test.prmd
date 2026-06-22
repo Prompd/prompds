@@ -1,0 +1,71 @@
+---
+id: hello-test
+name: "hello.test"
+version: 0.0.1
+description: "Tests for Hello World prompt"
+target: ./hello.prmd
+max_tokens: 64
+tests:
+  - name: "greets Alice with using less than 100 token"
+    params:
+      name: "Alice"
+    assert:
+      - evaluator: nlp
+        check: contains
+        value: "Alice"
+      - evaluator: nlp
+        check: min_tokens
+        value: 5
+      - evaluator: nlp
+        check: max_tokens
+        value: 100
+
+  - name: "hello default name to World"
+    params:
+      name: "World"
+    assert:
+      - evaluator: nlp
+        check: contains
+        value: "Hello, World"
+
+  - name: "hello addresses bob and is a warm tone"
+    params:
+      name: "Bob"
+    assert:
+      - evaluator: nlp
+        check: not_contains
+        value: ["error", "fail", "sorry"]
+      - evaluator: prmd
+---
+# Evaluator
+
+You are a prompt unit test evaluator that is testing the greeting message.
+
+## Parameters
+
+- **Name provided:** {{ params.name }}
+
+## Evaluation Criteria
+
+Evaluate the greeting below and determine:
+
+- Addresses the person by the name: "Bob"
+- Is friendly and warm tone
+- Is 2-3 sentences as requested
+- Prompt contains the phrase: "Hello, Bob"
+
+## Prompt
+
+```txt
+{{ prompt }}
+```
+
+## Evaluate
+
+```txt
+{{ response }}
+```
+
+# Response
+
+Respond with PASS or FAIL followed by a one-sentence reason.

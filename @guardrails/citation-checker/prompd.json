@@ -1,0 +1,30 @@
+{
+  "name": "@guardrails/citation-checker",
+  "version": "0.1.0",
+  "description": "Flags LLM outputs that make factual claims without grounding in provided source context.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "guardrails",
+    "hallucination",
+    "grounding",
+    "citations",
+    "rag",
+    "factuality"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "readme": "README.md",
+  "main": "prompts/citation-checker.prmd",
+  "files": [
+    "prompts/citation-checker.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ]
+}

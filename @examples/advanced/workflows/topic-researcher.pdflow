@@ -636,36 +636,6 @@
         "provider": "langsearch",
         "errorHandlerNodeId": "error-handler-1769156347862"
       }
-    },
-    {
-      "id": "provider-1772778432422",
-      "type": "provider",
-      "position": {
-        "x": 345,
-        "y": 480
-      },
-      "data": {
-        "label": "Provider",
-        "providerId": "openai",
-        "model": "gpt-4o"
-      }
-    },
-    {
-      "id": "error-handler-1772778449669",
-      "type": "error-handler",
-      "position": {
-        "x": 645,
-        "y": 480
-      },
-      "data": {
-        "label": "Error Handler",
-        "strategy": "retry",
-        "retry": {
-          "maxAttempts": 3,
-          "backoffMs": 1000,
-          "backoffMultiplier": 2
-        }
-      }
     }
   ],
   "edges": [

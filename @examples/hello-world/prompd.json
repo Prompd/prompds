@@ -1,6 +1,6 @@
 {
   "name": "@examples/hello-world",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "The simplest possible Prompd package. A single prompt with one parameter.",
   "type": "package",
   "author": "Prompd LLC",
@@ -15,6 +15,7 @@
   "main": "prompts/hello.prmd",
   "files": [
     "prompts/hello.prmd",
-    "README.md"
+    "README.md",
+    "prompts/hello.test.prmd"
   ]
 }

@@ -1,0 +1,20 @@
+{
+  "name": "@ci/pr-common",
+  "version": "0.0.1",
+  "description": "Prompd project: @ci",
+  "author": "Prompd",
+  "files": [
+    "prompts/base-pr-reviewer.prmd",
+    "README.md",
+    "systems/pr-reviewer.md"
+  ],
+  "ignore": [
+    "*.log",
+    "*.tmp",
+    ".env*"
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "readme": "README.md",
+  "main": "prompts/base-pr-reviewer.prmd"
+}

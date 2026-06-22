@@ -1,0 +1,34 @@
+{
+  "name": "@ci/github",
+  "version": "0.1.0",
+  "description": "Extends base-pr-reviewer with GitHub Reviews API output format. Maps findings to check run annotations and generates GitHub suggestion blocks.",
+  "type": "skill",
+  "author": "Prompd",
+  "license": "ELv2",
+  "keywords": [
+    "github",
+    "ci",
+    "code-review",
+    "pr",
+    "actions",
+    "checks",
+    "devops"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prompd/packages"
+  },
+  "readme": "README.md",
+  "main": "prompts/github.prmd",
+  "files": [
+    "prompts/github.prmd",
+    "README.md"
+  ],
+  "ignore": [
+    "dist/**",
+    ".prompd/**"
+  ],
+  "dependencies": {
+    "@prompd/base-pr-reviewer": "^0.1.0"
+  }
+}
